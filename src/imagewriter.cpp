@@ -958,15 +958,33 @@ void ImageWriter::_startDfuThread()
         QString chosen;
         qint64 bestAvail = 0;
 
+        QStringList rejected;
+
         for (const QString &dir : candidates)
         {
             QDir().mkpath(dir);
             QStorageInfo si(dir);
             if (!si.isValid() || !si.isReady() || si.isReadOnly())
+            {
+                QString why = !QDir(dir).exists() ? tr("could not be created")
+                            : !si.isValid()       ? tr("is not a recognised volume")
+                            : !si.isReady()       ? tr("is not ready")
+                                                  : tr("is read-only");
+                qDebug() << "Rejecting temporary directory" << dir << ":" << why
+                         << "(exists:" << QDir(dir).exists()
+                         << "valid:" << si.isValid()
+                         << "ready:" << si.isReady()
+                         << "readOnly:" << si.isReadOnly() << ")";
+                rejected += QStringLiteral("%1 (%2)").arg(dir, why);
                 continue;
+            }
             const QString fstype = si.fileSystemType();
             if (fstype.contains("tmpfs") || fstype.contains("ramfs"))
+            {
+                qDebug() << "Rejecting temporary directory" << dir << ": RAM-backed" << fstype;
+                rejected += QStringLiteral("%1 (%2)").arg(dir, tr("is RAM-backed"));
                 continue;
+            }
 
             qint64 needed = tempNeeded;
             /* A fresh download being cached takes extra room on the cache volume */
@@ -990,12 +1008,25 @@ void ImageWriter::_startDfuThread()
 
         if (chosen.isEmpty())
         {
-            emit error(tr("Not enough disk space to prepare the image.<br>"
-                          "About %1 GB of free space is needed to extract the image, "
-                          "but only %2 GB is available.<br>"
-                          "Free up disk space and try again.")
-                       .arg((tempNeeded + gb - 1) / gb)
-                       .arg(bestAvail / gb));
+            /* Distinguish "the volume is full" from "no candidate directory was
+               usable at all". The latter used to be reported as "0 GB available",
+               which sent people looking for disk space they already had. */
+            if (rejected.count() == candidates.count())
+            {
+                emit error(tr("Could not find a usable temporary directory to extract the image.<br>"
+                              "Tried: %1<br>"
+                              "This is a permissions problem, not a disk space problem.")
+                           .arg(rejected.join(QStringLiteral(", "))));
+            }
+            else
+            {
+                emit error(tr("Not enough disk space to prepare the image.<br>"
+                              "About %1 GB of free space is needed to extract the image, "
+                              "but only %2 MB is available.<br>"
+                              "Free up disk space and try again.")
+                           .arg((tempNeeded + gb - 1) / gb)
+                           .arg(bestAvail / (1024*1024ll)));
+            }
             return;
         }
         tempDir = chosen;
