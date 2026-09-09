@@ -1,9 +1,6 @@
 #include "priviligedprocess.h"
 #include <qlocalsocket.h>
-#include <QStandardPaths>
 #include <filesystem>
-#include <QDir>
-#include <QCoreApplication>
 
 PriviligedProcess::PriviligedProcess(QObject* parent)
     : _proc{parent}
@@ -29,11 +26,16 @@ void PriviligedProcess::setArguments(QStringList &args)
 {
     _args = args;
 
-#warning "Remove before production"
-    QString logpath = QStandardPaths::writableLocation(QStandardPaths::TempLocation) + QDir::separator() + QCoreApplication::applicationName() + ".txt";
-    qDebug() << "logpath: " << logpath;
-    _proc.setStandardErrorFile(logpath);
-    _proc.setStandardOutputFile(logpath);
+    /*
+     * Send the helper's output to our own stdout/stderr rather than to a file.
+     * This used to log to $TMPDIR/<appname>.txt, which is a predictable path in
+     * a directory other users can write to - on a shared machine someone can
+     * pre-create or symlink it and catch, or redirect, the output of a process
+     * we are about to run as root. Forwarding keeps the output visible when the
+     * application is started from a terminal, without putting it anywhere
+     * another user can reach.
+     */
+    _proc.setProcessChannelMode(QProcess::ForwardedChannels);
 }
 
 QProcess *PriviligedProcess::getQProcess()
