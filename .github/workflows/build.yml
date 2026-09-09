@@ -124,13 +124,72 @@ jobs:
           modules: 'qtimageformats qtpdf qtserialport qtvirtualkeyboard qtquick3d'
       - name: Checkout
         uses: actions/checkout@v4
+
+      # macOS keys a privacy (TCC) grant to the code signature, so on an
+      # unsigned build the grant breaks on every rebuild as the cdhash changes
+      # and the user has to re-add the app to Full Disk Access by hand. Sign
+      # with a Developer ID and notarize whenever the secrets are configured;
+      # fall back to an unsigned build (forks, PRs) so the job never blocks.
+      - name: Check for signing credentials
+        id: signing
+        env:
+          MACOS_CERTIFICATE: ${{ secrets.MACOS_CERTIFICATE }}
+          MACOS_SIGNING_IDENTITY: ${{ secrets.MACOS_SIGNING_IDENTITY }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+        run: |
+          if [ -n "$MACOS_CERTIFICATE" ] && [ -n "$MACOS_SIGNING_IDENTITY" ]; then
+            echo "sign=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "sign=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::MACOS_CERTIFICATE/MACOS_SIGNING_IDENTITY not set - producing an UNSIGNED build. Users will have to grant Full Disk Access by hand, and the grant will not survive an update."
+          fi
+          # Notarisation is optional: signing alone is enough for a locally
+          # built app, because a bundle that was never downloaded carries no
+          # quarantine attribute for Gatekeeper to check. A DMG handed to
+          # someone else does need it.
+          if [ -n "$APPLE_ID" ]; then
+            echo "notarize=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "notarize=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Import Developer ID certificate
+        if: steps.signing.outputs.sign == 'true'
+        env:
+          MACOS_CERTIFICATE: ${{ secrets.MACOS_CERTIFICATE }}
+          MACOS_CERTIFICATE_PWD: ${{ secrets.MACOS_CERTIFICATE_PWD }}
+        run: |
+          KEYCHAIN="$RUNNER_TEMP/signing.keychain-db"
+          KEYCHAIN_PWD="$(uuidgen)"
+          echo "$MACOS_CERTIFICATE" | base64 --decode > "$RUNNER_TEMP/cert.p12"
+          security create-keychain -p "$KEYCHAIN_PWD" "$KEYCHAIN"
+          security set-keychain-settings -lut 3600 "$KEYCHAIN"
+          security unlock-keychain -p "$KEYCHAIN_PWD" "$KEYCHAIN"
+          security import "$RUNNER_TEMP/cert.p12" -k "$KEYCHAIN" \
+            -P "$MACOS_CERTIFICATE_PWD" -T /usr/bin/codesign -T /usr/bin/security
+          # Without this codesign blocks on a GUI prompt for the private key
+          security set-key-partition-list -S apple-tool:,apple:,codesign: \
+            -s -k "$KEYCHAIN_PWD" "$KEYCHAIN" >/dev/null
+          security list-keychain -d user -s "$KEYCHAIN" login.keychain-db
+          rm -f "$RUNNER_TEMP/cert.p12"
+          security find-identity -v -p codesigning "$KEYCHAIN"
+
       - name: Configure
         run: |
+          EXTRA=()
+          if [ "${{ steps.signing.outputs.sign }}" = "true" ]; then
+            EXTRA+=(-DIMAGER_SIGNED_APP:BOOL=ON)
+            EXTRA+=(-DIMAGER_SIGNING_IDENTITY:STRING="${{ secrets.MACOS_SIGNING_IDENTITY }}")
+          fi
+          # Notarisation is driven from the steps below rather than from
+          # CMake's IMAGER_NOTARIZE_APP, which expects a notarytool keychain
+          # profile to have been stored beforehand.
           cmake -S "$GITHUB_WORKSPACE/src" -B "$GITHUB_WORKSPACE/build" \
             -DCMAKE_BUILD_TYPE:STRING=Release \
             -DCMAKE_PREFIX_PATH:PATH="$QT_ROOT_DIR" \
             -DQt6_ROOT:PATH="$QT_ROOT_DIR" \
-            -DQT_QMAKE_EXECUTABLE:FILEPATH="$QT_ROOT_DIR/bin/qmake"
+            -DQT_QMAKE_EXECUTABLE:FILEPATH="$QT_ROOT_DIR/bin/qmake" \
+            "${EXTRA[@]}"
       - name: Build
         run: cmake --build "$GITHUB_WORKSPACE/build" --parallel
       - name: Get project version
@@ -139,6 +198,37 @@ jobs:
           version=$(grep IMAGER_VERSION_STR "$GITHUB_WORKSPACE/build/CMakeCache.txt" | cut -d '=' -f 2)
           mv "$GITHUB_WORKSPACE/build/GemstoneImager-${version}.dmg" "$GITHUB_WORKSPACE/build/GemImager-${version}.dmg"
           tee -a "${GITHUB_OUTPUT}" <<< gemImagerVersion="$version"
+
+      - name: Notarize and staple
+        if: steps.signing.outputs.sign == 'true' && steps.signing.outputs.notarize == 'true'
+        env:
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          APPLE_APP_PASSWORD: ${{ secrets.APPLE_APP_PASSWORD }}
+        run: |
+          DMG="$GITHUB_WORKSPACE/build/GemImager-${{ steps.getversion.outputs.gemImagerVersion }}.dmg"
+          xcrun notarytool submit "$DMG" --wait \
+            --apple-id "$APPLE_ID" --team-id "$APPLE_TEAM_ID" --password "$APPLE_APP_PASSWORD"
+          # Staple the ticket so Gatekeeper accepts the DMG offline
+          xcrun stapler staple "$DMG"
+
+      - name: Verify signature
+        if: steps.signing.outputs.sign == 'true'
+        run: |
+          DMG="$GITHUB_WORKSPACE/build/GemImager-${{ steps.getversion.outputs.gemImagerVersion }}.dmg"
+          APP="$GITHUB_WORKSPACE/build/GemstoneImager.app"
+          # The bundle is what has to be signed inside-out; verify it strictly
+          codesign --verify --deep --strict --verbose=2 "$APP"
+          codesign -dv --verbose=4 "$APP" 2>&1 | grep -E 'Authority|TeamIdentifier|Timestamp|flags'
+          codesign --verify --verbose=2 "$DMG"
+          if [ "${{ steps.signing.outputs.notarize }}" = "true" ]; then
+            # Gatekeeper's own verdict; only meaningful once notarized
+            spctl --assess --type open --context context:primary-signature -vv "$DMG"
+            xcrun stapler validate "$DMG"
+          else
+            echo "::warning::Signed but not notarized (APPLE_ID not set). Gatekeeper will refuse this DMG on a user's machine."
+          fi
+
       - name: Upload DMG
         uses: actions/upload-artifact@v4
         with:
