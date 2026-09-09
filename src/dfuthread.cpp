@@ -70,8 +70,98 @@ void DfuThread::setTempDirectory(const QString &dir)
     _tempDir = dir;
 }
 
+void DfuThread::setStreamImageSize(qint64 imageSize)
+{
+    _streaming = imageSize > 0;
+    _streamImageSize = imageSize;
+}
+
+/*
+ * The extractor pads a final short block out to a multiple of the sector size,
+ * so the number of bytes that reach _writeFile can exceed the declared image
+ * length. Declare the padded length to the transfer, or it would report an
+ * overrun on the last block of an unaligned image.
+ */
+static qint64 paddedTo512(qint64 n)
+{
+    return (n + 511) & ~511LL;
+}
+
+bool DfuThread::openStreamToRawemmc()
+{
+    DfuWrapper *dfu = new DfuWrapper(nullptr);
+    _activeDfu = dfu;
+    connect(dfu, &DfuWrapper::statusMessage, this, [this](const QString &m) {
+        emit preparationStatusUpdate(m);
+    });
+    connect(dfu, &DfuWrapper::streamProgress, this, &DfuThread::onStreamProgress);
+
+    if (!dfu->initialize()) {
+        emit error(tr("Failed to initialise USB: %1").arg(dfu->lastError()));
+        goto fail;
+    }
+    /* U-Boot needs a moment after the bootloader stage before it offers the
+       rawemmc alt-setting, and the caller has already waited; still allow a few
+       attempts rather than failing on the first miss. */
+    for (int attempt = 1; attempt <= 15; attempt++) {
+        if (_cancelled)
+            goto fail;
+        if (dfu->findDevice(DfuWrapper::TI_VENDOR_ID, DfuWrapper::TI_PRODUCT_ID,
+                            DfuWrapper::ALT_RAWEMMC))
+            break;
+        if (attempt == 15) {
+            emit error(tr("No DFU device found (VID:0x%1 PID:0x%2 alt:%3) after %4 retries")
+                       .arg(DfuWrapper::TI_VENDOR_ID, 4, 16, QChar('0'))
+                       .arg(DfuWrapper::TI_PRODUCT_ID, 4, 16, QChar('0'))
+                       .arg(DfuWrapper::ALT_RAWEMMC).arg(attempt));
+            goto fail;
+        }
+        QThread::msleep(1000);
+    }
+
+    if (!dfu->beginStream(paddedTo512(_streamImageSize))) {
+        emit error(tr("Failed to start the DFU transfer: %1").arg(dfu->lastError()));
+        goto fail;
+    }
+    return true;
+
+fail:
+    _activeDfu = nullptr;
+    dfu->cleanup();
+    delete dfu;
+    return false;
+}
+
+size_t DfuThread::_writeFile(const char *buf, size_t len)
+{
+    if (!_streaming)
+        return DownloadThread::_writeFile(buf, len);
+
+    if (_cancelled || _streamFailed)
+        return len;
+
+    /* Kept in step with the base class so the image hash is still verified.
+       Unlike the base class nothing is held back: the first block cannot be
+       deferred to the end of a sequential transfer, so it goes out in order
+       like every other block. */
+    _writehash.addData(buf, len);
+
+    if (!_activeDfu || !_activeDfu->streamChunk(buf, (qint64)len)) {
+        _streamFailed = true;
+        emit error(tr("DFU transfer failed: %1")
+                   .arg(_activeDfu ? _activeDfu->lastError() : tr("transfer was not open")));
+        return 0;
+    }
+
+    _bytesWritten += len;
+    return len;
+}
+
 bool DfuThread::_openAndPrepareDevice()
 {
+    if (_streaming)
+        return openStreamToRawemmc();
+
     QString tempDir = _tempDir.isEmpty()
         ? QStandardPaths::writableLocation(QStandardPaths::CacheLocation) : _tempDir;
     QDir().mkpath(tempDir);
@@ -105,16 +195,41 @@ void DfuThread::run()
         return;
     }
 
-    if (QUrl(QString::fromUtf8(_url)).isLocalFile())
-        emit dfuProgress(5, tr("Reading image from cache/local file (no download needed)..."));
-    else
-        emit dfuProgress(5, tr("Downloading image..."));
-    DownloadExtractThread::run();
-    waitForExtractThread();
-    if (!_successful) return;
-    if (_cancelled) { emit error(tr("Cancelled")); return; }
+    /*
+     * Streaming sends the image as it arrives, so the board has to be running
+     * U-Boot and offering the rawemmc alt-setting *before* the download starts.
+     * The bootloader stage therefore runs first here, where the temp-file path
+     * does it after the image has already been written out.
+     */
+    if (_streaming) {
+        if (!prepareDeviceForImage()) return;
 
-    if (!_geminit.isEmpty() || !_config.isEmpty() || !_cmdline.isEmpty() || !_firstrun.isEmpty() || !_cloudinit.isEmpty()) {
+        emit dfuProgress(80, tr("Sending image to device (this may take several minutes)..."));
+        if (QUrl(QString::fromUtf8(_url)).isLocalFile())
+            emit preparationStatusUpdate(tr("Reading image from cache/local file (no download needed)..."));
+        DownloadExtractThread::run();
+        waitForExtractThread();
+        if (_cancelled) { emit error(tr("Cancelled")); return; }
+        if (_streamFailed) return;          /* _writeFile has already reported it */
+        if (!_successful) return;
+
+        if (!_activeDfu || !_activeDfu->finishStream()) {
+            emit error(tr("DFU transfer failed at the end of the image: %1")
+                       .arg(_activeDfu ? _activeDfu->lastError() : tr("transfer was not open")));
+            return;
+        }
+    } else {
+        if (QUrl(QString::fromUtf8(_url)).isLocalFile())
+            emit dfuProgress(5, tr("Reading image from cache/local file (no download needed)..."));
+        else
+            emit dfuProgress(5, tr("Downloading image..."));
+        DownloadExtractThread::run();
+        waitForExtractThread();
+        if (!_successful) return;
+        if (_cancelled) { emit error(tr("Cancelled")); return; }
+    }
+
+    if (!_streaming && (!_geminit.isEmpty() || !_config.isEmpty() || !_cmdline.isEmpty() || !_firstrun.isEmpty() || !_cloudinit.isEmpty())) {
         emit dfuProgress(35, tr("Customizing image..."));
         if (_file.isOpen()) _file.close();
         _file.setFileName(_tempImagePath);
@@ -127,31 +242,12 @@ void DfuThread::run()
     }
     if (_cancelled) { emit error(tr("Cancelled")); return; }
 
-    emit dfuProgress(38, tr("Fetching bootloader files..."));
-    if (!fetchBootloaderFiles()) return;
-    if (_cancelled) { emit error(tr("Cancelled")); return; }
+    if (!_streaming) {
+        if (!prepareDeviceForImage()) return;
 
-    /* A missing Windows driver makes every stage below fail after its own
-       retries, so check for it once here rather than letting the user wait out
-       three rounds of that and then read a libusb error. A device that is not
-       attached yet is not an error: the retry loops wait for it on purpose. */
-    const QString driverHint = DfuDriver::missingDriverHint(DfuWrapper::TI_VENDOR_ID,
-                                                            DfuWrapper::TI_PRODUCT_ID);
-    if (!driverHint.isEmpty()) {
-        emit error(driverHint);
-        return;
+        emit dfuProgress(80, tr("Sending image to device (this may take several minutes)..."));
+        if (!sendImageToRawemmc()) return;
     }
-
-    emit dfuProgress(45, tr("Sending bootloader files..."));
-    if (!sendBootloaderFiles()) return;
-    if (_cancelled) { emit error(tr("Cancelled")); return; }
-
-    emit dfuProgress(77, tr("Waiting for device to enter DFU mode..."));
-    QThread::sleep(3);
-    if (_cancelled) { emit error(tr("Cancelled")); return; }
-
-    emit dfuProgress(80, tr("Sending image to device (this may take several minutes)..."));
-    if (!sendImageToRawemmc()) return;
 
     /* All data has been sent, but the device is still flushing buffered image
        data to eMMC and then writes the boot binaries. U-Boot's DFU gadget only
@@ -183,6 +279,37 @@ void DfuThread::run()
                              "and switch the boot mode to eMMC."));
     QThread::msleep(1000);
     emit success();
+}
+
+/* Everything that has to happen before any image data can be sent: get the
+   bootloader files, make sure Windows has a driver bound, push the bootloader
+   stages and give U-Boot a moment to come up. */
+bool DfuThread::prepareDeviceForImage()
+{
+    emit dfuProgress(38, tr("Fetching bootloader files..."));
+    if (!fetchBootloaderFiles()) return false;
+    if (_cancelled) { emit error(tr("Cancelled")); return false; }
+
+    /* A missing Windows driver makes every stage below fail after its own
+       retries, so check for it once here rather than letting the user wait out
+       three rounds of that and then read a libusb error. A device that is not
+       attached yet is not an error: the retry loops wait for it on purpose. */
+    const QString driverHint = DfuDriver::missingDriverHint(DfuWrapper::TI_VENDOR_ID,
+                                                            DfuWrapper::TI_PRODUCT_ID);
+    if (!driverHint.isEmpty()) {
+        emit error(driverHint);
+        return false;
+    }
+
+    emit dfuProgress(45, tr("Sending bootloader files..."));
+    if (!sendBootloaderFiles()) return false;
+    if (_cancelled) { emit error(tr("Cancelled")); return false; }
+
+    emit dfuProgress(77, tr("Waiting for device to enter DFU mode..."));
+    QThread::sleep(3);
+    if (_cancelled) { emit error(tr("Cancelled")); return false; }
+
+    return true;
 }
 
 bool DfuThread::runDfu(const QString &altSetting, const QString &filePath, bool resetAfter)

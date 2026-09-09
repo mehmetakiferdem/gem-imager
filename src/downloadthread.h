@@ -130,7 +130,7 @@ public:
     uint64_t bytesWritten();
 
     virtual bool isImage();
-    size_t _writeFile(const char *buf, size_t len);
+    virtual size_t _writeFile(const char *buf, size_t len);
 
 signals:
     void success();

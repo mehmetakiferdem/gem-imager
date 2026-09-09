@@ -21,12 +21,23 @@ public:
     void cancelDownload() override;
     void setTempDirectory(const QString &dir);
 
+    /*
+     * Stream the image straight to the device as it is decompressed, instead of
+     * extracting it to a temporary file first. Saves needing as much free disk
+     * space as the uncompressed image - 17 GB for the 16 GiB Android image.
+     * imageSize is the uncompressed length, which the DFU transfer needs up
+     * front. Not usable together with image customization, which has to seek
+     * around inside the image.
+     */
+    void setStreamImageSize(qint64 imageSize);
+
 signals:
     void dfuProgress(int percentage, QString statusMsg);
 
 protected:
     void run() override;
     bool _openAndPrepareDevice() override;
+    size_t _writeFile(const char *buf, size_t len) override;
 
 private:
     QString _bootloaderFiles[3];
@@ -38,7 +49,12 @@ private:
     QString _tempDir;
 
     class DfuWrapper *_activeDfu;
+    bool _streaming = false;
+    qint64 _streamImageSize = 0;
+    bool _streamFailed = false;
     bool runDfu(const QString &altSetting, const QString &filePath, bool resetAfter);
+    bool prepareDeviceForImage();
+    bool openStreamToRawemmc();
     bool fetchBootloaderFiles();
     bool sendBootloaderFiles();
     bool sendImageToRawemmc();

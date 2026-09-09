@@ -256,136 +256,183 @@ bool DfuWrapper::downloadFile(const QString &filePath, bool resetAfter)
     return true;
 }
 
-bool DfuWrapper::downloadFileStreaming(const QString &filePath)
+/*
+ * The device is ready for the next block once it reports DNLOAD_IDLE (or has
+ * gone into an error state we handle above). Status polls fail transiently
+ * while U-Boot flushes to eMMC, so a few failures in a row are tolerated;
+ * a definitive disconnect is not.
+ */
+bool DfuWrapper::waitForDeviceIdle(struct dfu_status *dst)
+{
+    int statusRetries = 0;
+    for (;;) {
+        int ret = dfu_get_status(dfuDevice, dst);
+        if (ret < 0) {
+            if (ret != LIBUSB_ERROR_NO_DEVICE && ++statusRetries <= 3) {
+                QThread::msleep(100);
+                continue;
+            }
+            setError(QString("Status poll error: %1").arg(libusb_error_name(ret)));
+            return false;
+        }
+        statusRetries = 0;
+        if (dst->bState == DFU_STATE_dfuDNLOAD_IDLE || dst->bState == DFU_STATE_dfuERROR)
+            return true;
+        QThread::msleep(dst->bwPollTimeout > 0 ? dst->bwPollTimeout : 1);
+    }
+}
+
+bool DfuWrapper::beginStream(qint64 totalBytes)
 {
     if (!dfuDevice || !dfuDevice->dev_handle) {
         setError("No DFU device");
         return false;
     }
-
+    if (totalBytes <= 0) {
+        setError("Image size is not known, cannot transfer");
+        return false;
+    }
     if (!claimInterface())
         return false;
 
-    QFile file(filePath);
-    if (!file.open(QIODevice::ReadOnly)) {
-        setError(QString("Failed to open file: %1").arg(filePath));
-        libusb_release_interface(dfuDevice->dev_handle, dfuDevice->interface);
-        return false;
-    }
-
-    qint64 fileSize = file.size();
-    if (fileSize == 0) {
-        setError("Image file is empty, cannot transfer");
-        libusb_release_interface(dfuDevice->dev_handle, dfuDevice->interface);
-        return false;
-    }
-
-    int xfer_size = getTransferSize();
-    if (xfer_size <= 0)
-        xfer_size = 4096;
+    _streamXferSize = getTransferSize();
+    if (_streamXferSize <= 0)
+        _streamXferSize = 4096;
+    _streamTotal = totalBytes;
+    _streamSent = 0;
+    _streamTransaction = 0;
+    _streamRestarted = false;
+    _streamPending.clear();
+    _streamActive = true;
 
     // U-Boot's rawemmc alt-setting can take minutes to flush its DFU buffer to eMMC
     dfu_set_timeout(300000);
 
     emit statusMessage(QString("Streaming %1 MB to device (this may take several minutes)...")
-                       .arg(fileSize / 1024 / 1024));
+                       .arg(_streamTotal / 1024 / 1024));
+    return true;
+}
 
-    QByteArray buf(xfer_size, 0);
-    unsigned short transaction = 0;
-    qint64 bytesSent = 0;
-    bool ok = true;
-    bool restartedStaleSession = false;
+bool DfuWrapper::streamChunk(const char *data, qint64 len)
+{
+    if (!_streamActive) {
+        setError("Transfer has not been started");
+        return false;
+    }
 
-    while (bytesSent < fileSize && ok) {
+    /*
+     * The caller's chunk size has nothing to do with the device's, so buffer
+     * and hand over exactly wTransferSize at a time. The tail of a chunk stays
+     * in _streamPending until enough has arrived, or until finishStream()
+     * flushes it as the last (short) block.
+     */
+    _streamPending.append(data, len);
+
+    while (_streamPending.size() >= _streamXferSize
+           || (_streamSent + _streamPending.size() == _streamTotal && !_streamPending.isEmpty()))
+    {
+        const qint64 thisBlock = qMin<qint64>(_streamXferSize, _streamPending.size());
+
         if (isCancelled()) {
             setError("Transfer cancelled by user");
-            ok = false;
-            break;
+            return false;
         }
-
-        qint64 bytesRead = file.read(buf.data(), qMin((qint64)xfer_size, fileSize - bytesSent));
-        if (bytesRead <= 0) {
-            setError("File read error during streaming");
-            ok = false;
-            break;
+        if (_streamSent + thisBlock > _streamTotal) {
+            setError(QString("Transfer overran the declared image size of %1 bytes")
+                     .arg(_streamTotal));
+            return false;
         }
 
         int ret = dfu_download(dfuDevice->dev_handle, dfuDevice->interface,
-                               (unsigned short)bytesRead, transaction++,
-                               (unsigned char *)buf.data());
+                               (unsigned short)thisBlock, _streamTransaction++,
+                               (unsigned char *)_streamPending.data());
         if (ret < 0) {
             setError(QString("Download error: %1").arg(libusb_error_name(ret)));
-            ok = false;
-            break;
+            return false;
         }
 
-        bytesSent += bytesRead;
-
-        // Poll until device is ready for the next chunk.
-        // Status polls can fail transiently while U-Boot is busy flushing to eMMC;
-        // only give up after repeated failures or a definitive disconnect.
         struct dfu_status dst;
-        int statusRetries = 0;
-        do {
-            ret = dfu_get_status(dfuDevice, &dst);
-            if (ret < 0) {
-                if (ret != LIBUSB_ERROR_NO_DEVICE && ++statusRetries <= 3) {
-                    QThread::msleep(100);
-                    continue;
-                }
-                setError(QString("Status poll error: %1").arg(libusb_error_name(ret)));
-                ok = false;
-                break;
-            }
-            statusRetries = 0;
-            if (dst.bState == DFU_STATE_dfuDNLOAD_IDLE || dst.bState == DFU_STATE_dfuERROR)
-                break;
-            QThread::msleep(dst.bwPollTimeout > 0 ? dst.bwPollTimeout : 1);
-        } while (1);
-
-        if (!ok) break;
+        if (!waitForDeviceIdle(&dst))
+            return false;
 
         if (dst.bStatus != DFU_STATUS_OK) {
             /* A stale DFU session left on the device by an interrupted transfer
                rejects our first block with a sequence-number mismatch
                ("dfu_write: Wrong sequence number!" on the device console) and
-               cleans itself up in the process. Clear the error state and start
-               the transfer over once; DFU_ABORT alone does not reset U-Boot's
-               block counter, so this rejection is the only reliable reset. */
-            if (transaction == 1 && !restartedStaleSession) {
-                restartedStaleSession = true;
+               cleans itself up in the process. Clear the error state and send
+               this block again; DFU_ABORT alone does not reset U-Boot's block
+               counter, so this rejection is the only reliable reset. Nothing
+               has been accepted yet at this point, so the block we still hold
+               is all that needs resending. */
+            if (_streamTransaction == 1 && !_streamRestarted) {
+                _streamRestarted = true;
                 dfu_clear_status(dfuDevice->dev_handle, dfuDevice->interface);
                 emit statusMessage("Device had a stale DFU session, restarting transfer from the beginning...");
-                file.seek(0);
-                transaction = 0;
-                bytesSent = 0;
+                _streamTransaction = 0;
                 continue;
             }
             setError(QString("DFU device error: state=%1 status=%2").arg(dst.bState).arg(dst.bStatus));
-            ok = false;
-            break;
+            return false;
         }
 
-        emit streamProgress(bytesSent, fileSize);
+        _streamPending.remove(0, thisBlock);
+        _streamSent += thisBlock;
 
-        if ((bytesSent % (10LL * 1024 * 1024)) < xfer_size || bytesSent == fileSize)
+        emit streamProgress(_streamSent, _streamTotal);
+        if ((_streamSent % (10LL * 1024 * 1024)) < _streamXferSize || _streamSent == _streamTotal)
             emit statusMessage(QString("Transferred %1 / %2 MB...")
-                               .arg(bytesSent / 1024 / 1024).arg(fileSize / 1024 / 1024));
+                               .arg(_streamSent / 1024 / 1024).arg(_streamTotal / 1024 / 1024));
     }
 
-    file.close();
+    return true;
+}
 
-    // Verify all bytes were actually sent before signalling end of transfer.
-    // If bytesSent < fileSize the loop exited early due to an error (ok == false).
-    if (ok && bytesSent != fileSize) {
+bool DfuWrapper::finishStream()
+{
+    if (!_streamActive) {
+        setError("Transfer has not been started");
+        return false;
+    }
+    _streamActive = false;
+
+    bool ok = true;
+
+    /* Anything still buffered is a short final block */
+    if (!_streamPending.isEmpty())
+    {
+        const qint64 thisBlock = _streamPending.size();
+        int ret = dfu_download(dfuDevice->dev_handle, dfuDevice->interface,
+                               (unsigned short)thisBlock, _streamTransaction++,
+                               (unsigned char *)_streamPending.data());
+        if (ret < 0) {
+            setError(QString("Download error: %1").arg(libusb_error_name(ret)));
+            ok = false;
+        } else {
+            struct dfu_status dst;
+            if (!waitForDeviceIdle(&dst)) {
+                ok = false;
+            } else if (dst.bStatus != DFU_STATUS_OK) {
+                setError(QString("DFU device error: state=%1 status=%2").arg(dst.bState).arg(dst.bStatus));
+                ok = false;
+            } else {
+                _streamPending.clear();
+                _streamSent += thisBlock;
+                emit streamProgress(_streamSent, _streamTotal);
+            }
+        }
+    }
+
+    /* Sending the end-of-transfer packet after a short transfer would make the
+       device commit a truncated image, so refuse instead. */
+    if (ok && _streamSent != _streamTotal) {
         setError(QString("Transfer incomplete: sent %1 of %2 bytes")
-                 .arg(bytesSent).arg(fileSize));
+                 .arg(_streamSent).arg(_streamTotal));
         ok = false;
     }
 
     if (ok) {
         // Zero-length packet signals end of transfer
-        dfu_download(dfuDevice->dev_handle, dfuDevice->interface, 0, transaction, nullptr);
+        dfu_download(dfuDevice->dev_handle, dfuDevice->interface, 0, _streamTransaction, nullptr);
 
         // Wait for manifest phase (final eMMC flush)
         emit statusMessage("Waiting for device to complete writing...");
@@ -439,6 +486,45 @@ bool DfuWrapper::downloadFileStreaming(const QString &filePath)
     dfu_set_timeout(5000);
     libusb_release_interface(dfuDevice->dev_handle, dfuDevice->interface);
     return ok;
+}
+
+/* Drive the push interface above from a file, for callers that already have one */
+bool DfuWrapper::downloadFileStreaming(const QString &filePath)
+{
+    QFile file(filePath);
+    if (!file.open(QIODevice::ReadOnly)) {
+        setError(QString("Failed to open file: %1").arg(filePath));
+        return false;
+    }
+    const qint64 fileSize = file.size();
+    if (fileSize == 0) {
+        setError("Image file is empty, cannot transfer");
+        return false;
+    }
+    if (!beginStream(fileSize))
+        return false;
+
+    QByteArray buf(_streamXferSize, 0);
+    qint64 read = 0;
+    while (read < fileSize) {
+        const qint64 n = file.read(buf.data(), qMin<qint64>(buf.size(), fileSize - read));
+        if (n <= 0) {
+            setError("File read error during streaming");
+            _streamActive = false;
+            dfu_set_timeout(5000);
+            libusb_release_interface(dfuDevice->dev_handle, dfuDevice->interface);
+            return false;
+        }
+        if (!streamChunk(buf.constData(), n)) {
+            _streamActive = false;
+            dfu_set_timeout(5000);
+            libusb_release_interface(dfuDevice->dev_handle, dfuDevice->interface);
+            return false;
+        }
+        read += n;
+    }
+    file.close();
+    return finishStream();
 }
 
 void DfuWrapper::cleanup()

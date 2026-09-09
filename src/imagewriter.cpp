@@ -945,12 +945,26 @@ void ImageWriter::_startDfuThread()
         emit preparationStatusUpdate(tr("Image found in cache, skipping download"));
     }
 
+    /*
+     * Prefer streaming the image to the device as it is decompressed: a
+     * temporary copy of a 16 GiB image asks for 17 GB of free disk space, which
+     * is a lot to demand for data that is only on its way to the eMMC.
+     *
+     * Customization rules it out - writing config.ini into the image means
+     * seeking around inside it - and so does not knowing the uncompressed
+     * length, which the DFU transfer needs up front. Either way, fall back to
+     * extracting to a temporary file.
+     */
+    const bool canStream = _extrLen && _geminit.isEmpty() && _config.isEmpty()
+                           && _cmdline.isEmpty() && _firstrun.isEmpty()
+                           && _cloudinit.isEmpty();
+
     /* The image is extracted to a temporary file before being sent via DFU.
        Pick a location with enough free space for it, and never a RAM-backed
        filesystem: on some distros /tmp is tmpfs capped at half the RAM, and
        filling it starves the rest of the system. */
     QString tempDir = QStandardPaths::writableLocation(QStandardPaths::CacheLocation);
-    if (_extrLen)
+    if (_extrLen && !canStream)
     {
         const qint64 gb = 1024*1024*1024ll;
         const qint64 tempNeeded = (qint64)_extrLen + gb; /* 1 GB headroom */
@@ -1062,6 +1076,11 @@ void ImageWriter::_startDfuThread()
 
     DfuThread *dfuThread = new DfuThread(urlstr, _dst.toLatin1(), _expectedHash, _expectedTiboot3Hash, _expectedTisplHash, _expectedUbootHash, this);
     dfuThread->setTempDirectory(tempDir);
+    if (canStream)
+    {
+        qDebug() << "Streaming" << _extrLen << "bytes to DFU without a temporary copy";
+        dfuThread->setStreamImageSize((qint64)_extrLen);
+    }
     _thread = dfuThread;
 
     connect(_thread, SIGNAL(success()), SLOT(onSuccess()));
