@@ -29,6 +29,7 @@
  #include <QRegularExpression>
  #include <QStandardPaths>
  #include <QStorageInfo>
+ #include <QTemporaryFile>
  #include <QTimeZone>
  #include <QWindow>
  #include <QGuiApplication>
@@ -963,27 +964,53 @@ void ImageWriter::_startDfuThread()
         for (const QString &dir : candidates)
         {
             QDir().mkpath(dir);
-            QStorageInfo si(dir);
-            if (!si.isValid() || !si.isReady() || si.isReadOnly())
+            if (!QDir(dir).exists())
             {
-                QString why = !QDir(dir).exists() ? tr("could not be created")
-                            : !si.isValid()       ? tr("is not a recognised volume")
-                            : !si.isReady()       ? tr("is not ready")
-                                                  : tr("is read-only");
-                qDebug() << "Rejecting temporary directory" << dir << ":" << why
-                         << "(exists:" << QDir(dir).exists()
-                         << "valid:" << si.isValid()
-                         << "ready:" << si.isReady()
-                         << "readOnly:" << si.isReadOnly() << ")";
-                rejected += QStringLiteral("%1 (%2)").arg(dir, why);
+                qDebug() << "Rejecting temporary directory" << dir << ": could not be created";
+                rejected += QStringLiteral("%1 (%2)").arg(dir, tr("could not be created"));
                 continue;
             }
+
+            /*
+             * Whether we can write here is settled by writing, not by asking
+             * QStorageInfo. On macOS 10.15 and later / is a read-only system
+             * volume and the home directory reaches the writable data volume
+             * through a firmlink, and QStorageInfo can resolve a path on the
+             * data volume to the system volume's mount point - so isReadOnly()
+             * comes back true for a directory that is perfectly writable, and
+             * every candidate gets rejected.
+             */
+            {
+                QTemporaryFile probe(dir + QStringLiteral("/.gemimager-writeprobe-XXXXXX"));
+                if (!probe.open())
+                {
+                    qDebug() << "Rejecting temporary directory" << dir
+                             << ": not writable:" << probe.errorString();
+                    rejected += QStringLiteral("%1 (%2)").arg(dir, tr("is not writable"));
+                    continue;
+                }
+            }
+
+            QStorageInfo si(dir);
             const QString fstype = si.fileSystemType();
             if (fstype.contains("tmpfs") || fstype.contains("ramfs"))
             {
                 qDebug() << "Rejecting temporary directory" << dir << ": RAM-backed" << fstype;
                 rejected += QStringLiteral("%1 (%2)").arg(dir, tr("is RAM-backed"));
                 continue;
+            }
+
+            /*
+             * The directory is writable; the free space figure is advisory. If
+             * the volume cannot be interrogated, take the directory rather than
+             * refuse to work over a number we could not read.
+             */
+            if (!si.isValid() || !si.isReady())
+            {
+                qDebug() << "Using writable temporary directory" << dir
+                         << "without a free space figure (volume not readable)";
+                chosen = dir;
+                break;
             }
 
             qint64 needed = tempNeeded;
@@ -1017,6 +1044,7 @@ void ImageWriter::_startDfuThread()
                               "Tried: %1<br>"
                               "This is a permissions problem, not a disk space problem.")
                            .arg(rejected.join(QStringLiteral(", "))));
+                qDebug() << "No usable temporary directory among" << candidates;
             }
             else
             {
