@@ -7,6 +7,63 @@ env:
   QT_FORCE_STDERR_LOGGING: 1
 
 jobs:
+  # Windows cannot let libusb touch the board's DFU interface until a driver it
+  # supports is bound to it, and nothing binds one by default - which is why
+  # users are otherwise told to do it by hand with Zadig. wdi-simple is
+  # libwdi's own CLI; the installer runs it so the driver is in place before
+  # anyone tries a DFU transfer. Built here rather than vendored because only
+  # the resulting .exe is needed, and it is invoked as a separate process, so
+  # libwdi's LGPL does not reach this project's own sources.
+  windows_dfu_driver:
+    runs-on: windows-2022
+    env:
+      LIBWDI_REF: v1.5.1
+      # WDK 8.0 redistributable: the only part of the WDK libwdi needs, and the
+      # last one to still ship the WinUSB co-installers its INF template copies
+      WDK_URL: https://go.microsoft.com/fwlink/p/?LinkID=253170
+    steps:
+      - name: Install MSYS2
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: mingw64
+          update: true
+          install: >-
+            mingw-w64-x86_64-toolchain
+            base-devel
+            autotools
+            git
+      - name: Checkout libwdi
+        uses: actions/checkout@v4
+        with:
+          repository: pbatard/libwdi
+          ref: ${{ env.LIBWDI_REF }}
+          path: libwdi
+      - name: Fetch the WDK redistributable
+        shell: cmd
+        run: |
+          cd libwdi
+          curl -L "%WDK_URL%" -o wdk-redist.msi
+          msiexec /a %CD%\wdk-redist.msi /qn TARGETDIR=%CD%\wdk
+          if not exist "wdk\Windows Kits\8.0" exit /b 1
+      - name: Build wdi-simple
+        shell: msys2 {0}
+        run: |
+          cd libwdi
+          ./bootstrap.sh
+          ./configure --build=x86_64-w64-mingw32 --host=x86_64-w64-mingw32 \
+            --disable-32bit --disable-shared --disable-debug \
+            --enable-examples-build \
+            --with-wdkdir="wdk/Windows Kits/8.0" --with-wdfver=1011
+          make
+          test -f examples/wdi-simple.exe
+          sha256sum examples/wdi-simple.exe
+      - name: Upload wdi-simple
+        uses: actions/upload-artifact@v4
+        with:
+          name: wdi-simple
+          path: libwdi/examples/wdi-simple.exe
+          if-no-files-found: error
+
   linux:
     runs-on: ubuntu-22.04
     steps:
@@ -53,6 +110,7 @@ jobs:
 
   windows:
     runs-on: windows-2022
+    needs: windows_dfu_driver
     defaults: { run: { shell: cmd } }
     steps:
       - name: Install Qt
@@ -94,8 +152,15 @@ jobs:
         run: |
           set Path=%QT_ROOT_DIR%\..\..\Tools\mingw1120_64\bin;%Path%
           cmake --build "%GITHUB_WORKSPACE%\build" --parallel
+      # After the build, so windeployqt cannot race with it
+      - name: Fetch wdi-simple
+        uses: actions/download-artifact@v4
+        with:
+          name: wdi-simple
+          path: ${{ github.workspace }}\build\deploy
       - name: Make NSIS installer
         run: |
+          if not exist "%GITHUB_WORKSPACE%\build\deploy\wdi-simple.exe" exit /b 1
           makensis %GITHUB_WORKSPACE%\build\gem-imager.nsi
       - name: Get project version
         id: getversion
