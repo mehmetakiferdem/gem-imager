@@ -462,7 +462,8 @@ elseif(APPLE)
                 COMMAND "${MACDEPLOYQT_EXECUTABLE}" "${CMAKE_BINARY_DIR}/${PROJECT_NAME}.app" -qmldir=${CMAKE_CURRENT_SOURCE_DIR})
             add_custom_command(TARGET ${PROJECT_NAME}
                 POST_BUILD
-                COMMAND mv "${CMAKE_BINARY_DIR}/${PROJECT_NAME}.app" "${CMAKE_BINARY_DIR}/GemstoneImager.app")
+                COMMAND ${CMAKE_COMMAND} -E rm -rf "${CMAKE_BINARY_DIR}/GemstoneImager.app"
+                COMMAND ${CMAKE_COMMAND} -E rename "${CMAKE_BINARY_DIR}/${PROJECT_NAME}.app" "${CMAKE_BINARY_DIR}/GemstoneImager.app")
             
             # Sign the .app.
             add_custom_command(TARGET ${PROJECT_NAME}
