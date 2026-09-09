@@ -38,6 +38,7 @@ protected:
     void run() override;
     bool _openAndPrepareDevice() override;
     size_t _writeFile(const char *buf, size_t len) override;
+    void _onWriteError() override;
 
 private:
     QString _bootloaderFiles[3];
@@ -55,6 +56,8 @@ private:
     bool runDfu(const QString &altSetting, const QString &filePath, bool resetAfter);
     bool prepareDeviceForImage();
     bool openStreamToRawemmc();
+    void closeStream();
+    QString _streamError;
     bool fetchBootloaderFiles();
     bool sendBootloaderFiles();
     bool sendImageToRawemmc();

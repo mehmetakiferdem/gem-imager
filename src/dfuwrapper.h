@@ -70,6 +70,7 @@ private:
     void setError(const QString &msg);
     bool claimInterface();
     bool waitForDeviceIdle(struct dfu_status *dst);
+    bool sendOneBlock(const char *data, qint64 len);
 
     /* beginStream()/streamChunk()/finishStream() state */
     int _streamXferSize = 0;

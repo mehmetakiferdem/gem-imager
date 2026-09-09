@@ -148,8 +148,10 @@ size_t DfuThread::_writeFile(const char *buf, size_t len)
 
     if (!_activeDfu || !_activeDfu->streamChunk(buf, (qint64)len)) {
         _streamFailed = true;
-        emit error(tr("DFU transfer failed: %1")
-                   .arg(_activeDfu ? _activeDfu->lastError() : tr("transfer was not open")));
+        _streamError = _activeDfu ? _activeDfu->lastError() : tr("transfer was not open");
+        /* Returning short makes the base class call _onWriteError(), which is
+           overridden below to report _streamError. Reporting it from here as
+           well would put two dialogs in front of the user. */
         return 0;
     }
 
@@ -209,13 +211,15 @@ void DfuThread::run()
             emit preparationStatusUpdate(tr("Reading image from cache/local file (no download needed)..."));
         DownloadExtractThread::run();
         waitForExtractThread();
-        if (_cancelled) { emit error(tr("Cancelled")); return; }
-        if (_streamFailed) return;          /* _writeFile has already reported it */
-        if (!_successful) return;
+        if (_cancelled) { closeStream(); emit error(tr("Cancelled")); return; }
+        if (_streamFailed) { closeStream(); return; }   /* already reported */
+        if (!_successful) { closeStream(); return; }
 
-        if (!_activeDfu || !_activeDfu->finishStream()) {
-            emit error(tr("DFU transfer failed at the end of the image: %1")
-                       .arg(_activeDfu ? _activeDfu->lastError() : tr("transfer was not open")));
+        const bool finished = _activeDfu && _activeDfu->finishStream();
+        const QString finishError = _activeDfu ? _activeDfu->lastError() : tr("transfer was not open");
+        closeStream();
+        if (!finished) {
+            emit error(tr("DFU transfer failed at the end of the image: %1").arg(finishError));
             return;
         }
     } else {
@@ -279,6 +283,33 @@ void DfuThread::run()
                              "and switch the boot mode to eMMC."));
     QThread::msleep(1000);
     emit success();
+}
+
+void DfuThread::_onWriteError()
+{
+    if (!_streaming) {
+        DownloadExtractThread::_onWriteError();
+        return;
+    }
+    if (_cancelled)
+        return;
+    /* "Error writing file to disk" would be wrong here: nothing was written to
+       a disk, the USB transfer failed. */
+    _onDownloadError(tr("DFU transfer failed: %1")
+                     .arg(_streamError.isEmpty() ? tr("unknown error") : _streamError));
+}
+
+/* Release the USB device and the libusb context the streaming transfer holds.
+   The temp-file path does this inside runDfu(); the streaming path keeps the
+   wrapper alive across the whole download, so it is closed here instead. */
+void DfuThread::closeStream()
+{
+    if (!_activeDfu)
+        return;
+    DfuWrapper *dfu = _activeDfu;
+    _activeDfu = nullptr;
+    dfu->cleanup();
+    delete dfu;
 }
 
 /* Everything that has to happen before any image data can be sent: get the

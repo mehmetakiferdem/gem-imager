@@ -313,39 +313,19 @@ bool DfuWrapper::beginStream(qint64 totalBytes)
     return true;
 }
 
-bool DfuWrapper::streamChunk(const char *data, qint64 len)
+/* Send exactly one block that is already sitting in a contiguous buffer.
+   Returns false and sets the error on failure. */
+bool DfuWrapper::sendOneBlock(const char *data, qint64 len)
 {
-    if (!_streamActive) {
-        setError("Transfer has not been started");
-        return false;
-    }
-
-    /*
-     * The caller's chunk size has nothing to do with the device's, so buffer
-     * and hand over exactly wTransferSize at a time. The tail of a chunk stays
-     * in _streamPending until enough has arrived, or until finishStream()
-     * flushes it as the last (short) block.
-     */
-    _streamPending.append(data, len);
-
-    while (_streamPending.size() >= _streamXferSize
-           || (_streamSent + _streamPending.size() == _streamTotal && !_streamPending.isEmpty()))
-    {
-        const qint64 thisBlock = qMin<qint64>(_streamXferSize, _streamPending.size());
-
+    for (;;) {
         if (isCancelled()) {
             setError("Transfer cancelled by user");
             return false;
         }
-        if (_streamSent + thisBlock > _streamTotal) {
-            setError(QString("Transfer overran the declared image size of %1 bytes")
-                     .arg(_streamTotal));
-            return false;
-        }
 
         int ret = dfu_download(dfuDevice->dev_handle, dfuDevice->interface,
-                               (unsigned short)thisBlock, _streamTransaction++,
-                               (unsigned char *)_streamPending.data());
+                               (unsigned short)len, _streamTransaction++,
+                               (unsigned char *)data);
         if (ret < 0) {
             setError(QString("Download error: %1").arg(libusb_error_name(ret)));
             return false;
@@ -355,34 +335,78 @@ bool DfuWrapper::streamChunk(const char *data, qint64 len)
         if (!waitForDeviceIdle(&dst))
             return false;
 
-        if (dst.bStatus != DFU_STATUS_OK) {
-            /* A stale DFU session left on the device by an interrupted transfer
-               rejects our first block with a sequence-number mismatch
-               ("dfu_write: Wrong sequence number!" on the device console) and
-               cleans itself up in the process. Clear the error state and send
-               this block again; DFU_ABORT alone does not reset U-Boot's block
-               counter, so this rejection is the only reliable reset. Nothing
-               has been accepted yet at this point, so the block we still hold
-               is all that needs resending. */
-            if (_streamTransaction == 1 && !_streamRestarted) {
-                _streamRestarted = true;
-                dfu_clear_status(dfuDevice->dev_handle, dfuDevice->interface);
-                emit statusMessage("Device had a stale DFU session, restarting transfer from the beginning...");
-                _streamTransaction = 0;
-                continue;
-            }
-            setError(QString("DFU device error: state=%1 status=%2").arg(dst.bState).arg(dst.bStatus));
-            return false;
+        if (dst.bStatus == DFU_STATUS_OK)
+            break;
+
+        /* A stale DFU session left on the device by an interrupted transfer
+           rejects our first block with a sequence-number mismatch
+           ("dfu_write: Wrong sequence number!" on the device console) and
+           cleans itself up in the process. Clear the error state and send this
+           block again; DFU_ABORT alone does not reset U-Boot's block counter,
+           so this rejection is the only reliable reset. Nothing has been
+           accepted yet at this point, so this one block is all there is to
+           resend. */
+        if (_streamTransaction == 1 && !_streamRestarted) {
+            _streamRestarted = true;
+            dfu_clear_status(dfuDevice->dev_handle, dfuDevice->interface);
+            emit statusMessage("Device had a stale DFU session, restarting transfer from the beginning...");
+            _streamTransaction = 0;
+            continue;
         }
-
-        _streamPending.remove(0, thisBlock);
-        _streamSent += thisBlock;
-
-        emit streamProgress(_streamSent, _streamTotal);
-        if ((_streamSent % (10LL * 1024 * 1024)) < _streamXferSize || _streamSent == _streamTotal)
-            emit statusMessage(QString("Transferred %1 / %2 MB...")
-                               .arg(_streamSent / 1024 / 1024).arg(_streamTotal / 1024 / 1024));
+        setError(QString("DFU device error: state=%1 status=%2").arg(dst.bState).arg(dst.bStatus));
+        return false;
     }
+
+    _streamSent += len;
+    emit streamProgress(_streamSent, _streamTotal);
+    if ((_streamSent % (10LL * 1024 * 1024)) < _streamXferSize || _streamSent == _streamTotal)
+        emit statusMessage(QString("Transferred %1 / %2 MB...")
+                           .arg(_streamSent / 1024 / 1024).arg(_streamTotal / 1024 / 1024));
+    return true;
+}
+
+bool DfuWrapper::streamChunk(const char *data, qint64 len)
+{
+    if (!_streamActive) {
+        setError("Transfer has not been started");
+        return false;
+    }
+    if (_streamSent + _streamPending.size() + len > _streamTotal) {
+        setError(QString("Transfer overran the declared image size of %1 bytes")
+                 .arg(_streamTotal));
+        return false;
+    }
+
+    /*
+     * The caller's chunk size has nothing to do with the device's, so blocks
+     * are cut to wTransferSize here. Whole blocks are sent straight out of the
+     * caller's buffer; only a trailing partial block is copied, and only until
+     * the next call tops it up. Draining a buffer with remove(0, n) instead
+     * would memmove the rest of it once per block - 128 times per megabyte at
+     * a 4 KB transfer size, which is most of a terabyte over a large image.
+     */
+    qint64 off = 0;
+
+    if (!_streamPending.isEmpty()) {
+        const qint64 want = _streamXferSize - _streamPending.size();
+        const qint64 take = qMin(want, len);
+        _streamPending.append(data, take);
+        off += take;
+        if (_streamPending.size() < _streamXferSize)
+            return true;                 /* still short of a full block */
+        if (!sendOneBlock(_streamPending.constData(), _streamPending.size()))
+            return false;
+        _streamPending.clear();
+    }
+
+    while (len - off >= _streamXferSize) {
+        if (!sendOneBlock(data + off, _streamXferSize))
+            return false;
+        off += _streamXferSize;
+    }
+
+    if (len - off > 0)
+        _streamPending.append(data + off, len - off);
 
     return true;
 }
@@ -400,26 +424,10 @@ bool DfuWrapper::finishStream()
     /* Anything still buffered is a short final block */
     if (!_streamPending.isEmpty())
     {
-        const qint64 thisBlock = _streamPending.size();
-        int ret = dfu_download(dfuDevice->dev_handle, dfuDevice->interface,
-                               (unsigned short)thisBlock, _streamTransaction++,
-                               (unsigned char *)_streamPending.data());
-        if (ret < 0) {
-            setError(QString("Download error: %1").arg(libusb_error_name(ret)));
+        if (sendOneBlock(_streamPending.constData(), _streamPending.size()))
+            _streamPending.clear();
+        else
             ok = false;
-        } else {
-            struct dfu_status dst;
-            if (!waitForDeviceIdle(&dst)) {
-                ok = false;
-            } else if (dst.bStatus != DFU_STATUS_OK) {
-                setError(QString("DFU device error: state=%1 status=%2").arg(dst.bState).arg(dst.bStatus));
-                ok = false;
-            } else {
-                _streamPending.clear();
-                _streamSent += thisBlock;
-                emit streamProgress(_streamSent, _streamTotal);
-            }
-        }
     }
 
     /* Sending the end-of-transfer packet after a short transfer would make the
