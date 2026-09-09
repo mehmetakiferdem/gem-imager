@@ -33,7 +33,7 @@ jobs:
             autotools
             git
       - name: Checkout libwdi
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: pbatard/libwdi
           ref: ${{ env.LIBWDI_REF }}
@@ -58,7 +58,7 @@ jobs:
           test -f examples/wdi-simple.exe
           sha256sum examples/wdi-simple.exe
       - name: Upload wdi-simple
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: wdi-simple
           path: libwdi/examples/wdi-simple.exe
@@ -86,7 +86,7 @@ jobs:
           arch: 'linux_gcc_64'
           modules: 'qtimageformats qtpdf qtserialport qtvirtualkeyboard qtquick3d'
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Build
         id: build
         run: |
@@ -103,7 +103,7 @@ jobs:
             tee -a "${GITHUB_OUTPUT}" <<< gemImagerVersion="$imager_version"
             mv Gemstone_Imager-${imager_version}-x86_64.AppImage GemImager-${imager_version}.AppImage
       - name: Upload AppImage
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: GemImager Linux ${{ steps.build.outputs.gemImagerVersion }}
           path: GemImager-${{ steps.build.outputs.gemImagerVersion }}.AppImage
@@ -132,7 +132,7 @@ jobs:
           scoop bucket add extras
           scoop install nsis
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Set MINGW64_ROOT
         shell: powershell
         run: |
@@ -154,7 +154,7 @@ jobs:
           cmake --build "%GITHUB_WORKSPACE%\build" --parallel
       # After the build, so windeployqt cannot race with it
       - name: Fetch wdi-simple
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: wdi-simple
           path: ${{ github.workspace }}\build\deploy
@@ -170,7 +170,7 @@ jobs:
           mv $GITHUB_WORKSPACE/build/gem-imager-${version}.exe $GITHUB_WORKSPACE/build/GemImager-${version}.exe
           tee -a "${GITHUB_OUTPUT}" <<< gemImagerVersion="$version"
       - name: Upload installer
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: GemImager Windows ${{ steps.getversion.outputs.gemImagerVersion }}
           path: ${{ github.workspace }}\build\GemImager-${{ steps.getversion.outputs.gemImagerVersion }}.exe
@@ -188,7 +188,7 @@ jobs:
           arch: 'clang_64'
           modules: 'qtimageformats qtpdf qtserialport qtvirtualkeyboard qtquick3d'
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       # macOS keys a privacy (TCC) grant to the code signature, so on an
       # unsigned build the grant breaks on every rebuild as the cdhash changes
@@ -295,7 +295,7 @@ jobs:
           fi
 
       - name: Upload DMG
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: GemImager macOS ${{ steps.getversion.outputs.gemImagerVersion }}
           path: build/GemImager-${{ steps.getversion.outputs.gemImagerVersion }}.dmg
