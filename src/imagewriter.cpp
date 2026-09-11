@@ -933,6 +933,31 @@ void ImageWriter::startDfu()
     _startDfuThread();
 }
 
+/*
+ * Whether anything actually has to be written into the image.
+ *
+ * Not the same question as "did the user customize something": OptionsPopup
+ * always seeds geminit with a bare "firstboot=1" before adding anything the
+ * user asked for, so geminit is never empty. On its own that line changes
+ * nothing - gem-first-boot sources config.ini, finds no hostname, password or
+ * wifi keys to apply, and deletes the line again - so an image carrying only
+ * that is the same image either way, and can be streamed.
+ */
+bool ImageWriter::customizationWritesToImage() const
+{
+    if (!_config.isEmpty() || !_cmdline.isEmpty() || !_firstrun.isEmpty()
+        || !_cloudinit.isEmpty() || !_cloudinitNetwork.isEmpty())
+        return true;
+
+    for (const QByteArray &line : _geminit.split('\n')) {
+        const QByteArray t = line.trimmed();
+        if (t.isEmpty() || t == "firstboot=1")
+            continue;
+        return true;
+    }
+    return false;
+}
+
 void ImageWriter::_startDfuThread()
 {
     QByteArray urlstr = _src.toString(_src.FullyEncoded).toLatin1();
@@ -955,9 +980,7 @@ void ImageWriter::_startDfuThread()
      * length, which the DFU transfer needs up front. Either way, fall back to
      * extracting to a temporary file.
      */
-    const bool canStream = _extrLen && _geminit.isEmpty() && _config.isEmpty()
-                           && _cmdline.isEmpty() && _firstrun.isEmpty()
-                           && _cloudinit.isEmpty();
+    const bool canStream = _extrLen && !customizationWritesToImage();
 
     /* The image is extracted to a temporary file before being sent via DFU.
        Pick a location with enough free space for it, and never a RAM-backed
