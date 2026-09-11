@@ -936,23 +936,44 @@ void ImageWriter::startDfu()
 /*
  * Whether anything actually has to be written into the image.
  *
- * Not the same question as "did the user customize something": OptionsPopup
- * always seeds geminit with a bare "firstboot=1" before adding anything the
- * user asked for, so geminit is never empty. On its own that line changes
- * nothing - gem-first-boot sources config.ini, finds no hostname, password or
- * wifi keys to apply, and deletes the line again - so an image carrying only
- * that is the same image either way, and can be streamed.
+ * Not the same question as "did the user touch the options dialog":
+ * OptionsPopup::applySettings() always emits a fixed set of geminit lines
+ * before adding anything the user asked for - "firstboot=1" plus a
+ * "<feature>=0" for each feature left switched off - and the write flow always
+ * calls applySettings(), so geminit is never empty.
+ *
+ * None of those defaults does anything. gem-first-boot sources
+ * /boot/config.ini, and with firstboot set but no hostname, userpasswd or wifi
+ * keys the block applies nothing and then deletes the line; "vnc=0" needs a
+ * vncpassword that is not there; and cryptsetup, writeimagetommc,
+ * storagegadget, ethernetgadget and serialgadgets have no reader at all in the
+ * distro overlays. Nothing outside that block depends on the file existing, so
+ * an image flashed without it reaches the same state - which means it can be
+ * streamed.
+ *
+ * The rule is deliberately about the value rather than a list of key names: a
+ * feature switched off reads the same as a feature that was never mentioned.
+ * A key set to anything else counts as customization, so a new option added
+ * later errs towards the temp-file path rather than being dropped silently.
  */
 bool ImageWriter::customizationWritesToImage() const
 {
     if (!_config.isEmpty() || !_cmdline.isEmpty() || !_firstrun.isEmpty()
         || !_cloudinit.isEmpty() || !_cloudinitNetwork.isEmpty())
+    {
+        qDebug() << "Not streaming: config/cmdline/firstrun/cloud-init content is set";
         return true;
+    }
+
+    static const QRegularExpression featureOff(QStringLiteral("^[A-Za-z0-9_]+=0$"));
 
     for (const QByteArray &line : _geminit.split('\n')) {
         const QByteArray t = line.trimmed();
         if (t.isEmpty() || t == "firstboot=1")
             continue;
+        if (featureOff.match(QString::fromLatin1(t)).hasMatch())
+            continue;
+        qDebug() << "Not streaming: geminit carries" << t;
         return true;
     }
     return false;
