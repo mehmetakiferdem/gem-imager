@@ -29,6 +29,7 @@
  #include <QRegularExpression>
  #include <QStandardPaths>
  #include <QStorageInfo>
+ #include <QTemporaryFile>
  #include <QTimeZone>
  #include <QWindow>
  #include <QGuiApplication>
@@ -958,15 +959,59 @@ void ImageWriter::_startDfuThread()
         QString chosen;
         qint64 bestAvail = 0;
 
+        QStringList rejected;
+
         for (const QString &dir : candidates)
         {
             QDir().mkpath(dir);
-            QStorageInfo si(dir);
-            if (!si.isValid() || !si.isReady() || si.isReadOnly())
+            if (!QDir(dir).exists())
+            {
+                qDebug() << "Rejecting temporary directory" << dir << ": could not be created";
+                rejected += QStringLiteral("%1 (%2)").arg(dir, tr("could not be created"));
                 continue;
+            }
+
+            /*
+             * Whether we can write here is settled by writing, not by asking
+             * QStorageInfo. On macOS 10.15 and later / is a read-only system
+             * volume and the home directory reaches the writable data volume
+             * through a firmlink, and QStorageInfo can resolve a path on the
+             * data volume to the system volume's mount point - so isReadOnly()
+             * comes back true for a directory that is perfectly writable, and
+             * every candidate gets rejected.
+             */
+            {
+                QTemporaryFile probe(dir + QStringLiteral("/.gemimager-writeprobe-XXXXXX"));
+                if (!probe.open())
+                {
+                    qDebug() << "Rejecting temporary directory" << dir
+                             << ": not writable:" << probe.errorString();
+                    rejected += QStringLiteral("%1 (%2)").arg(dir, tr("is not writable"));
+                    continue;
+                }
+            }
+
+            QStorageInfo si(dir);
             const QString fstype = si.fileSystemType();
             if (fstype.contains("tmpfs") || fstype.contains("ramfs"))
+            {
+                qDebug() << "Rejecting temporary directory" << dir << ": RAM-backed" << fstype;
+                rejected += QStringLiteral("%1 (%2)").arg(dir, tr("is RAM-backed"));
                 continue;
+            }
+
+            /*
+             * The directory is writable; the free space figure is advisory. If
+             * the volume cannot be interrogated, take the directory rather than
+             * refuse to work over a number we could not read.
+             */
+            if (!si.isValid() || !si.isReady())
+            {
+                qDebug() << "Using writable temporary directory" << dir
+                         << "without a free space figure (volume not readable)";
+                chosen = dir;
+                break;
+            }
 
             qint64 needed = tempNeeded;
             /* A fresh download being cached takes extra room on the cache volume */
@@ -990,12 +1035,26 @@ void ImageWriter::_startDfuThread()
 
         if (chosen.isEmpty())
         {
-            emit error(tr("Not enough disk space to prepare the image.<br>"
-                          "About %1 GB of free space is needed to extract the image, "
-                          "but only %2 GB is available.<br>"
-                          "Free up disk space and try again.")
-                       .arg((tempNeeded + gb - 1) / gb)
-                       .arg(bestAvail / gb));
+            /* Distinguish "the volume is full" from "no candidate directory was
+               usable at all". The latter used to be reported as "0 GB available",
+               which sent people looking for disk space they already had. */
+            if (rejected.count() == candidates.count())
+            {
+                emit error(tr("Could not find a usable temporary directory to extract the image.<br>"
+                              "Tried: %1<br>"
+                              "This is a permissions problem, not a disk space problem.")
+                           .arg(rejected.join(QStringLiteral(", "))));
+                qDebug() << "No usable temporary directory among" << candidates;
+            }
+            else
+            {
+                emit error(tr("Not enough disk space to prepare the image.<br>"
+                              "About %1 GB of free space is needed to extract the image, "
+                              "but only %2 MB is available.<br>"
+                              "Free up disk space and try again.")
+                           .arg((tempNeeded + gb - 1) / gb)
+                           .arg(bestAvail / (1024*1024ll)));
+            }
             return;
         }
         tempDir = chosen;
