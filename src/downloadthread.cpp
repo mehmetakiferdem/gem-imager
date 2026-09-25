@@ -215,8 +215,15 @@ bool DownloadThread::_openAndPrepareDevice()
         return false;
     } else if (authopenresult == _file.authOpenError) {
         QString msg = tr("Error running authopen to gain access to disk device '%1'").arg(QString(_filename));
-        msg += "<br>"+tr("Please verify if 'Gemstone Imager' is allowed access to 'removable volumes' in privacy settings (under 'files and folders' or alternatively give it 'full disk access').");
-        QStringList args("x-apple.systempreferences:com.apple.preference.security?Privacy_RemovableVolume");
+        const QString why = _file.lastAuthOpenError();
+        if (!why.isEmpty())
+            msg += "<br>" + tr("Reason: %1").arg(why);
+        /* Writing to /dev/rdiskN is raw device access, which is covered by Full
+           Disk Access; "Removable Volumes" covers files on a mounted volume and
+           is not enough. The pane this used to open was therefore the wrong one,
+           and granting what it asked for changed nothing. */
+        msg += "<br>"+tr("Give 'Gemstone Imager' <b>Full Disk Access</b> in Privacy & Security, then quit and reopen the application - macOS only reads the permission at startup.");
+        QStringList args("x-apple.systempreferences:com.apple.preference.security?Privacy_AllFiles");
         QProcess::execute("open", args);
         emit error(msg);
         return false;
