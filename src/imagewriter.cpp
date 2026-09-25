@@ -933,6 +933,70 @@ void ImageWriter::startDfu()
     _startDfuThread();
 }
 
+/*
+ * Whether anything actually has to be written into the image.
+ *
+ * Not the same question as "did the user touch the options dialog":
+ * OptionsPopup::applySettings() always emits a fixed set of geminit lines
+ * before adding anything the user asked for - "firstboot=1" plus a
+ * "<feature>=0" for each feature left switched off - and the write flow always
+ * calls applySettings(), so geminit is never empty.
+ *
+ * None of those defaults does anything. gem-first-boot sources
+ * /boot/config.ini, and with firstboot set but no hostname, userpasswd or wifi
+ * keys the block applies nothing and then deletes the line; "vnc=0" needs a
+ * vncpassword that is not there; and cryptsetup, writeimagetommc,
+ * storagegadget, ethernetgadget and serialgadgets have no reader at all in the
+ * distro overlays. Nothing outside that block depends on the file existing, so
+ * an image flashed without it reaches the same state - which means the boot
+ * partition need not be held back and customized on the way.
+ *
+ * The rule is deliberately about the value rather than a list of key names: a
+ * feature switched off reads the same as a feature that was never mentioned.
+ * A key set to anything else counts as customization, so a new option added
+ * later errs towards customizing rather than being dropped silently.
+ */
+bool ImageWriter::customizationWritesToImage() const
+{
+    /*
+     * Only what DownloadThread::_customizeImage() actually writes for this
+     * init format counts. OptionsPopup fills firstrun and cloud-init whenever
+     * "set username and password" is ticked - which it is by default - but a
+     * geminit image never receives either, so they must not decide anything.
+     */
+    const bool anyFormat = _initFormat == "auto";
+    if (!_config.isEmpty() || !_cmdline.isEmpty())
+    {
+        qDebug() << "Customizing: config.txt/cmdline.txt content is set";
+        return true;
+    }
+    if ((anyFormat || _initFormat == "systemd") && !_firstrun.isEmpty())
+    {
+        qDebug() << "Customizing: firstrun.sh is set";
+        return true;
+    }
+    if ((anyFormat || _initFormat == "cloudinit") && (!_cloudinit.isEmpty() || !_cloudinitNetwork.isEmpty()))
+    {
+        qDebug() << "Customizing: cloud-init content is set";
+        return true;
+    }
+    if (_initFormat != "geminit")
+        return false;
+
+    static const QRegularExpression featureOff(QStringLiteral("^[A-Za-z0-9_]+=0$"));
+
+    for (const QByteArray &line : _geminit.split('\n')) {
+        const QByteArray t = line.trimmed();
+        if (t.isEmpty() || t == "firstboot=1")
+            continue;
+        if (featureOff.match(QString::fromLatin1(t)).hasMatch())
+            continue;
+        qDebug() << "Customizing: geminit carries" << t;
+        return true;
+    }
+    return false;
+}
+
 void ImageWriter::_startDfuThread()
 {
     QByteArray urlstr = _src.toString(_src.FullyEncoded).toLatin1();
@@ -945,15 +1009,31 @@ void ImageWriter::_startDfuThread()
         emit preparationStatusUpdate(tr("Image found in cache, skipping download"));
     }
 
+    /*
+     * Prefer streaming the image to the device as it is decompressed: a
+     * temporary copy of a 16 GiB image asks for 17 GB of free disk space, which
+     * is a lot to demand for data that is only on its way to the eMMC.
+     *
+     * Customization only writes into the boot partition at the start of the
+     * image, so DfuThread holds just that part back in a temporary file,
+     * customizes it there and then streams on. Not knowing the uncompressed
+     * length, which the DFU transfer needs up front, is what still rules
+     * streaming out and falls back to extracting to a temporary file.
+     */
+    const bool canStream = _extrLen != 0;
+    const bool customizeHead = canStream && customizationWritesToImage();
+
     /* The image is extracted to a temporary file before being sent via DFU.
        Pick a location with enough free space for it, and never a RAM-backed
        filesystem: on some distros /tmp is tmpfs capped at half the RAM, and
        filling it starves the rest of the system. */
     QString tempDir = QStandardPaths::writableLocation(QStandardPaths::CacheLocation);
-    if (_extrLen)
+    if (_extrLen && (!canStream || customizeHead))
     {
         const qint64 gb = 1024*1024*1024ll;
-        const qint64 tempNeeded = (qint64)_extrLen + gb; /* 1 GB headroom */
+        /* The held-back head is at most 512 MB (DfuThread's maxHeadSize) */
+        const qint64 tempNeeded = canStream ? 512*1024*1024ll
+                                            : (qint64)_extrLen + gb; /* 1 GB headroom */
         const QStorageInfo cacheVolume(tempDir);
         const QStringList candidates = { tempDir, QDir::tempPath() };
         QString chosen;
@@ -1048,12 +1128,20 @@ void ImageWriter::_startDfuThread()
             }
             else
             {
-                emit error(tr("Not enough disk space to prepare the image.<br>"
-                              "About %1 GB of free space is needed to extract the image, "
-                              "but only %2 MB is available.<br>"
-                              "Free up disk space and try again.")
-                           .arg((tempNeeded + gb - 1) / gb)
-                           .arg(bestAvail / (1024*1024ll)));
+                if (canStream)
+                    emit error(tr("Not enough disk space to customize the image.<br>"
+                                  "About %1 MB of free space is needed, "
+                                  "but only %2 MB is available.<br>"
+                                  "Free up disk space, or write the image without customization.")
+                               .arg(tempNeeded / (1024*1024ll))
+                               .arg(bestAvail / (1024*1024ll)));
+                else
+                    emit error(tr("Not enough disk space to prepare the image.<br>"
+                                  "About %1 GB of free space is needed to extract the image, "
+                                  "but only %2 MB is available.<br>"
+                                  "Free up disk space and try again.")
+                               .arg((tempNeeded + gb - 1) / gb)
+                               .arg(bestAvail / (1024*1024ll)));
             }
             return;
         }
@@ -1062,6 +1150,12 @@ void ImageWriter::_startDfuThread()
 
     DfuThread *dfuThread = new DfuThread(urlstr, _dst.toLatin1(), _expectedHash, _expectedTiboot3Hash, _expectedTisplHash, _expectedUbootHash, this);
     dfuThread->setTempDirectory(tempDir);
+    if (canStream)
+    {
+        qDebug() << "Streaming" << _extrLen << "bytes to DFU"
+                 << (customizeHead ? "customizing the boot partition on the way" : "without a temporary copy");
+        dfuThread->setStreamImageSize((qint64)_extrLen, customizeHead);
+    }
     _thread = dfuThread;
 
     connect(_thread, SIGNAL(success()), SLOT(onSuccess()));

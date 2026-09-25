@@ -130,7 +130,7 @@ public:
     uint64_t bytesWritten();
 
     virtual bool isImage();
-    size_t _writeFile(const char *buf, size_t len);
+    virtual size_t _writeFile(const char *buf, size_t len);
 
 signals:
     void success();
@@ -147,7 +147,7 @@ protected:
     virtual void _onWriteError();
 
     void _hashData(const char *buf, size_t len);
-    void _writeComplete();
+    virtual void _writeComplete();
     bool _verify();
     int _authopen(const QByteArray &filename);
     virtual bool _openAndPrepareDevice();
