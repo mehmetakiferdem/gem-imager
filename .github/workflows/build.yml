@@ -29,7 +29,7 @@ jobs:
           arch: 'linux_gcc_64'
           modules: 'qtimageformats qtpdf qtserialport qtvirtualkeyboard qtquick3d'
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Build
         id: build
         run: |
@@ -46,7 +46,7 @@ jobs:
             tee -a "${GITHUB_OUTPUT}" <<< gemImagerVersion="$imager_version"
             mv Gemstone_Imager-${imager_version}-x86_64.AppImage GemImager-${imager_version}.AppImage
       - name: Upload AppImage
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: GemImager Linux ${{ steps.build.outputs.gemImagerVersion }}
           path: GemImager-${{ steps.build.outputs.gemImagerVersion }}.AppImage
@@ -74,7 +74,7 @@ jobs:
           scoop bucket add extras
           scoop install nsis
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Set MINGW64_ROOT
         shell: powershell
         run: |
@@ -105,7 +105,7 @@ jobs:
           mv $GITHUB_WORKSPACE/build/gem-imager-${version}.exe $GITHUB_WORKSPACE/build/GemImager-${version}.exe
           tee -a "${GITHUB_OUTPUT}" <<< gemImagerVersion="$version"
       - name: Upload installer
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: GemImager Windows ${{ steps.getversion.outputs.gemImagerVersion }}
           path: ${{ github.workspace }}\build\GemImager-${{ steps.getversion.outputs.gemImagerVersion }}.exe
@@ -123,7 +123,7 @@ jobs:
           arch: 'clang_64'
           modules: 'qtimageformats qtpdf qtserialport qtvirtualkeyboard qtquick3d'
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Configure
         run: |
           cmake -S "$GITHUB_WORKSPACE/src" -B "$GITHUB_WORKSPACE/build" \
@@ -140,7 +140,7 @@ jobs:
           mv "$GITHUB_WORKSPACE/build/GemstoneImager-${version}.dmg" "$GITHUB_WORKSPACE/build/GemImager-${version}.dmg"
           tee -a "${GITHUB_OUTPUT}" <<< gemImagerVersion="$version"
       - name: Upload DMG
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: GemImager macOS ${{ steps.getversion.outputs.gemImagerVersion }}
           path: build/GemImager-${{ steps.getversion.outputs.gemImagerVersion }}.dmg
