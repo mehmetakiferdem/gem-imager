@@ -81,6 +81,10 @@ InstallDir "$PROGRAMFILES\Gemstone Imager"
 !insertmacro MUI_PAGE_LICENSE "${LICENSE_TXT}"
 !endif
 
+; Needed for the optional DFU driver section to be selectable at all
+!define MUI_COMPONENTSPAGE_TEXT_TOP "Everything the application itself needs is installed either way. The one option below is only for flashing the board over USB."
+!insertmacro MUI_PAGE_COMPONENTS
+
 !ifdef REG_START_MENU
 !define MUI_STARTMENUPAGE_NODISABLE
 !define MUI_STARTMENUPAGE_DEFAULTFOLDER "Gemstone"
@@ -718,7 +722,43 @@ File "deploy\tls\qcertonlybackend.dll"
 File "deploy\tls\qopensslbackend.dll"
 File "deploy\tls\qschannelbackend.dll"
 
+; libwdi's CLI, used by the DFU driver section below and named by the
+; application when it finds the driver missing at flash time
+SetOutPath "$INSTDIR"
+File "deploy\wdi-simple.exe"
+
 SectionEnd
+
+######################################################################
+
+; Windows will not let libusb reach the board's DFU interface until a driver it
+; supports is bound to it, and nothing binds one by default. Without this the
+; user has to install one by hand with Zadig before flashing over USB.
+;
+; The board does not have to be attached: when it is absent libwdi stages the
+; driver instead, and Windows binds it the first time the board appears.
+;
+; Only DFU needs this - writing an SD card goes through raw disk access - so
+; the section is optional, and unselecting it leaves the machine untouched.
+Section "DFU driver (USB flashing)" SEC_DFU_DRIVER
+
+DetailPrint "Installing the WinUSB driver for the T3 Gemstone DFU interface..."
+; -v/-p: the board's DFU VID/PID, shared by its ROM, SPL and U-Boot stages
+; -t 0 : WinUSB    -s: no GUI
+nsExec::ExecToLog '"$INSTDIR\wdi-simple.exe" -n "T3 Gemstone DFU" -m "T3 Gemstone" -v 0x0451 -p 0x6165 -t 0 -s'
+Pop $0
+${If} $0 == 0
+  DetailPrint "DFU driver installed."
+${Else}
+  ; Not fatal: the application explains how to get it if a transfer needs it
+  DetailPrint "DFU driver installation returned $0 - USB (DFU) flashing may ask for it again."
+${EndIf}
+
+SectionEnd
+
+!insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
+!insertmacro MUI_DESCRIPTION_TEXT ${SEC_DFU_DRIVER} "Installs the WinUSB driver that flashing the board over USB (DFU) needs. Not required for writing SD cards."
+!insertmacro MUI_FUNCTION_DESCRIPTION_END
 
 ######################################################################
 
@@ -781,6 +821,7 @@ Delete "$INSTDIR\opengl32sw.dll"
 Delete "$INSTDIR\libssl-1_1.dll"
 Delete "$INSTDIR\libcrypto-1_1.dll"
 Delete "$INSTDIR\fat32format.exe"
+Delete "$INSTDIR\wdi-simple.exe"
 Delete "$INSTDIR\libEGL.dll"
 Delete "$INSTDIR\libgcc_s_dw2-1.dll"
 Delete "$INSTDIR\libGLESV2.dll"

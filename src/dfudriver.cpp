@@ -117,8 +117,12 @@ QString DfuDriver::missingDriverHint(quint16 vendorId, quint16 productId)
     QString hint = QCoreApplication::translate("DfuDriver",
         "Windows cannot reach the board because no suitable USB driver is bound "
         "to its DFU interface.<br><br>"
-        "Install the WinUSB driver for <b>USB\\VID_%1&amp;PID_%2</b> using Zadig, "
-        "then retry. The board does not need to be power cycled for this.")
+        "The installer normally puts this driver in place. If it was skipped, "
+        "re-run the Gemstone Imager installer and leave <b>DFU driver "
+        "(USB flashing)</b> selected, then retry - the board does not need to "
+        "be power cycled.<br><br>"
+        "The driver wanted is WinUSB, for <b>USB\\VID_%1&amp;PID_%2</b>; it can "
+        "also be installed by hand with Zadig.")
         .arg(QString::asprintf("%04X", vendorId), QString::asprintf("%04X", productId));
 
     if (!boundDriver.isEmpty())
