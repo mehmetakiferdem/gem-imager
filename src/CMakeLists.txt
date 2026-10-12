@@ -468,7 +468,8 @@ elseif(APPLE)
             # Sign the .app.
             add_custom_command(TARGET ${PROJECT_NAME}
                 POST_BUILD
-                COMMAND codesign -f --deep --digest-algorithm=sha1,sha256 -o runtime --timestamp -s "${IMAGER_SIGNING_IDENTITY}" "${CMAKE_BINARY_DIR}/GemstoneImager.app")
+                COMMAND codesign -f --deep --digest-algorithm=sha1,sha256 -o runtime --timestamp -s "${IMAGER_SIGNING_IDENTITY}" "${CMAKE_BINARY_DIR}/GemstoneImager.app"
+                VERBATIM)
 
             # Create the .dmg for distribution
             add_custom_command(TARGET ${PROJECT_NAME}
@@ -478,13 +479,15 @@ elseif(APPLE)
             # Sign the .dmg for distribution, but do not initialise notarisation
             add_custom_command(TARGET ${PROJECT_NAME}
                 POST_BUILD
-                COMMAND codesign -f --digest-algorithm=sha1,sha256 -o runtime --timestamp -s "${IMAGER_SIGNING_IDENTITY}" "${CMAKE_BINARY_DIR}/GemstoneImager.dmg")
+                COMMAND codesign -f --digest-algorithm=sha1,sha256 -o runtime --timestamp -s "${IMAGER_SIGNING_IDENTITY}" "${CMAKE_BINARY_DIR}/GemstoneImager.dmg"
+                VERBATIM)
 
             if(IMAGER_NOTARIZE_APP)
                 if(IMAGER_NOTARIZE_KEYCHAIN_PROFILE)
                     add_custom_command(TARGET ${PROJECT_NAME}
                         POST_BUILD
-                        COMMAND xcrun notarytool submit "${CMAKE_BINARY_DIR}/GemstoneImager.dmg" --wait --keychain-profile "${IMAGER_NOTARIZE_KEYCHAIN_PROFILE}")
+                        COMMAND xcrun notarytool submit "${CMAKE_BINARY_DIR}/GemstoneImager.dmg" --wait --keychain-profile "${IMAGER_NOTARIZE_KEYCHAIN_PROFILE}"
+                        VERBATIM)
                     add_custom_command(TARGET ${PROJECT_NAME}
                         POST_BUILD
                         COMMAND xcrun stapler staple "${CMAKE_BINARY_DIR}/GemstoneImager.dmg")
