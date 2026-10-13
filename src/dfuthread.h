@@ -44,6 +44,7 @@ protected:
     size_t _writeFile(const char *buf, size_t len) override;
     void _writeComplete() override;
     void _onWriteError() override;
+    void _onDownloadError(const QString &msg) override;
 
 private:
     QString _bootloaderFiles[3];
@@ -58,6 +59,18 @@ private:
     bool _streaming = false;
     qint64 _streamImageSize = 0;
     bool _streamFailed = false;
+    bool _errorReported = false;
+
+    /*
+     * Mass storage mode: a U-Boot that offers the "ums" alt-setting can expose
+     * the eMMC as a USB disk, which is written like an SD card - several times
+     * faster than DFU. _ums is set once the disk has been found.
+     */
+    bool _ums = false;
+    qint64 _umsLastReport = 0;
+    enum class UmsResult { Unavailable, Ready, Failed };
+    UmsResult switchToMassStorage();
+    bool waitForBoardToLeaveUsb(bool massStorage);
     bool _streamErrorReported = false;
     bool _headPending = false;
     qint64 _headEnd = 0;

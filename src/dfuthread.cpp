@@ -21,7 +21,13 @@
 #include <QJsonObject>
 #include <QJsonArray>
 #include <QElapsedTimer>
+#include <QSet>
 #include <cstring>
+#include "dependencies/drivelist/src/drivelist.hpp"
+#ifdef Q_OS_WIN
+#include <windows.h>
+#include <winioctl.h>
+#endif
 
 #include <QEventLoop>
 #include <QNetworkAccessManager>
@@ -270,6 +276,15 @@ fail:
 
 size_t DfuThread::_writeFile(const char *buf, size_t len)
 {
+    if (_ums) {
+        const size_t written = DownloadThread::_writeFile(buf, len);
+        const qint64 done = (qint64)_bytesWritten;
+        if (done - _umsLastReport >= 16 * 1024 * 1024) {
+            _umsLastReport = done;
+            onStreamProgress(done, _streamImageSize > 0 ? _streamImageSize : done);
+        }
+        return written;
+    }
     if (!_streaming)
         return DownloadThread::_writeFile(buf, len);
 
@@ -307,6 +322,8 @@ size_t DfuThread::_writeFile(const char *buf, size_t len)
 
 bool DfuThread::_openAndPrepareDevice()
 {
+    if (_ums)
+        return DownloadThread::_openAndPrepareDevice();
     if (_streaming)
         return openStreamToRawemmc();
 
@@ -344,21 +361,60 @@ void DfuThread::run()
     }
 
     /*
-     * Streaming sends the image as it arrives, so the board has to be running
-     * U-Boot and offering the rawemmc alt-setting *before* the download starts.
-     * The bootloader stage therefore runs first here, where the temp-file path
-     * does it after the image has already been written out.
+     * The bootloader stage runs first on every path: streaming and mass storage
+     * both need U-Boot up before the image starts to arrive, and the temp-file
+     * path loses nothing by having U-Boot wait for it.
+     */
+    if (!prepareDeviceForImage()) return;
+
+    switch (switchToMassStorage()) {
+    case UmsResult::Failed:
+        return;   /* already reported; the board has left DFU mode */
+    case UmsResult::Ready:
+        _headPending = false;   /* the disk is customized in place */
+        emit dfuProgress(80, tr("Writing image to the board over USB mass storage..."));
+        DownloadExtractThread::run();
+        waitForExtractThread();
+        if (_errorReported) return;
+        if (_cancelled) { emit error(tr("Cancelled")); return; }
+        if (!_successful) return;
+#ifdef Q_OS_WIN
+        {
+            /* The eject after writing only covers volumes with a drive letter,
+               and a freshly written disk may have none yet. U-Boot leaves
+               mass storage mode, and goes on to write the boot binaries, only
+               on a SCSI eject, so send one to the disk itself. */
+            HANDLE h = CreateFileA(_filename.constData(), GENERIC_READ | GENERIC_WRITE,
+                                   FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 0, NULL);
+            if (h != INVALID_HANDLE_VALUE) {
+                DWORD unused;
+                DeviceIoControl(h, IOCTL_STORAGE_EJECT_MEDIA, NULL, 0, NULL, 0, &unused, NULL);
+                CloseHandle(h);
+            }
+        }
+#endif
+        if (!waitForBoardToLeaveUsb(true)) return;
+        emit dfuProgress(100, tr("Image written to eMMC successfully! Power off the board "
+                                 "and switch the boot mode to eMMC."));
+        QThread::msleep(1000);
+        emit success();
+        return;
+    case UmsResult::Unavailable:
+        break;   /* an older U-Boot: send the image over DFU */
+    }
+
+    /*
+     * Streaming sends the image as it arrives, to the rawemmc alt-setting the
+     * board offers now that U-Boot is up.
      */
     if (_streaming) {
-        if (!prepareDeviceForImage()) return;
-
         emit dfuProgress(80, tr("Sending image to device (this may take several minutes)..."));
         if (QUrl(QString::fromUtf8(_url)).isLocalFile())
             emit preparationStatusUpdate(tr("Reading image from cache/local file (no download needed)..."));
         DownloadExtractThread::run();
         waitForExtractThread();
         /* before _cancelled: reporting a failure also sets it */
-        if (_streamFailed) { closeStream(); return; }   /* already reported */
+        if (_streamFailed || _errorReported) { closeStream(); return; }   /* already reported */
         if (_cancelled) { closeStream(); emit error(tr("Cancelled")); return; }
         if (!_successful) { closeStream(); return; }
 
@@ -376,6 +432,7 @@ void DfuThread::run()
             emit dfuProgress(5, tr("Downloading image..."));
         DownloadExtractThread::run();
         waitForExtractThread();
+        if (_errorReported) return;
         if (!_successful) return;
         if (_cancelled) { emit error(tr("Cancelled")); return; }
     }
@@ -394,43 +451,17 @@ void DfuThread::run()
     if (_cancelled) { emit error(tr("Cancelled")); return; }
 
     if (!_streaming) {
-        if (!prepareDeviceForImage()) return;
-
         emit dfuProgress(80, tr("Sending image to device (this may take several minutes)..."));
         if (!sendImageToRawemmc()) return;
     }
 
-    /* All data has been sent, but the device is still flushing buffered image
-       data to eMMC and then writes the boot binaries. U-Boot's DFU gadget only
-       drops off the USB bus once all of that is done, so wait for the device
-       to disappear instead of declaring success while it is still writing.
-       (If a second board in DFU mode is attached this waits for that one too;
-       that is the safe direction to be wrong in.) */
-    emit dfuProgress(95, tr("Device is writing to eMMC (do not power off)..."));
-    QElapsedTimer flushTimer;
-    flushTimer.start();
-    const qint64 flushTimeoutMs = 15 * 60 * 1000;
-    while (DfuWrapper::isDevicePresent(DfuWrapper::TI_VENDOR_ID, DfuWrapper::TI_PRODUCT_ID)) {
-        if (_cancelled) { emit error(tr("Cancelled")); return; }
-        if (flushTimer.elapsed() > flushTimeoutMs) {
-            emit error(tr("The device is still writing to eMMC %1 minutes after the "
-                          "transfer finished.<br>Do NOT power off the board yet: check "
-                          "the serial console and wait until write activity stops.")
-                       .arg(flushTimeoutMs / 60000));
-            return;
-        }
-        QThread::msleep(500);
-    }
-    /* The boot binaries are written right after the DFU gadget shuts down;
-       give that step a moment to finish before declaring the board safe to
-       power off. */
-    QThread::sleep(5);
-
+    if (!waitForBoardToLeaveUsb(false)) return;
     emit dfuProgress(100, tr("Image written to eMMC successfully! Power off the board "
                              "and switch the boot mode to eMMC."));
     QThread::msleep(1000);
     emit success();
 }
+
 
 /*
  * The base class finishes by flushing, fsyncing and verifying _file and then
@@ -440,6 +471,11 @@ void DfuThread::run()
  */
 void DfuThread::_writeComplete()
 {
+    if (_ums) {
+        /* An ordinary disk: verify, customize in place and eject, as for an SD card */
+        DownloadThread::_writeComplete();
+        return;
+    }
     if (!_streaming) {
         DownloadExtractThread::_writeComplete();
         return;
@@ -469,9 +505,17 @@ void DfuThread::_writeComplete()
     qDebug() << "Streamed image in" << _timer.elapsed() / 1000 << "seconds";
 }
 
+/* Remember that an error has been shown, so run() does not follow it with a
+   second "Cancelled" dialog: reporting an error also sets _cancelled. */
+void DfuThread::_onDownloadError(const QString &msg)
+{
+    _errorReported = true;
+    DownloadThread::_onDownloadError(msg);
+}
+
 void DfuThread::_onWriteError()
 {
-    if (!_streaming) {
+    if (_ums || !_streaming) {
         DownloadExtractThread::_onWriteError();
         return;
     }
@@ -481,6 +525,143 @@ void DfuThread::_onWriteError()
        a disk, the USB transfer failed. */
     _onDownloadError(tr("DFU transfer failed: %1")
                      .arg(_streamError.isEmpty() ? tr("unknown error") : _streamError));
+}
+
+/* The Linux mass storage gadget IDs U-Boot presents in ums mode */
+static const int UMS_VENDOR_ID  = 0x0525;
+static const int UMS_PRODUCT_ID = 0xA4A5;
+static const char *ALT_UMS = "ums";
+
+/*
+ * U-Boot's ums disks, by device path. The inquiry data reads "Linux UMS disk 0",
+ * which is what both the Linux description (vendor + model) and the Windows
+ * friendly name are made from.
+ */
+static QSet<QString> listUmsDisks()
+{
+    QSet<QString> disks;
+    for (const auto &d : Drivelist::ListStorageDevices()) {
+        if (d.isSystem || !(d.isUSB || d.isRemovable))
+            continue;
+        if (QString::fromStdString(d.description).contains(QLatin1String("UMS disk"), Qt::CaseInsensitive))
+            disks.insert(QString::fromStdString(d.device));
+    }
+    return disks;
+}
+
+/*
+ * Ask U-Boot to expose the eMMC as USB mass storage, and find the disk that
+ * appears. Unavailable means U-Boot is still waiting in DFU mode and the image
+ * can go over DFU; Failed means the board may have left DFU mode and the error
+ * has been reported.
+ */
+DfuThread::UmsResult DfuThread::switchToMassStorage()
+{
+#ifdef Q_OS_DARWIN
+    /* Raw disk access goes through authopen on macOS, which is not reliable yet */
+    return UmsResult::Unavailable;
+#else
+    if (qEnvironmentVariableIsSet("GEM_IMAGER_NO_UMS"))
+        return UmsResult::Unavailable;
+
+    /* U-Boot takes a moment to come up after the bootloader stage. Once it
+       offers rawemmc without ums, it is a version that predates mass storage. */
+    bool offered = false;
+    for (int attempt = 1; attempt <= 15 && !offered; attempt++) {
+        if (_cancelled)
+            return UmsResult::Unavailable;
+        for (const char *alt : { ALT_UMS, DfuWrapper::ALT_RAWEMMC }) {
+            DfuWrapper probe;
+            const bool found = probe.initialize()
+                && probe.findDevice(DfuWrapper::TI_VENDOR_ID, DfuWrapper::TI_PRODUCT_ID, alt);
+            probe.cleanup();
+            if (found && !strcmp(alt, ALT_UMS)) { offered = true; break; }
+            if (found) {
+                qDebug() << "U-Boot offers rawemmc but no ums alt-setting; using DFU";
+                return UmsResult::Unavailable;
+            }
+        }
+        if (!offered)
+            QThread::msleep(1000);
+    }
+    if (!offered)
+        return UmsResult::Unavailable;   /* openStreamToRawemmc() will report it */
+
+    const QSet<QString> before = listUmsDisks();
+
+    QTemporaryFile marker(QDir::tempPath() + QDir::separator() + "dfu_ums_XXXXXX");
+    if (!marker.open() || marker.write("UMS1", 4) != 4 || !marker.flush()) {
+        emit error(tr("Failed to create temporary file for DFU image"));
+        return UmsResult::Failed;
+    }
+    marker.close();
+
+    emit dfuProgress(78, tr("Switching the board to USB mass storage mode..."));
+    if (!runDfu(ALT_UMS, marker.fileName(), true))
+        return UmsResult::Failed;   /* runDfu() reported it */
+
+    QElapsedTimer timer;
+    timer.start();
+    while (timer.elapsed() < 30000) {
+        if (_cancelled)
+            return UmsResult::Failed;
+        const QSet<QString> now = listUmsDisks();
+        for (const QString &disk : now) {
+            if (!before.contains(disk)) {
+                qDebug() << "Board is exposed as USB mass storage at" << disk;
+                _filename = disk.toLatin1();
+                _ums = true;
+                _ejectEnabled = true;
+                return UmsResult::Ready;
+            }
+        }
+        QThread::msleep(1000);
+    }
+
+    emit error(tr("The board switched to USB mass storage mode, but no disk appeared "
+                  "within 30 seconds.<br><br>Power off the board, set the boot switches "
+                  "to DFU mode again, restore power and retry."));
+    return UmsResult::Failed;
+#endif
+}
+
+/*
+ * After the last byte the board still has to finish writing to eMMC and then
+ * writes the boot binaries. In DFU mode U-Boot's gadget only drops off the bus
+ * once the data is flushed; in mass storage mode it leaves when the disk is
+ * ejected, and the boot binaries follow. Wait for it to go rather than declare
+ * success while it is still writing. (A second board attached in DFU mode is
+ * waited for too; that is the safe direction to be wrong in.)
+ */
+bool DfuThread::waitForBoardToLeaveUsb(bool massStorage)
+{
+    emit dfuProgress(95, tr("Device is writing to eMMC (do not power off)..."));
+    QElapsedTimer flushTimer;
+    flushTimer.start();
+    const qint64 flushTimeoutMs = (massStorage ? 2 : 15) * 60 * 1000;
+    while (DfuWrapper::isDevicePresent(DfuWrapper::TI_VENDOR_ID, DfuWrapper::TI_PRODUCT_ID)
+           || (massStorage && DfuWrapper::isDevicePresent(UMS_VENDOR_ID, UMS_PRODUCT_ID))) {
+        if (_cancelled) { emit error(tr("Cancelled")); return false; }
+        if (flushTimer.elapsed() > flushTimeoutMs) {
+            if (massStorage)
+                emit error(tr("The image was written, but the board did not leave USB mass "
+                              "storage mode after it was ejected, so the boot binaries may "
+                              "not have been updated.<br>Power off the board, set the boot "
+                              "switches to DFU mode again and retry."));
+            else
+                emit error(tr("The device is still writing to eMMC %1 minutes after the "
+                              "transfer finished.<br>Do NOT power off the board yet: check "
+                              "the serial console and wait until write activity stops.")
+                           .arg(flushTimeoutMs / 60000));
+            return false;
+        }
+        QThread::msleep(500);
+    }
+    /* The boot binaries are written right after the gadget shuts down; give
+       that step a moment to finish before declaring the board safe to power
+       off. */
+    QThread::sleep(massStorage ? 10 : 5);
+    return true;
 }
 
 /* Release the USB device and the libusb context the streaming transfer holds.
