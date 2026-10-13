@@ -800,6 +800,34 @@ bool DfuThread::sendBootloaderFiles()
 
 bool DfuThread::fetchBootloaderFiles()
 {
+    /*
+     * For trying out a bootloader before it is published: take tiboot3.bin,
+     * tispl.bin and u-boot.img from this directory instead of the server.
+     * They are copied, because the copies are deleted afterwards.
+     */
+    const QString localDir = qEnvironmentVariable("GEM_IMAGER_BOOTLOADER_DIR");
+    if (!localDir.isEmpty()) {
+        const QStringList names = {"tiboot3.bin", "tispl.bin", "u-boot.img"};
+        for (int i = 0; i < 3; i++) {
+            const QString src = localDir + QDir::separator() + names[i];
+            QTemporaryFile tmp(QDir::tempPath() + QDir::separator() + "dfu_XXXXXX");
+            tmp.setAutoRemove(false);
+            if (!tmp.open()) {
+                emit error(tr("Failed to create temp file for %1").arg(names[i]));
+                return false;
+            }
+            tmp.close();
+            QFile::remove(tmp.fileName());
+            if (!QFile::copy(src, tmp.fileName())) {
+                emit error(tr("Failed to download bootloader file: %1").arg(src));
+                return false;
+            }
+            _bootloaderFiles[i] = tmp.fileName();
+            qDebug() << "Ready" << names[i] << "from local directory" << src;
+        }
+        return true;
+    }
+
     QString listUrlStr = QString(BOOTIMG_URL).arg("t3-gem-o1").arg("list.json");
     
     emit dfuProgress(40, tr("Fetching bootloader list..."));
