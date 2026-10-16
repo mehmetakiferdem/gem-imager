@@ -1373,6 +1373,10 @@ ApplicationWindow {
     }
 
     property bool isDfuMode: false
+    /* Set once the DFU thread is transferring the image and reports progress
+       itself; the polled byte count would otherwise overwrite its text with
+       "Preparing image" every second. */
+    property bool dfuOwnsProgress: false
     property bool isUniflashMode: false
 
     MsgPopup {
@@ -1432,7 +1436,8 @@ ApplicationWindow {
                 cancelwritebutton.enabled = true
                 cancelwritebutton.visible = true
                 cancelverifybutton.enabled = false
-                progressText.text = qsTr("Starting DFU operation...");
+                dfuOwnsProgress = false
+        progressText.text = qsTr("Starting DFU operation...");
                 imageWriter.startDfu()
             } else {
                 if (!imageWriter.readyToWrite()) {
@@ -1524,6 +1529,8 @@ ApplicationWindow {
         if (progressBar.value !== newPos) {
             if (progressText.text === qsTr("Cancelling..."))
                 return
+            if (isDfuMode && dfuOwnsProgress)
+                return
 
             if (imageWriter.isNetworkDownload())
                 progressText.text = qsTr("Downloading... %1%").arg(Math.floor(newPos*100))
@@ -1576,6 +1583,9 @@ ApplicationWindow {
     }
 
     function onDfuProgress(percentage, statusMsg) {
+        /* From 78% on the image itself is on its way to the board */
+        if (percentage >= 78)
+            dfuOwnsProgress = true
         progressBar.indeterminate = false
         progressBar.value = percentage / 100.0
         progressBar.Material.accent = "#ffffff"
@@ -2174,6 +2184,7 @@ ApplicationWindow {
         cancelwritebutton.enabled = true
         cancelwritebutton.visible = true
         cancelverifybutton.enabled = false
+        dfuOwnsProgress = false
         progressText.text = qsTr("Starting DFU operation...");
         progressText.visible = true
         progressBar.visible = true
