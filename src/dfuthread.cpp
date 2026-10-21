@@ -24,6 +24,8 @@
 #include <QSet>
 #include <cstring>
 #include "dependencies/drivelist/src/drivelist.hpp"
+#include "devicewrapper.h"
+#include "devicewrapperfatpartition.h"
 #ifdef Q_OS_WIN
 #include <windows.h>
 #include <winioctl.h>
@@ -798,6 +800,60 @@ bool DfuThread::sendBootloaderFiles()
     return true;
 }
 
+/*
+ * When the image is a local file, use the bootloader in its own boot
+ * partition for the DFU stage rather than the one on the server. That is the
+ * bootloader the board ends up with anyway - it is copied to the eMMC boot
+ * partition after the image - and it may be newer than the published one,
+ * e.g. able to offer USB mass storage. Only a U-Boot that knows the DFU boot
+ * flow (bootcmd_dfu) is taken; anything else falls back to the server.
+ */
+bool DfuThread::takeBootloaderFromImage()
+{
+    const QUrl url(QString::fromUtf8(_url));
+    if (!url.isLocalFile())
+        return false;
+
+    const QStringList names = {"tiboot3.bin", "tispl.bin", "u-boot.img"};
+    QByteArray contents[3];
+    try {
+        DeviceWrapperFile f;
+        f.setFileName(url.toLocalFile());
+        if (!f.open(QIODevice::ReadOnly))
+            return false;
+        DeviceWrapper dw(&f);
+        DeviceWrapperFatPartition *fat = dw.fatPartition(1);
+        for (int i = 0; i < 3; i++) {
+            if (!fat->fileExists(names[i]))
+                return false;
+            contents[i] = fat->readFile(names[i]);
+            if (contents[i].isEmpty())
+                return false;
+        }
+    } catch (std::exception &e) {
+        /* compressed or not a disk image: nothing to read */
+        qDebug() << "No bootloader taken from the image:" << e.what();
+        return false;
+    }
+
+    if (!contents[2].contains("bootcmd_dfu")) {
+        qDebug() << "The image's U-Boot has no DFU boot flow; using the server's bootloader";
+        return false;
+    }
+
+    for (int i = 0; i < 3; i++) {
+        QTemporaryFile tmp(QDir::tempPath() + QDir::separator() + "dfu_XXXXXX");
+        tmp.setAutoRemove(false);
+        if (!tmp.open() || tmp.write(contents[i]) != contents[i].size()) {
+            qDebug() << "Could not write" << names[i] << "from the image; using the server's bootloader";
+            return false;
+        }
+        _bootloaderFiles[i] = tmp.fileName();
+        qDebug() << "Ready" << names[i] << "from the image's boot partition";
+    }
+    return true;
+}
+
 bool DfuThread::fetchBootloaderFiles()
 {
     /*
@@ -827,6 +883,9 @@ bool DfuThread::fetchBootloaderFiles()
         }
         return true;
     }
+
+    if (takeBootloaderFromImage())
+        return true;
 
     QString listUrlStr = QString(BOOTIMG_URL).arg("t3-gem-o1").arg("list.json");
     

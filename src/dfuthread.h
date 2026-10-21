@@ -85,6 +85,7 @@ private:
     void closeStream();
     QString _streamError;
     bool fetchBootloaderFiles();
+    bool takeBootloaderFromImage();
     bool sendBootloaderFiles();
     bool sendImageToRawemmc();
     void onStreamProgress(qint64 bytesSent, qint64 totalBytes);
