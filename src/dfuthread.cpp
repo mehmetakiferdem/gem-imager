@@ -602,11 +602,32 @@ DfuThread::UmsResult DfuThread::switchToMassStorage()
     if (!runDfu(ALT_UMS, marker.fileName(), true))
         return UmsResult::Failed;   /* runDfu() reported it */
 
+    /* The first time a host sees the mass storage gadget, Windows installs
+       a driver for it before the disk shows up, which can take a while. */
+#ifdef Q_OS_WIN
+    const qint64 timeoutMs = 120000;
+#else
+    const qint64 timeoutMs = 30000;
+#endif
     QElapsedTimer timer;
     timer.start();
-    while (timer.elapsed() < 30000) {
+    QSet<QString> reported;
+    while (timer.elapsed() < timeoutMs) {
         if (_cancelled)
             return UmsResult::Failed;
+        /* Log every disk that appears while waiting, so a disk that is there
+           but not recognised as the board can be told from one that never
+           appeared. */
+        for (const auto &d : Drivelist::ListStorageDevices()) {
+            const QString dev = QString::fromStdString(d.device);
+            if (reported.contains(dev))
+                continue;
+            reported.insert(dev);
+            qDebug() << "Disk while waiting for the board:" << dev
+                     << "description:" << QString::fromStdString(d.description)
+                     << "usb:" << d.isUSB << "removable:" << d.isRemovable
+                     << "system:" << d.isSystem << "size:" << d.size;
+        }
         const QSet<QString> now = listUmsDisks();
         for (const QString &disk : now) {
             if (!before.contains(disk)) {
@@ -621,8 +642,8 @@ DfuThread::UmsResult DfuThread::switchToMassStorage()
     }
 
     emit error(tr("The board switched to USB mass storage mode, but no disk appeared "
-                  "within 30 seconds.<br><br>Power off the board, set the boot switches "
-                  "to DFU mode again, restore power and retry."));
+                  "within %1 seconds.<br><br>Power off the board, set the boot switches "
+                  "to DFU mode again, restore power and retry.").arg(timeoutMs / 1000));
     return UmsResult::Failed;
 #endif
 }
