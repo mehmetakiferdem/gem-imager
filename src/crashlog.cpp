@@ -8,6 +8,7 @@
 #include <QDateTime>
 #include <QDir>
 #include <QFile>
+#include <QRegularExpression>
 #include <QStandardPaths>
 #include <QSysInfo>
 #include <QThread>
@@ -170,8 +171,30 @@ const char *levelName(QtMsgType type)
     return "?";
 }
 
-void messageHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg)
+/*
+ * Keep secrets out of the log: the files persist, are kept for ten sessions
+ * and get attached to bug reports. Mask the value of anything whose key
+ * looks like a password, passphrase or key, and any crypt(3) hash that
+ * appears without a key (firstrun scripts, cloud-init user data).
+ */
+QString redactSecrets(const QString &msg)
 {
+    static const QRegularExpression keyed(QStringLiteral(
+        "\\b([A-Za-z0-9_-]*(?:passw|psk|secret|token)[A-Za-z0-9_-]*)"
+        "(\\s*[=:]\\s*)('[^']*'|\"[^\"]*\"|[^\\s\\\\,;]+)"),
+        QRegularExpression::CaseInsensitiveOption);
+    static const QRegularExpression cryptHash(QStringLiteral(
+        "\\$(?:1|2[aby]?|5|6|y|gy|7)\\$[^\\s'\"\\\\]+"));
+
+    QString out = msg;
+    out.replace(keyed, QStringLiteral("\\1\\2***"));
+    out.replace(cryptHash, QStringLiteral("$***"));
+    return out;
+}
+
+void messageHandler(QtMsgType type, const QMessageLogContext &context, const QString &rawMsg)
+{
+    const QString msg = redactSecrets(rawMsg);
     QByteArray line = QDateTime::currentDateTime().toString(QStringLiteral("HH:mm:ss.zzz")).toUtf8();
     line += ' ';
     line += levelName(type);
