@@ -63,7 +63,7 @@ ApplicationWindow {
 
             Image {
                 id: image
-                source: "icons/logo_sxs_imager.png"
+                source: "icons/t3_gemstone_logo.png"
 
                 smooth: true
                 antialiasing: true
