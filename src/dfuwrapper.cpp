@@ -358,7 +358,9 @@ bool DfuWrapper::sendOneBlock(const char *data, qint64 len)
     }
 
     _streamSent += len;
-    emit streamProgress(_streamSent, _streamTotal);
+    /* Once per MiB: per 4 KiB block it queued millions of GUI updates */
+    if ((_streamSent >> 20) != ((_streamSent - len) >> 20) || _streamSent == _streamTotal)
+        emit streamProgress(_streamSent, _streamTotal);
     if ((_streamSent % (10LL * 1024 * 1024)) < _streamXferSize || _streamSent == _streamTotal)
         emit statusMessage(QString("Transferred %1 / %2 MB...")
                            .arg(_streamSent / 1024 / 1024).arg(_streamTotal / 1024 / 1024));

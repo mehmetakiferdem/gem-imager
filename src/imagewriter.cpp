@@ -1022,6 +1022,8 @@ void ImageWriter::_startDfuThread()
         urlstr = QUrl::fromLocalFile(_cacheFileName).toString(_src.FullyEncoded).toLatin1();
         emit preparationStatusUpdate(tr("Image found in cache, skipping download"));
     }
+    /* onDownloadProgress labels by this; only startWrite() used to set it */
+    _networkDownload = !QUrl(QString::fromLatin1(urlstr)).isLocalFile();
 
     /*
      * Prefer streaming the image to the device as it is decompressed: a
@@ -1042,12 +1044,13 @@ void ImageWriter::_startDfuThread()
        filesystem: on some distros /tmp is tmpfs capped at half the RAM, and
        filling it starves the rest of the system. */
     QString tempDir = QStandardPaths::writableLocation(QStandardPaths::CacheLocation);
-    if (_extrLen && (!canStream || customizeHead))
+    /* Only the held-back head of a customized stream needs room on disk. The
+       temp-file path is taken when the image size is unknown, so there is
+       no size to check ahead of time. */
+    if (customizeHead)
     {
-        const qint64 gb = 1024*1024*1024ll;
         /* The held-back head is at most 512 MB (DfuThread's maxHeadSize) */
-        const qint64 tempNeeded = canStream ? 512*1024*1024ll
-                                            : (qint64)_extrLen + gb; /* 1 GB headroom */
+        const qint64 tempNeeded = 512*1024*1024ll;
         const QStorageInfo cacheVolume(tempDir);
         const QStringList candidates = { tempDir, QDir::tempPath() };
         QString chosen;
@@ -1142,20 +1145,12 @@ void ImageWriter::_startDfuThread()
             }
             else
             {
-                if (canStream)
-                    emit error(tr("Not enough disk space to customize the image.<br>"
-                                  "About %1 MB of free space is needed, "
-                                  "but only %2 MB is available.<br>"
-                                  "Free up disk space, or write the image without customization.")
-                               .arg(tempNeeded / (1024*1024ll))
-                               .arg(bestAvail / (1024*1024ll)));
-                else
-                    emit error(tr("Not enough disk space to prepare the image.<br>"
-                                  "About %1 GB of free space is needed to extract the image, "
-                                  "but only %2 MB is available.<br>"
-                                  "Free up disk space and try again.")
-                               .arg((tempNeeded + gb - 1) / gb)
-                               .arg(bestAvail / (1024*1024ll)));
+                emit error(tr("Not enough disk space to customize the image.<br>"
+                              "About %1 MB of free space is needed, "
+                              "but only %2 MB is available.<br>"
+                              "Free up disk space, or write the image without customization.")
+                           .arg(tempNeeded / (1024*1024ll))
+                           .arg(bestAvail / (1024*1024ll)));
             }
             return;
         }

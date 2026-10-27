@@ -8,6 +8,8 @@
 
 #include "downloadextractthread.h"
 #include <QTemporaryFile>
+#include <QMutex>
+#include <atomic>
 
 class DfuThread : public DownloadExtractThread
 {
@@ -57,10 +59,14 @@ private:
     QString _tempDir;
 
     class DfuWrapper *_activeDfu;
+    /* cancelDownload() runs on the GUI thread while the worker swaps and
+       deletes the wrapper; both go through this */
+    QMutex _activeDfuMutex;
+    void setActiveDfu(class DfuWrapper *dfu);
     bool _streaming = false;
     qint64 _streamImageSize = 0;
     bool _streamFailed = false;
-    bool _errorReported = false;
+    std::atomic<bool> _errorReported{false};
 
     /*
      * Mass storage mode: a U-Boot that offers the "ums" alt-setting can expose

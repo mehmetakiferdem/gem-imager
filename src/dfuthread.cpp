@@ -48,6 +48,16 @@ DfuThread::DfuThread(const QByteArray &url, const QByteArray &localfilename,
     _suppressSuccessSignal = true;
     _ejectEnabled = false;
     _activeDfu = nullptr;
+
+    /*
+     * Whatever path an error takes - an emit error() in the base classes, a
+     * call that names DownloadThread::_onDownloadError and so bypasses the
+     * override, a customization failure - once one is shown, run() must
+     * neither follow it with "Cancelled" nor report success. A direct
+     * connection runs in the emitting thread, before run() looks.
+     */
+    connect(this, &DownloadThread::error, this, [this](QString) { _errorReported = true; },
+            Qt::DirectConnection);
 }
 
 DfuThread::~DfuThread()
@@ -73,8 +83,15 @@ bool DfuThread::isImage()
 void DfuThread::cancelDownload()
 {
     DownloadExtractThread::cancelDownload();
+    QMutexLocker lock(&_activeDfuMutex);
     if (_activeDfu)
         _activeDfu->cancel();
+}
+
+void DfuThread::setActiveDfu(DfuWrapper *dfu)
+{
+    QMutexLocker lock(&_activeDfuMutex);
+    _activeDfu = dfu;
 }
 
 void DfuThread::setTempDirectory(const QString &dir)
@@ -234,7 +251,7 @@ bool DfuThread::customizeAndSendHead()
 bool DfuThread::openStreamToRawemmc()
 {
     DfuWrapper *dfu = new DfuWrapper(nullptr);
-    _activeDfu = dfu;
+    setActiveDfu(dfu);
     connect(dfu, &DfuWrapper::statusMessage, this, [this](const QString &m) {
         emit preparationStatusUpdate(m);
     });
@@ -270,7 +287,7 @@ bool DfuThread::openStreamToRawemmc()
     return true;
 
 fail:
-    _activeDfu = nullptr;
+    setActiveDfu(nullptr);
     dfu->cleanup();
     delete dfu;
     return false;
@@ -488,7 +505,14 @@ void DfuThread::_writeComplete()
         DownloadExtractThread::_writeComplete();
         return;
     }
-    if (_streamFailed || _cancelled)
+    if (_streamFailed) {
+        /* The extractor only checks a block's result before writing the next
+           one, so a failure on the last block reaches nobody but us */
+        if (!_streamErrorReported)
+            _onWriteError();
+        return;
+    }
+    if (_cancelled)
         return;
 
     /* An image that ends before the boot partition does: the head never
@@ -538,7 +562,9 @@ void DfuThread::_beforeCloseDevice()
 void DfuThread::_onDownloadError(const QString &msg)
 {
     _errorReported = true;
-    DownloadThread::_onDownloadError(msg);
+    /* DownloadExtractThread's version also wakes the extract thread, which
+       otherwise waits forever for data after a network error */
+    DownloadExtractThread::_onDownloadError(msg);
 }
 
 void DfuThread::_onWriteError()
@@ -549,6 +575,7 @@ void DfuThread::_onWriteError()
     }
     if (_cancelled || _streamErrorReported)
         return;
+    _streamErrorReported = true;
     /* "Error writing file to disk" would be wrong here: nothing was written to
        a disk, the USB transfer failed. */
     _onDownloadError(tr("DFU transfer failed: %1")
@@ -721,7 +748,7 @@ void DfuThread::closeStream()
     if (!_activeDfu)
         return;
     DfuWrapper *dfu = _activeDfu;
-    _activeDfu = nullptr;
+    setActiveDfu(nullptr);
     dfu->cleanup();
     delete dfu;
 }
@@ -768,7 +795,7 @@ bool DfuThread::runDfu(const QString &altSetting, const QString &filePath, bool 
             return false;
 
         DfuWrapper *dfu = new DfuWrapper(nullptr);
-        _activeDfu = dfu;
+        setActiveDfu(dfu);
 
         if (_cancelled) dfu->cancel();
 
@@ -783,7 +810,7 @@ bool DfuThread::runDfu(const QString &altSetting, const QString &filePath, bool 
         bool cancelled = dfu->isCancelled();
         lastError = dfu->lastError();
 
-        _activeDfu = nullptr;
+        setActiveDfu(nullptr);
         dfu->cleanup();
         delete dfu;
 
@@ -855,6 +882,26 @@ bool DfuThread::sendBootloaderFiles()
  * e.g. able to offer USB mass storage. Only a U-Boot that knows the DFU boot
  * flow (bootcmd_dfu) is taken; anything else falls back to the server.
  */
+/* Where bootloader copies are kept while a write runs: next to the cached
+   ones, not in /tmp, which can be RAM-backed */
+static QString bootloaderTempDir()
+{
+    const QString dir = QStandardPaths::writableLocation(QStandardPaths::CacheLocation)
+        + QDir::separator() + "bootloaders" + QDir::separator() + "t3-gem-o1";
+    QDir().mkpath(dir);
+    return dir;
+}
+
+/* Remove copies already made when a set could not be completed */
+static void discardBootloaderFiles(QString files[3])
+{
+    for (int i = 0; i < 3; i++) {
+        if (!files[i].isEmpty())
+            QFile::remove(files[i]);
+        files[i].clear();
+    }
+}
+
 bool DfuThread::takeBootloaderFromImage()
 {
     const QUrl url(QString::fromUtf8(_url));
@@ -889,10 +936,12 @@ bool DfuThread::takeBootloaderFromImage()
     }
 
     for (int i = 0; i < 3; i++) {
-        QTemporaryFile tmp(QDir::tempPath() + QDir::separator() + "dfu_XXXXXX");
+        QTemporaryFile tmp(bootloaderTempDir() + QDir::separator() + "dfu_XXXXXX");
         tmp.setAutoRemove(false);
         if (!tmp.open() || tmp.write(contents[i]) != contents[i].size()) {
             qDebug() << "Could not write" << names[i] << "from the image; using the server's bootloader";
+            tmp.remove();
+            discardBootloaderFiles(_bootloaderFiles);
             return false;
         }
         _bootloaderFiles[i] = tmp.fileName();
@@ -913,7 +962,7 @@ bool DfuThread::fetchBootloaderFiles()
         const QStringList names = {"tiboot3.bin", "tispl.bin", "u-boot.img"};
         for (int i = 0; i < 3; i++) {
             const QString src = localDir + QDir::separator() + names[i];
-            QTemporaryFile tmp(QDir::tempPath() + QDir::separator() + "dfu_XXXXXX");
+            QTemporaryFile tmp(bootloaderTempDir() + QDir::separator() + "dfu_XXXXXX");
             tmp.setAutoRemove(false);
             if (!tmp.open()) {
                 emit error(tr("Failed to create temp file for %1").arg(names[i]));
