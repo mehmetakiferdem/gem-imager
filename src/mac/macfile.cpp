@@ -7,6 +7,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
+#include <string.h>
 #include <sys/socket.h>
 #include <security/Authorization.h>
 #include <QDebug>
@@ -40,6 +41,8 @@ MacFile::authOpenResult MacFile::authOpen(const QByteArray &filename)
     AuthorizationExternalForm externalForm;
     if (AuthorizationMakeExternalForm(authRef, &externalForm) != 0)
     {
+        _lastError = QStringLiteral("AuthorizationMakeExternalForm() failed");
+        qDebug() << _lastError;
         AuthorizationFree(authRef, 0);
         return authOpenError;
     }
@@ -48,9 +51,34 @@ MacFile::authOpenResult MacFile::authOpen(const QByteArray &filename)
     QByteArray mode = QByteArray::number(O_RDWR);
     int pipe[2];
     int stdinpipe[2];
-    ::socketpair(AF_UNIX, SOCK_STREAM, 0, pipe);
-    ::pipe(stdinpipe);
+    if (::socketpair(AF_UNIX, SOCK_STREAM, 0, pipe) == -1)
+    {
+        _lastError = QStringLiteral("socketpair() failed: %1").arg(strerror(errno));
+        qDebug() << _lastError;
+        AuthorizationFree(authRef, 0);
+        return authOpenError;
+    }
+    if (::pipe(stdinpipe) == -1)
+    {
+        _lastError = QStringLiteral("pipe() failed: %1").arg(strerror(errno));
+        qDebug() << _lastError;
+        ::close(pipe[0]);
+        ::close(pipe[1]);
+        AuthorizationFree(authRef, 0);
+        return authOpenError;
+    }
     pid_t pid = ::fork();
+    if (pid == -1)
+    {
+        _lastError = QStringLiteral("fork() failed: %1").arg(strerror(errno));
+        qDebug() << _lastError;
+        ::close(pipe[0]);
+        ::close(pipe[1]);
+        ::close(stdinpipe[0]);
+        ::close(stdinpipe[1]);
+        AuthorizationFree(authRef, 0);
+        return authOpenError;
+    }
     if (pid == 0)
     {
         // child
@@ -108,14 +136,36 @@ MacFile::authOpenResult MacFile::authOpen(const QByteArray &filename)
             wpid = ::waitpid(pid, &status, 0);
         } while (wpid == -1 && errno == EINTR);
 
+        /* Done with the read end either way; it used to be left open, leaking
+           one descriptor per call. */
+        ::close(pipe[0]);
+
         if (wpid == -1)
         {
-            qDebug() << "waitpid() failed executing authopen";
+            _lastError = QStringLiteral("waitpid() failed executing authopen: %1").arg(strerror(errno));
+            qDebug() << _lastError;
+            if (fd != -1) ::close(fd);
+            AuthorizationFree(authRef, 0);
             return authOpenError;
         }
         if (WEXITSTATUS(status))
         {
+            /* 255 is our own exit(-1) from the child, i.e. authopen could not
+               be executed at all - a different problem from authopen running
+               and refusing. Carry the code so the caller can say which. */
+            _lastError = (WEXITSTATUS(status) == 255)
+                ? QStringLiteral("could not execute %1").arg(cmd)
+                : QStringLiteral("authopen exited with code %1").arg(WEXITSTATUS(status));
             qDebug() << "authopen returned failure code" << WEXITSTATUS(status);
+            if (fd != -1) ::close(fd);
+            AuthorizationFree(authRef, 0);
+            return authOpenError;
+        }
+        if (fd == -1)
+        {
+            _lastError = QStringLiteral("authopen succeeded but passed no file descriptor");
+            qDebug() << _lastError;
+            AuthorizationFree(authRef, 0);
             return authOpenError;
         }
 

@@ -19,8 +19,6 @@
 /**********************************************************
 *	Compiler Constants
 **********************************************************/
-#define encrypt(input, key, output) (des(input, key, output, ENCRYPT))
-#define decrypt(input, key, output) (des(input, key, output, DECRYPT))
 
 
 /**********************************************************

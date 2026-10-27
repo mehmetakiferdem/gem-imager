@@ -2,7 +2,6 @@
    Released into the Public Domain by Ulrich Drepper <drepper@redhat.com>.  */
 #include "shacrypt.h"   
 
-extern char* stpncpy(char* dest, const char* src, size_t n);
    /* Structure to save state of computation between the single steps.  */
    struct sha512_ctx {
        uint64_t H[8];
@@ -364,7 +363,7 @@ extern char* stpncpy(char* dest, const char* src, size_t n);
        /* Create byte sequence P.  */
        cp = p_bytes = alloca(key_len);
        for (cnt = key_len; cnt >= 64; cnt -= 64)
-       cp = mempcpy(cp, temp_result, 64);
+       cp = crypt_mempcpy(cp, temp_result, 64);
        memcpy(cp, temp_result, cnt);
        /* Start computation of S byte sequence.  */
        sha512_init_ctx(&alt_ctx);
@@ -376,7 +375,7 @@ extern char* stpncpy(char* dest, const char* src, size_t n);
        /* Create byte sequence S.  */
        cp = s_bytes = alloca(salt_len);
        for (cnt = salt_len; cnt >= 64; cnt -= 64)
-       cp = mempcpy(cp, temp_result, 64);
+       cp = crypt_mempcpy(cp, temp_result, 64);
        memcpy(cp, temp_result, cnt);
        /* Repeatedly run the collected hash value through SHA512 to burn
           CPU cycles.  */
@@ -404,7 +403,7 @@ extern char* stpncpy(char* dest, const char* src, size_t n);
        }
        /* Now we can construct the result string.  It consists of three
           parts.  */
-       cp = stpncpy(buffer, sha512_salt_prefix, MAX(0, buflen));
+       cp = crypt_stpncpy(buffer, sha512_salt_prefix, MAX(0, buflen));
        buflen -= sizeof(sha512_salt_prefix) - 1;
        if (rounds_custom) {
        int n = snprintf(cp, MAX(0, buflen), "%s%zu$",
@@ -412,7 +411,7 @@ extern char* stpncpy(char* dest, const char* src, size_t n);
        cp += n;
        buflen -= n;
        }
-       cp = stpncpy(cp, salt, MIN((size_t) MAX(0, buflen), salt_len));
+       cp = crypt_stpncpy(cp, salt, MIN((size_t) MAX(0, buflen), salt_len));
        buflen -= MIN((size_t) MAX(0, buflen), salt_len);
        if (buflen > 0) {
        *cp++ = '$';

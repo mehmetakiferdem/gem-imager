@@ -6,4 +6,12 @@ if [ ! -x /usr/bin/gem-imager ]; then
     chmod +x /usr/bin/gem-imager
 fi
 
+# Broken rule installed by the app in older versions (99- prefix defeated uaccess)
+rm -f /etc/udev/rules.d/99-gem-imager-dfu.rules
+
+if command -v udevadm >/dev/null 2>&1; then
+    udevadm control --reload-rules || true
+    udevadm trigger --subsystem-match=usb || true
+fi
+
 #DEBHELPER#

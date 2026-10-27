@@ -7,4 +7,4 @@ debian/gem-imager.png /usr/share/icons/hicolor/128x128/apps/
 debian/*.desktop /usr/share/applications/
 debian/*.metainfo.xml /usr/share/metainfo/
 debian/*.policy /usr/share/polkit-1/actions/
-src/linux/99-gem-imager-dfu.rules => /usr/lib/udev/rules.d/99-gem-imager-dfu.rules
+src/linux/60-gem-imager-dfu.rules => /usr/lib/udev/rules.d/60-gem-imager-dfu.rules

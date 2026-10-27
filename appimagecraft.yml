@@ -7,9 +7,10 @@ project:
 build:
   cmake:
     source_dir: src/
-    # You should also set your Qt6_ROOT here, like so:
+    # QT6_ROOT must be exported before running appimagecraft, e.g.:
+    #   export QT6_ROOT=$HOME/Qt/6.7.3/gcc_64
     extra_variables:
-    - Qt6_ROOT=/opt/Qt/6.7.3/gcc_64
+    - Qt6_ROOT="${QT6_ROOT:?QT6_ROOT is not set - export it to your Qt installation, e.g. export QT6_ROOT=$HOME/Qt/6.7.3/gcc_64}"
     environment:
       BUILD_TYPE: MinSizeRel
 
@@ -19,6 +20,10 @@ appimage:
       - qt
     raw_environment:
       QML_SOURCES_PATHS: "\"$PROJECT_ROOT\"/src/qmlcomponents/"
+      # linuxdeploy resolves the binary's dependencies via the dynamic
+      # linker search path; the Qt lib dir must be on it, otherwise
+      # deployment fails with e.g. "Could not find dependency: libQt6SerialPort.so.6".
+      LD_LIBRARY_PATH: "$QT6_ROOT/lib:$LD_LIBRARY_PATH"
     extra_args: --exclude-library "libwayland-*"
     environment:
       # Disable Wayland back-end until the dependency problem gets resolved.
@@ -27,7 +32,7 @@ appimage:
       # This is deleterious - because the the runtime OS graphics stack also depends on that
       # library to create native window types. With no strong ABI versioning on that library,
       # you wind up with exotic symbol resolution failures at runtime.
-      # See-Also: 
+      # See-Also:
       # EXTRA_PLATFORM_PLUGINS: "libqwayland-egl.so;libqwayland-generic.so"
       # EXTRA_QT_PLUGINS: "waylandcompositor"
-      QMAKE: "/opt/Qt/6.7.3/gcc_64/bin/qmake"
+      QMAKE: "$QT6_ROOT/bin/qmake"

@@ -20,22 +20,23 @@ jobs:
           sudo wget -O ${{ runner.temp }}/appimagecraft.AppImage https://github.com/TheAssassin/appimagecraft/releases/download/continuous/appimagecraft-x86_64.AppImage
           sudo chmod +x ${{ runner.temp }}/appimagecraft.AppImage
       - name: Install Qt
-        uses: jurplel/install-qt-action@v3
+        uses: jurplel/install-qt-action@v4
         with:
-          aqtversion: '==3.1.*'
+          aqtversion: '>=3.2.0'
           version: '6.7.3'
           host: 'linux'
           target: 'desktop'
           arch: 'linux_gcc_64'
           modules: 'qtimageformats qtpdf qtserialport qtvirtualkeyboard qtquick3d'
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Build
         id: build
         run: |
-            export Qt6_ROOT="$Qt6_DIR"
-            export QMAKE="$Qt6_DIR/bin/qmake"
-            export LD_LIBRARY_PATH="$Qt6_DIR/lib"
+            # install-qt-action v4 exports QT_ROOT_DIR instead of Qt6_DIR
+            export Qt6_ROOT="$QT_ROOT_DIR"
+            export QMAKE="$QT_ROOT_DIR/bin/qmake"
+            export LD_LIBRARY_PATH="$QT_ROOT_DIR/lib"
 
             sed -i "s@Qt6_ROOT=.*@Qt6_ROOT=\"$Qt6_ROOT\"@" appimagecraft.yml
             sed -i "s@QMAKE: .*@QMAKE: \"$QMAKE\"@" appimagecraft.yml
@@ -45,7 +46,7 @@ jobs:
             tee -a "${GITHUB_OUTPUT}" <<< gemImagerVersion="$imager_version"
             mv Gemstone_Imager-${imager_version}-x86_64.AppImage GemImager-${imager_version}.AppImage
       - name: Upload AppImage
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: GemImager Linux ${{ steps.build.outputs.gemImagerVersion }}
           path: GemImager-${{ steps.build.outputs.gemImagerVersion }}.AppImage
@@ -55,9 +56,9 @@ jobs:
     defaults: { run: { shell: cmd } }
     steps:
       - name: Install Qt
-        uses: jurplel/install-qt-action@v3
+        uses: jurplel/install-qt-action@v4
         with:
-          aqtversion: '==3.1.*'
+          aqtversion: '>=3.2.0'
           version: '6.7.3'
           host: 'windows'
           target: 'desktop'
@@ -73,25 +74,25 @@ jobs:
           scoop bucket add extras
           scoop install nsis
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Set MINGW64_ROOT
         shell: powershell
         run: |
-          $mingw_dir = (Resolve-Path "$($env:Qt6_DIR)\..\..\Tools\mingw1120_64").Path -replace '\\', '/'
+          $mingw_dir = (Resolve-Path "$($env:QT_ROOT_DIR)\..\..\Tools\mingw1120_64").Path -replace '\\', '/'
           (Get-Content "src\CMakeLists.txt") -replace 'set\(MINGW64_ROOT "C:/Qt/Tools/mingw1120_64"', "set(MINGW64_ROOT `"$mingw_dir`"" | Set-Content "src\CMakeLists.txt"
       - name: Configure
         id: build
         run: |
-            set Path=%Qt6_DIR%\..\..\Tools\mingw1120_64\bin;%Path%
+            set Path=%QT_ROOT_DIR%\..\..\Tools\mingw1120_64\bin;%Path%
             cmake -S "%GITHUB_WORKSPACE%\src" -B "%GITHUB_WORKSPACE%\build" ^
-              -DQT_QMAKE_EXECUTABLE:FILEPATH="%Qt6_DIR%\bin\qmake.exe" ^
+              -DQT_QMAKE_EXECUTABLE:FILEPATH="%QT_ROOT_DIR%\bin\qmake.exe" ^
               -DCMAKE_BUILD_TYPE:STRING=Release ^
-              -DCMAKE_PREFIX_PATH:PATH="%Qt6_DIR%" ^
+              -DCMAKE_PREFIX_PATH:PATH="%QT_ROOT_DIR%" ^
               -DCMAKE_GENERATOR:STRING=Ninja ^
               -G "Ninja"
       - name: Build
         run: |
-          set Path=%Qt6_DIR%\..\..\Tools\mingw1120_64\bin;%Path%
+          set Path=%QT_ROOT_DIR%\..\..\Tools\mingw1120_64\bin;%Path%
           cmake --build "%GITHUB_WORKSPACE%\build" --parallel
       - name: Make NSIS installer
         run: |
@@ -104,7 +105,149 @@ jobs:
           mv $GITHUB_WORKSPACE/build/gem-imager-${version}.exe $GITHUB_WORKSPACE/build/GemImager-${version}.exe
           tee -a "${GITHUB_OUTPUT}" <<< gemImagerVersion="$version"
       - name: Upload installer
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: GemImager Windows ${{ steps.getversion.outputs.gemImagerVersion }}
           path: ${{ github.workspace }}\build\GemImager-${{ steps.getversion.outputs.gemImagerVersion }}.exe
+
+  macos:
+    runs-on: macos-14
+    steps:
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v4
+        with:
+          aqtversion: '>=3.2.0'
+          version: '6.7.3'
+          host: 'mac'
+          target: 'desktop'
+          arch: 'clang_64'
+          modules: 'qtimageformats qtpdf qtserialport qtvirtualkeyboard qtquick3d'
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      # macOS keys a privacy (TCC) grant to the code signature, so on an
+      # unsigned build the grant breaks on every rebuild as the cdhash changes
+      # and the user has to re-add the app to Full Disk Access by hand. Sign
+      # with a Developer ID and notarize whenever the secrets are configured;
+      # fall back to an unsigned build (forks, PRs) so the job never blocks.
+      - name: Check for signing credentials
+        id: signing
+        env:
+          MACOS_CERTIFICATE: ${{ secrets.MACOS_CERTIFICATE }}
+          MACOS_SIGNING_IDENTITY: ${{ secrets.MACOS_SIGNING_IDENTITY }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_API_KEY_P8_BASE64: ${{ secrets.APPLE_API_KEY_P8_BASE64 }}
+        run: |
+          if [ -n "$MACOS_CERTIFICATE" ] && [ -n "$MACOS_SIGNING_IDENTITY" ]; then
+            echo "sign=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "sign=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::MACOS_CERTIFICATE/MACOS_SIGNING_IDENTITY not set - producing an UNSIGNED build. Users will have to grant Full Disk Access by hand, and the grant will not survive an update."
+          fi
+          # Notarisation is optional: signing alone is enough for a locally
+          # built app, because a bundle that was never downloaded carries no
+          # quarantine attribute for Gatekeeper to check. A DMG handed to
+          # someone else does need it. Either an App Store Connect API key or
+          # an Apple ID with an app-specific password will do.
+          if [ -n "$APPLE_API_KEY_P8_BASE64" ] || [ -n "$APPLE_ID" ]; then
+            echo "notarize=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "notarize=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Import Developer ID certificate
+        if: steps.signing.outputs.sign == 'true'
+        env:
+          MACOS_CERTIFICATE: ${{ secrets.MACOS_CERTIFICATE }}
+          MACOS_CERTIFICATE_PWD: ${{ secrets.MACOS_CERTIFICATE_PWD }}
+        run: |
+          KEYCHAIN="$RUNNER_TEMP/signing.keychain-db"
+          KEYCHAIN_PWD="$(uuidgen)"
+          echo "$MACOS_CERTIFICATE" | base64 --decode > "$RUNNER_TEMP/cert.p12"
+          security create-keychain -p "$KEYCHAIN_PWD" "$KEYCHAIN"
+          security set-keychain-settings -lut 3600 "$KEYCHAIN"
+          security unlock-keychain -p "$KEYCHAIN_PWD" "$KEYCHAIN"
+          security import "$RUNNER_TEMP/cert.p12" -k "$KEYCHAIN" \
+            -P "$MACOS_CERTIFICATE_PWD" -T /usr/bin/codesign -T /usr/bin/security
+          # Without this codesign blocks on a GUI prompt for the private key
+          security set-key-partition-list -S apple-tool:,apple:,codesign: \
+            -s -k "$KEYCHAIN_PWD" "$KEYCHAIN" >/dev/null
+          security list-keychain -d user -s "$KEYCHAIN" login.keychain-db
+          rm -f "$RUNNER_TEMP/cert.p12"
+          security find-identity -v -p codesigning "$KEYCHAIN"
+
+      - name: Configure
+        run: |
+          EXTRA=()
+          if [ "${{ steps.signing.outputs.sign }}" = "true" ]; then
+            EXTRA+=(-DIMAGER_SIGNED_APP:BOOL=ON)
+            EXTRA+=(-DIMAGER_SIGNING_IDENTITY:STRING="${{ secrets.MACOS_SIGNING_IDENTITY }}")
+          fi
+          # Notarisation is driven from the steps below rather than from
+          # CMake's IMAGER_NOTARIZE_APP, which expects a notarytool keychain
+          # profile to have been stored beforehand.
+          cmake -S "$GITHUB_WORKSPACE/src" -B "$GITHUB_WORKSPACE/build" \
+            -DCMAKE_BUILD_TYPE:STRING=Release \
+            -DCMAKE_PREFIX_PATH:PATH="$QT_ROOT_DIR" \
+            -DQt6_ROOT:PATH="$QT_ROOT_DIR" \
+            -DQT_QMAKE_EXECUTABLE:FILEPATH="$QT_ROOT_DIR/bin/qmake" \
+            "${EXTRA[@]}"
+      - name: Build
+        run: cmake --build "$GITHUB_WORKSPACE/build" --parallel
+      - name: Get project version
+        id: getversion
+        run: |
+          version=$(grep IMAGER_VERSION_STR "$GITHUB_WORKSPACE/build/CMakeCache.txt" | cut -d '=' -f 2)
+          mv "$GITHUB_WORKSPACE/build/GemstoneImager-${version}.dmg" "$GITHUB_WORKSPACE/build/GemImager-${version}.dmg"
+          tee -a "${GITHUB_OUTPUT}" <<< gemImagerVersion="$version"
+
+      - name: Notarize and staple
+        if: steps.signing.outputs.sign == 'true' && steps.signing.outputs.notarize == 'true'
+        env:
+          APPLE_API_KEY_P8_BASE64: ${{ secrets.APPLE_API_KEY_P8_BASE64 }}
+          APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
+          APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          APPLE_APP_PASSWORD: ${{ secrets.APPLE_APP_PASSWORD }}
+        run: |
+          DMG="$GITHUB_WORKSPACE/build/GemImager-${{ steps.getversion.outputs.gemImagerVersion }}.dmg"
+          if [ -n "$APPLE_API_KEY_P8_BASE64" ]; then
+            KEY="$RUNNER_TEMP/AuthKey_${APPLE_API_KEY_ID}.p8"
+            echo "$APPLE_API_KEY_P8_BASE64" | base64 --decode > "$KEY"
+            xcrun notarytool submit "$DMG" --wait --output-format json \
+              --key "$KEY" --key-id "$APPLE_API_KEY_ID" --issuer "$APPLE_API_ISSUER" \
+              | tee "$RUNNER_TEMP/notary.json"
+            rm -f "$KEY"
+          else
+            xcrun notarytool submit "$DMG" --wait --output-format json \
+              --apple-id "$APPLE_ID" --team-id "$APPLE_TEAM_ID" --password "$APPLE_APP_PASSWORD" \
+              | tee "$RUNNER_TEMP/notary.json"
+          fi
+          # notarytool exits 0 even when Apple rejects the upload
+          grep -q '"status" *: *"Accepted"' "$RUNNER_TEMP/notary.json"
+          # Staple the ticket so Gatekeeper accepts the DMG offline
+          xcrun stapler staple "$DMG"
+
+      - name: Verify signature
+        if: steps.signing.outputs.sign == 'true'
+        run: |
+          DMG="$GITHUB_WORKSPACE/build/GemImager-${{ steps.getversion.outputs.gemImagerVersion }}.dmg"
+          APP="$GITHUB_WORKSPACE/build/GemstoneImager.app"
+          # The bundle is what has to be signed inside-out; verify it strictly
+          codesign --verify --deep --strict --verbose=2 "$APP"
+          codesign -dv --verbose=4 "$APP" 2>&1 | grep -E 'Authority|TeamIdentifier|Timestamp|flags'
+          codesign --verify --verbose=2 "$DMG"
+          if [ "${{ steps.signing.outputs.notarize }}" = "true" ]; then
+            # Gatekeeper's own verdict; only meaningful once notarized
+            spctl --assess --type open --context context:primary-signature -vv "$DMG"
+            xcrun stapler validate "$DMG"
+          else
+            echo "::warning::Signed but not notarized (no APPLE_API_KEY_P8_BASE64 or APPLE_ID). Gatekeeper will refuse this DMG on a user's machine."
+          fi
+
+      - name: Upload DMG
+        uses: actions/upload-artifact@v6
+        with:
+          name: GemImager macOS ${{ steps.getversion.outputs.gemImagerVersion }}
+          path: build/GemImager-${{ steps.getversion.outputs.gemImagerVersion }}.dmg
