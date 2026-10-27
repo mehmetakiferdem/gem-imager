@@ -5,6 +5,7 @@
 
 #include "dfuthread.h"
 #include "dfuwrapper.h"
+#include "dfudriver.h"
 #include "config.h"
 #include "downloadextractthread.h"
 #include <QFile>
@@ -130,6 +131,17 @@ void DfuThread::run()
     if (!fetchBootloaderFiles()) return;
     if (_cancelled) { emit error(tr("Cancelled")); return; }
 
+    /* A missing Windows driver makes every stage below fail after its own
+       retries, so check for it once here rather than letting the user wait out
+       three rounds of that and then read a libusb error. A device that is not
+       attached yet is not an error: the retry loops wait for it on purpose. */
+    const QString driverHint = DfuDriver::missingDriverHint(DfuWrapper::TI_VENDOR_ID,
+                                                            DfuWrapper::TI_PRODUCT_ID);
+    if (!driverHint.isEmpty()) {
+        emit error(driverHint);
+        return;
+    }
+
     emit dfuProgress(45, tr("Sending bootloader files..."));
     if (!sendBootloaderFiles()) return;
     if (_cancelled) { emit error(tr("Cancelled")); return; }
@@ -216,9 +228,17 @@ bool DfuThread::runDfu(const QString &altSetting, const QString &filePath, bool 
         }
     }
 
-    emit error(tr("DFU transfer failed while sending %1: %2<br><br>"
-                  "Power off the board, set the boot switches to DFU mode again, "
-                  "restore power and retry.").arg(altSetting, lastError));
+    /* The driver can be unbound mid-run (the board re-enumerates between
+       stages), and then power cycling is the wrong advice. */
+    const QString driverHint = DfuDriver::missingDriverHint(DfuWrapper::TI_VENDOR_ID,
+                                                            DfuWrapper::TI_PRODUCT_ID);
+    if (!driverHint.isEmpty())
+        emit error(tr("DFU transfer failed while sending %1: %2<br><br>%3")
+                   .arg(altSetting, lastError, driverHint));
+    else
+        emit error(tr("DFU transfer failed while sending %1: %2<br><br>"
+                      "Power off the board, set the boot switches to DFU mode again, "
+                      "restore power and retry.").arg(altSetting, lastError));
     return false;
 }
 
