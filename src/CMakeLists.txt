@@ -530,7 +530,7 @@ else()
 
     install(TARGETS ${PROJECT_NAME} DESTINATION bin)
     install(TARGETS simpbootp DESTINATION bin)
-    install(FILES "${CMAKE_CURRENT_LIST_DIR}/../debian/gem-imager.png" DESTINATION share/icons/hicolor/128x128/apps)
+    install(FILES "${CMAKE_CURRENT_LIST_DIR}/../debian/gem-imager.png" DESTINATION share/icons/hicolor/256x256/apps)
     install(FILES "linux/org.t3gemstone.gem-imager.desktop" DESTINATION share/applications)
     install(FILES "${CMAKE_CURRENT_LIST_DIR}/../debian/gem-imager.metainfo.xml" DESTINATION share/metainfo)
 endif()
