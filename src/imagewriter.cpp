@@ -309,15 +309,7 @@ void ImageWriter::setBootloaderHashes(const QByteArray &tiboot3Hash, const QByte
      QByteArray urlstr = _src.toString(_src.FullyEncoded).toLatin1();
      QString lowercaseurl = urlstr.toLower();
      bool compressed = lowercaseurl.endsWith(".zip") || lowercaseurl.endsWith(".xz") || lowercaseurl.endsWith(".bz2") || lowercaseurl.endsWith(".gz") || lowercaseurl.endsWith(".7z") || lowercaseurl.endsWith(".zst") || lowercaseurl.endsWith(".cache");
-     if (!_extrLen && _src.isLocalFile())
-     {
-         if (!compressed)
-             _extrLen = _downloadLen;
-         else if (lowercaseurl.endsWith(".zip"))
-             _parseCompressedFile();
-         else if (lowercaseurl.endsWith(".xz"))
-             _parseXZFile();
-     }
+     _determineLocalImageSize();
  
      if (_devLen && _extrLen > _devLen)
      {
@@ -997,8 +989,30 @@ bool ImageWriter::customizationWritesToImage() const
     return false;
 }
 
+/* The uncompressed size of a local image file, where it can be read without
+   extracting it: the file itself, or the index of a .zip or .xz. Images from
+   the OS list carry it in the list already. */
+void ImageWriter::_determineLocalImageSize()
+{
+    if (_extrLen || !_src.isLocalFile())
+        return;
+
+    const QString lowercaseurl = _src.toString(_src.FullyEncoded).toLower();
+    const bool compressed = lowercaseurl.endsWith(".zip") || lowercaseurl.endsWith(".xz") || lowercaseurl.endsWith(".bz2") || lowercaseurl.endsWith(".gz") || lowercaseurl.endsWith(".7z") || lowercaseurl.endsWith(".zst") || lowercaseurl.endsWith(".cache");
+    if (!compressed)
+        _extrLen = _downloadLen;
+    else if (lowercaseurl.endsWith(".zip"))
+        _parseCompressedFile();
+    else if (lowercaseurl.endsWith(".xz"))
+        _parseXZFile();
+}
+
 void ImageWriter::_startDfuThread()
 {
+    /* Without this a local file was never streamed: DFU went the temp-file
+       way, extracting the whole image to disk first. */
+    _determineLocalImageSize();
+
     QByteArray urlstr = _src.toString(_src.FullyEncoded).toLatin1();
 
     bool usingCachedImage = (!_expectedHash.isEmpty() && _cachedFileHash == _expectedHash);

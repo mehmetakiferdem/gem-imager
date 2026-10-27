@@ -363,46 +363,50 @@ void DfuThread::run()
     }
 
     /*
-     * The bootloader stage runs first on every path: streaming and mass storage
-     * both need U-Boot up before the image starts to arrive, and the temp-file
-     * path loses nothing by having U-Boot wait for it.
+     * Streaming and mass storage both need U-Boot up before the image starts
+     * to arrive, so the bootloader stage runs first for them. The temp-file
+     * path sends it only once the image is extracted: left waiting in DFU
+     * mode through a long extraction, the transfer then failed with
+     * LIBUSB_ERROR_PIPE on Windows.
      */
-    if (!prepareDeviceForImage()) return;
+    if (_streaming) {
+        if (!prepareDeviceForImage()) return;
 
-    switch (switchToMassStorage()) {
-    case UmsResult::Failed:
-        return;   /* already reported; the board has left DFU mode */
-    case UmsResult::Ready:
-        _headPending = false;   /* the disk is customized in place */
-        emit dfuProgress(80, tr("Writing image to the board over USB mass storage..."));
-        DownloadExtractThread::run();
-        waitForExtractThread();
-        if (_errorReported) return;
-        if (_cancelled) { emit error(tr("Cancelled")); return; }
-        if (!_successful) return;
+        switch (switchToMassStorage()) {
+        case UmsResult::Failed:
+            return;   /* already reported; the board has left DFU mode */
+        case UmsResult::Ready:
+            _headPending = false;   /* the disk is customized in place */
+            emit dfuProgress(80, tr("Writing image to the board over USB mass storage..."));
+            DownloadExtractThread::run();
+            waitForExtractThread();
+            if (_errorReported) return;
+            if (_cancelled) { emit error(tr("Cancelled")); return; }
+            if (!_successful) return;
 #ifdef Q_OS_WIN
-        {
-            /* The eject after writing only covers volumes with a drive letter,
-               and a freshly written disk may have none yet. U-Boot leaves
-               mass storage mode, and goes on to write the boot binaries, only
-               on a SCSI eject, so send one to the disk itself. */
-            HANDLE h = CreateFileA(_filename.constData(), GENERIC_READ | GENERIC_WRITE,
-                                   FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 0, NULL);
-            if (h != INVALID_HANDLE_VALUE) {
-                DWORD unused;
-                DeviceIoControl(h, IOCTL_STORAGE_EJECT_MEDIA, NULL, 0, NULL, 0, &unused, NULL);
-                CloseHandle(h);
+            {
+                /* The eject after writing only covers volumes with a drive letter,
+                   and a freshly written disk may have none yet. U-Boot leaves
+                   mass storage mode, and goes on to write the boot binaries, only
+                   on a SCSI eject, so send one to the disk itself. */
+                HANDLE h = CreateFileA(_filename.constData(), GENERIC_READ | GENERIC_WRITE,
+                                       FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 0, NULL);
+                if (h != INVALID_HANDLE_VALUE) {
+                    DWORD unused;
+                    DeviceIoControl(h, IOCTL_STORAGE_EJECT_MEDIA, NULL, 0, NULL, 0, &unused, NULL);
+                    CloseHandle(h);
+                }
             }
-        }
 #endif
-        if (!waitForBoardToLeaveUsb(true)) return;
-        emit dfuProgress(100, tr("Image written to eMMC successfully! Power off the board "
-                                 "and switch the boot mode to eMMC."));
-        QThread::msleep(1000);
-        emit success();
-        return;
-    case UmsResult::Unavailable:
-        break;   /* an older U-Boot: send the image over DFU */
+            if (!waitForBoardToLeaveUsb(true)) return;
+            emit dfuProgress(100, tr("Image written to eMMC successfully! Power off the board "
+                                     "and switch the boot mode to eMMC."));
+            QThread::msleep(1000);
+            emit success();
+            return;
+        case UmsResult::Unavailable:
+            break;   /* an older U-Boot: send the image over DFU */
+        }
     }
 
     /*
@@ -453,6 +457,8 @@ void DfuThread::run()
     if (_cancelled) { emit error(tr("Cancelled")); return; }
 
     if (!_streaming) {
+        if (!prepareDeviceForImage()) return;
+
         emit dfuProgress(80, tr("Sending image to device (this may take several minutes)..."));
         if (!sendImageToRawemmc()) return;
     }

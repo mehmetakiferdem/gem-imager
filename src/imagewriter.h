@@ -233,6 +233,7 @@ protected:
 
     void _parseCompressedFile();
     void _parseXZFile();
+    void _determineLocalImageSize();
     bool customizationWritesToImage() const;
     void _startDfuThread();
     QString _pubKeyFileName();
