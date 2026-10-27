@@ -179,7 +179,7 @@ set(CURL_INCLUDE_DIR ${CMAKE_CURRENT_LIST_DIR}/dependencies/curl-8.11.0/include)
 set(CURL_INCLUDE_DIRS ${CMAKE_CURRENT_LIST_DIR}/dependencies/curl-8.11.0/include)
 
 # Adding headers explicity so they are displayed in Qt Creator
-set(HEADERS config.h imagewriter.h networkaccessmanagerfactory.h nan.h drivelistitem.h drivelistmodel.h drivelistmodelpollthread.h driveformatthread.h powersaveblocker.h cli.h
+set(HEADERS config.h imagewriter.h networkaccessmanagerfactory.h nan.h drivelistitem.h drivelistmodel.h drivelistmodelpollthread.h driveformatthread.h powersaveblocker.h cli.h crashlog.h
     devicewrapper.h devicewrapperblockcacheentry.h devicewrapperpartition.h devicewrapperstructs.h devicewrapperfatpartition.h wlancredentials.h
     downloadthread.h downloadextractthread.h localfileextractthread.h downloadstatstelemetry.h dfuthread.h dfudriver.h dependencies/mountutils/src/mountutils.hpp 
     dependencies/crypt/sha256crypt.h dependencies/crypt/des.h dependencies/crypt/sha512crypt.h dependencies/crypt/shacrypt.h
@@ -259,7 +259,7 @@ set(SOURCES ${PLATFORM_SOURCES} "main.cpp" "imagewriter.cpp" "networkaccessmanag
     "drivelistitem.cpp" "drivelistmodel.cpp" "drivelistmodelpollthread.cpp" "downloadthread.cpp" "downloadextractthread.cpp"
     "devicewrapper.cpp" "devicewrapperblockcacheentry.cpp" "devicewrapperpartition.cpp" "devicewrapperfatpartition.cpp"
     "driveformatthread.cpp" "localfileextractthread.cpp" "powersaveblocker.cpp" "downloadstatstelemetry.cpp" "dfuthread.cpp" "dfuwrapper.cpp" "dfudriver.cpp" "qml.qrc"
-    "dependencies/crypt/sha256crypt.c" "dependencies/crypt/des.cpp" "dependencies/crypt/sha512crypt.c" "cli.cpp"
+    "dependencies/crypt/sha256crypt.c" "dependencies/crypt/des.cpp" "dependencies/crypt/sha512crypt.c" "cli.cpp" "crashlog.cpp"
     "dependencies/qtxmodem/crc16-xmodem.cpp" "dependencies/qtxmodem/transfer.cpp")
 
 find_package(Qt6 6.7 QUIET COMPONENTS Core Quick LinguistTools Svg OPTIONAL_COMPONENTS Widgets DBus WinExtras SerialPort)

@@ -1541,11 +1541,17 @@ void ImageWriter::_startDfuThread()
      _cloudinitNetwork = cloudinitNetwork;
      _geminit = geminit;
  
-     qDebug() << "Custom config.txt entries:" << config;
-     qDebug() << "Custom cmdline.txt entries:" << cmdline;
-     qDebug() << "Custom firstuse.sh:" << firstrun;
-     qDebug() << "Cloudinit:" << cloudinit;
-     qDebug() << "GemInit:" << geminit;
+     /* Only what was set, never the values: these carry password hashes and
+        the WiFi and VNC passwords, and the log is written to disk. */
+     QStringList geminitKeys;
+     for (const QByteArray &line : geminit.split('\n')) {
+         const int eq = line.indexOf('=');
+         if (eq > 0)
+             geminitKeys << QString::fromLatin1(line.left(eq).trimmed());
+     }
+     qDebug() << "Customization: config.txt" << config.size() << "bytes, cmdline.txt" << cmdline.size()
+              << "bytes, firstrun.sh" << firstrun.size() << "bytes, cloud-init" << cloudinit.size()
+              << "+" << cloudinitNetwork.size() << "bytes, geminit keys:" << geminitKeys.join(QLatin1Char(','));
  }
  
  QString ImageWriter::crypt6(const QByteArray &password)
