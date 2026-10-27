@@ -29,6 +29,7 @@
  #include <QRegularExpression>
  #include <QStandardPaths>
  #include <QStorageInfo>
+ #include <QTemporaryFile>
  #include <QTimeZone>
  #include <QWindow>
  #include <QGuiApplication>
@@ -308,15 +309,7 @@ void ImageWriter::setBootloaderHashes(const QByteArray &tiboot3Hash, const QByte
      QByteArray urlstr = _src.toString(_src.FullyEncoded).toLatin1();
      QString lowercaseurl = urlstr.toLower();
      bool compressed = lowercaseurl.endsWith(".zip") || lowercaseurl.endsWith(".xz") || lowercaseurl.endsWith(".bz2") || lowercaseurl.endsWith(".gz") || lowercaseurl.endsWith(".7z") || lowercaseurl.endsWith(".zst") || lowercaseurl.endsWith(".cache");
-     if (!_extrLen && _src.isLocalFile())
-     {
-         if (!compressed)
-             _extrLen = _downloadLen;
-         else if (lowercaseurl.endsWith(".zip"))
-             _parseCompressedFile();
-         else if (lowercaseurl.endsWith(".xz"))
-             _parseXZFile();
-     }
+     _determineLocalImageSize();
  
      if (_devLen && _extrLen > _devLen)
      {
@@ -334,8 +327,10 @@ void ImageWriter::setBootloaderHashes(const QByteArray &tiboot3Hash, const QByte
      {
          // Use cached file
          urlstr = QUrl::fromLocalFile(_cacheFileName).toString(_src.FullyEncoded).toLatin1();
+         emit preparationStatusUpdate(tr("Image found in cache, skipping download"));
      }
- 
+     _networkDownload = !QUrl(urlstr).isLocalFile();
+
      auto findBoardName = [this, &urlstr]() -> QByteArray
      {
          QString board_name{};
@@ -514,6 +509,13 @@ void ImageWriter::setBootloaderHashes(const QByteArray &tiboot3Hash, const QByte
  {
      return !sha256.isEmpty() && _cachedFileHash == sha256;
  }
+
+/* Return true if the current write fetches the image over the network
+   (as opposed to reading a local file or the disk cache) */
+bool ImageWriter::isNetworkDownload()
+{
+    return _networkDownload;
+}
  
  /* Utility function to return filename part from URL */
  QString ImageWriter::fileNameFromUrl(const QUrl &url)
@@ -890,9 +892,9 @@ void ImageWriter::startDfu()
     if (::geteuid() != 0)
     {
         bool udevRulesInstalled =
-            QFile::exists("/usr/lib/udev/rules.d/99-gem-imager-dfu.rules") ||
-            QFile::exists("/lib/udev/rules.d/99-gem-imager-dfu.rules")     ||
-            QFile::exists("/etc/udev/rules.d/99-gem-imager-dfu.rules");
+            QFile::exists("/usr/lib/udev/rules.d/60-gem-imager-dfu.rules") ||
+            QFile::exists("/lib/udev/rules.d/60-gem-imager-dfu.rules")     ||
+            QFile::exists("/etc/udev/rules.d/60-gem-imager-dfu.rules");
 
         if (!udevRulesInstalled)
         {
@@ -923,11 +925,246 @@ void ImageWriter::startDfu()
     _startDfuThread();
 }
 
+/*
+ * Whether anything actually has to be written into the image.
+ *
+ * Not the same question as "did the user touch the options dialog":
+ * OptionsPopup::applySettings() always emits a fixed set of geminit lines
+ * before adding anything the user asked for - "firstboot=1" plus a
+ * "<feature>=0" for each feature left switched off - and the write flow always
+ * calls applySettings(), so geminit is never empty.
+ *
+ * None of those defaults does anything. gem-first-boot sources
+ * /boot/config.ini, and with firstboot set but no hostname, userpasswd or wifi
+ * keys the block applies nothing and then deletes the line; "vnc=0" needs a
+ * vncpassword that is not there; and cryptsetup, writeimagetommc,
+ * storagegadget, ethernetgadget and serialgadgets have no reader at all in the
+ * distro overlays. Nothing outside that block depends on the file existing, so
+ * an image flashed without it reaches the same state - which means the boot
+ * partition need not be held back and customized on the way.
+ *
+ * The rule is deliberately about the value rather than a list of key names: a
+ * feature switched off reads the same as a feature that was never mentioned.
+ * A key set to anything else counts as customization, so a new option added
+ * later errs towards customizing rather than being dropped silently.
+ */
+bool ImageWriter::customizationWritesToImage() const
+{
+    /*
+     * Only what DownloadThread::_customizeImage() actually writes for this
+     * init format counts. OptionsPopup fills firstrun and cloud-init whenever
+     * "set username and password" is ticked - which it is by default - but a
+     * geminit image never receives either, so they must not decide anything.
+     */
+    const bool anyFormat = _initFormat == "auto";
+    if (!_config.isEmpty() || !_cmdline.isEmpty())
+    {
+        qDebug() << "Customizing: config.txt/cmdline.txt content is set";
+        return true;
+    }
+    if ((anyFormat || _initFormat == "systemd") && !_firstrun.isEmpty())
+    {
+        qDebug() << "Customizing: firstrun.sh is set";
+        return true;
+    }
+    if ((anyFormat || _initFormat == "cloudinit") && (!_cloudinit.isEmpty() || !_cloudinitNetwork.isEmpty()))
+    {
+        qDebug() << "Customizing: cloud-init content is set";
+        return true;
+    }
+    if (_initFormat != "geminit")
+        return false;
+
+    static const QRegularExpression featureOff(QStringLiteral("^[A-Za-z0-9_]+=0$"));
+
+    for (const QByteArray &line : _geminit.split('\n')) {
+        const QByteArray t = line.trimmed();
+        if (t.isEmpty() || t == "firstboot=1")
+            continue;
+        if (featureOff.match(QString::fromLatin1(t)).hasMatch())
+            continue;
+        qDebug() << "Customizing: geminit carries" << t;
+        return true;
+    }
+    return false;
+}
+
+/* The uncompressed size of a local image file, where it can be read without
+   extracting it: the file itself, or the index of a .zip or .xz. Images from
+   the OS list carry it in the list already. */
+void ImageWriter::_determineLocalImageSize()
+{
+    if (_extrLen || !_src.isLocalFile())
+        return;
+
+    const QString lowercaseurl = _src.toString(_src.FullyEncoded).toLower();
+    const bool compressed = lowercaseurl.endsWith(".zip") || lowercaseurl.endsWith(".xz") || lowercaseurl.endsWith(".bz2") || lowercaseurl.endsWith(".gz") || lowercaseurl.endsWith(".7z") || lowercaseurl.endsWith(".zst") || lowercaseurl.endsWith(".cache");
+    if (!compressed)
+        _extrLen = _downloadLen;
+    else if (lowercaseurl.endsWith(".zip"))
+        _parseCompressedFile();
+    else if (lowercaseurl.endsWith(".xz"))
+        _parseXZFile();
+}
+
 void ImageWriter::_startDfuThread()
 {
+    /* Without this a local file was never streamed: DFU went the temp-file
+       way, extracting the whole image to disk first. */
+    _determineLocalImageSize();
+
     QByteArray urlstr = _src.toString(_src.FullyEncoded).toLatin1();
 
+    bool usingCachedImage = (!_expectedHash.isEmpty() && _cachedFileHash == _expectedHash);
+    if (usingCachedImage)
+    {
+        // Use cached file
+        urlstr = QUrl::fromLocalFile(_cacheFileName).toString(_src.FullyEncoded).toLatin1();
+        emit preparationStatusUpdate(tr("Image found in cache, skipping download"));
+    }
+    /* onDownloadProgress labels by this; only startWrite() used to set it */
+    _networkDownload = !QUrl(QString::fromLatin1(urlstr)).isLocalFile();
+
+    /*
+     * Prefer streaming the image to the device as it is decompressed: a
+     * temporary copy of a 16 GiB image asks for 17 GB of free disk space, which
+     * is a lot to demand for data that is only on its way to the eMMC.
+     *
+     * Customization only writes into the boot partition at the start of the
+     * image, so DfuThread holds just that part back in a temporary file,
+     * customizes it there and then streams on. Not knowing the uncompressed
+     * length, which the DFU transfer needs up front, is what still rules
+     * streaming out and falls back to extracting to a temporary file.
+     */
+    const bool canStream = _extrLen != 0;
+    const bool customizeHead = canStream && customizationWritesToImage();
+
+    /* The image is extracted to a temporary file before being sent via DFU.
+       Pick a location with enough free space for it, and never a RAM-backed
+       filesystem: on some distros /tmp is tmpfs capped at half the RAM, and
+       filling it starves the rest of the system. */
+    QString tempDir = QStandardPaths::writableLocation(QStandardPaths::CacheLocation);
+    /* Only the held-back head of a customized stream needs room on disk. The
+       temp-file path is taken when the image size is unknown, so there is
+       no size to check ahead of time. */
+    if (customizeHead)
+    {
+        /* The held-back head is at most 512 MB (DfuThread's maxHeadSize) */
+        const qint64 tempNeeded = 512*1024*1024ll;
+        const QStorageInfo cacheVolume(tempDir);
+        const QStringList candidates = { tempDir, QDir::tempPath() };
+        QString chosen;
+        qint64 bestAvail = 0;
+
+        QStringList rejected;
+
+        for (const QString &dir : candidates)
+        {
+            QDir().mkpath(dir);
+            if (!QDir(dir).exists())
+            {
+                qDebug() << "Rejecting temporary directory" << dir << ": could not be created";
+                rejected += QStringLiteral("%1 (%2)").arg(dir, tr("could not be created"));
+                continue;
+            }
+
+            /*
+             * Whether we can write here is settled by writing, not by asking
+             * QStorageInfo. On macOS 10.15 and later / is a read-only system
+             * volume and the home directory reaches the writable data volume
+             * through a firmlink, and QStorageInfo can resolve a path on the
+             * data volume to the system volume's mount point - so isReadOnly()
+             * comes back true for a directory that is perfectly writable, and
+             * every candidate gets rejected.
+             */
+            {
+                QTemporaryFile probe(dir + QStringLiteral("/.gemimager-writeprobe-XXXXXX"));
+                if (!probe.open())
+                {
+                    qDebug() << "Rejecting temporary directory" << dir
+                             << ": not writable:" << probe.errorString();
+                    rejected += QStringLiteral("%1 (%2)").arg(dir, tr("is not writable"));
+                    continue;
+                }
+            }
+
+            QStorageInfo si(dir);
+            const QString fstype = si.fileSystemType();
+            if (fstype.contains("tmpfs") || fstype.contains("ramfs"))
+            {
+                qDebug() << "Rejecting temporary directory" << dir << ": RAM-backed" << fstype;
+                rejected += QStringLiteral("%1 (%2)").arg(dir, tr("is RAM-backed"));
+                continue;
+            }
+
+            /*
+             * The directory is writable; the free space figure is advisory. If
+             * the volume cannot be interrogated, take the directory rather than
+             * refuse to work over a number we could not read.
+             */
+            if (!si.isValid() || !si.isReady())
+            {
+                qDebug() << "Using writable temporary directory" << dir
+                         << "without a free space figure (volume not readable)";
+                chosen = dir;
+                break;
+            }
+
+            qint64 needed = tempNeeded;
+            /* A fresh download being cached takes extra room on the cache volume */
+            if (_cachingEnabled && !usingCachedImage && si.rootPath() == cacheVolume.rootPath())
+                needed += (qint64)_downloadLen;
+
+            if (si.bytesAvailable() >= needed)
+            {
+                chosen = dir;
+                break;
+            }
+            if (si.bytesAvailable() >= tempNeeded && si.rootPath() == cacheVolume.rootPath())
+            {
+                qDebug() << "Disk space too low to keep a cached copy, disabling caching for this download";
+                _cachingEnabled = false;
+                chosen = dir;
+                break;
+            }
+            bestAvail = qMax(bestAvail, si.bytesAvailable());
+        }
+
+        if (chosen.isEmpty())
+        {
+            /* Distinguish "the volume is full" from "no candidate directory was
+               usable at all". The latter used to be reported as "0 GB available",
+               which sent people looking for disk space they already had. */
+            if (rejected.count() == candidates.count())
+            {
+                emit error(tr("Could not find a usable temporary directory to extract the image.<br>"
+                              "Tried: %1<br>"
+                              "This is a permissions problem, not a disk space problem.")
+                           .arg(rejected.join(QStringLiteral(", "))));
+                qDebug() << "No usable temporary directory among" << candidates;
+            }
+            else
+            {
+                emit error(tr("Not enough disk space to customize the image.<br>"
+                              "About %1 MB of free space is needed, "
+                              "but only %2 MB is available.<br>"
+                              "Free up disk space, or write the image without customization.")
+                           .arg(tempNeeded / (1024*1024ll))
+                           .arg(bestAvail / (1024*1024ll)));
+            }
+            return;
+        }
+        tempDir = chosen;
+    }
+
     DfuThread *dfuThread = new DfuThread(urlstr, _dst.toLatin1(), _expectedHash, _expectedTiboot3Hash, _expectedTisplHash, _expectedUbootHash, this);
+    dfuThread->setTempDirectory(tempDir);
+    if (canStream)
+    {
+        qDebug() << "Streaming" << _extrLen << "bytes to DFU"
+                 << (customizeHead ? "customizing the boot partition on the way" : "without a temporary copy");
+        dfuThread->setStreamImageSize((qint64)_extrLen, customizeHead);
+    }
     _thread = dfuThread;
 
     connect(_thread, SIGNAL(success()), SLOT(onSuccess()));

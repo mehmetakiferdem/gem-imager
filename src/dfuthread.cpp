@@ -5,6 +5,7 @@
 
 #include "dfuthread.h"
 #include "dfuwrapper.h"
+#include "dfudriver.h"
 #include "config.h"
 #include "downloadextractthread.h"
 #include <QFile>
@@ -19,6 +20,16 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonArray>
+#include <QElapsedTimer>
+#include <QSet>
+#include <cstring>
+#include "dependencies/drivelist/src/drivelist.hpp"
+#include "devicewrapper.h"
+#include "devicewrapperfatpartition.h"
+#ifdef Q_OS_WIN
+#include <windows.h>
+#include <winioctl.h>
+#endif
 
 #include <QEventLoop>
 #include <QNetworkAccessManager>
@@ -36,6 +47,17 @@ DfuThread::DfuThread(const QByteArray &url, const QByteArray &localfilename,
 {
     _suppressSuccessSignal = true;
     _ejectEnabled = false;
+    _activeDfu = nullptr;
+
+    /*
+     * Whatever path an error takes - an emit error() in the base classes, a
+     * call that names DownloadThread::_onDownloadError and so bypasses the
+     * override, a customization failure - once one is shown, run() must
+     * neither follow it with "Cancelled" nor report success. A direct
+     * connection runs in the emitting thread, before run() looks.
+     */
+    connect(this, &DownloadThread::error, this, [this](QString) { _errorReported = true; },
+            Qt::DirectConnection);
 }
 
 DfuThread::~DfuThread()
@@ -48,6 +70,9 @@ DfuThread::~DfuThread()
         _tempImageFile->remove();
         delete _tempImageFile;
     }
+
+    if (!_headPath.isEmpty())
+        QFile::remove(_headPath);
 }
 
 bool DfuThread::isImage()
@@ -55,9 +80,276 @@ bool DfuThread::isImage()
     return true;
 }
 
+void DfuThread::cancelDownload()
+{
+    DownloadExtractThread::cancelDownload();
+    QMutexLocker lock(&_activeDfuMutex);
+    if (_activeDfu)
+        _activeDfu->cancel();
+}
+
+void DfuThread::setActiveDfu(DfuWrapper *dfu)
+{
+    QMutexLocker lock(&_activeDfuMutex);
+    _activeDfu = dfu;
+}
+
+void DfuThread::setTempDirectory(const QString &dir)
+{
+    _tempDir = dir;
+}
+
+void DfuThread::setStreamImageSize(qint64 imageSize, bool customizeHead)
+{
+    _streaming = imageSize > 0;
+    _streamImageSize = imageSize;
+    _headPending = _streaming && customizeHead;
+}
+
+/*
+ * The extractor pads a final short block out to a multiple of the sector size,
+ * so the number of bytes that reach _writeFile can exceed the declared image
+ * length. Declare the padded length to the transfer, or it would report an
+ * overrun on the last block of an unaligned image.
+ */
+static qint64 paddedTo512(qint64 n)
+{
+    return (n + 511) & ~511LL;
+}
+
+/*
+ * Where the first partition ends, from the partition table at the start of the
+ * image, or -1 if there is no table to read. Customization only ever touches
+ * partition 1 (DeviceWrapper::fatPartition(1)), so everything it can change
+ * lies before this offset.
+ */
+static qint64 firstPartitionEnd(const char *buf, qint64 len)
+{
+    auto u32 = [buf](qint64 off) { quint32 v; memcpy(&v, buf + off, 4); return (qint64)v; };
+    auto u64 = [buf](qint64 off) { quint64 v; memcpy(&v, buf + off, 8); return (qint64)v; };
+
+    if (len >= 1024 && !memcmp(buf + 512, "EFI PART", 8)) {
+        const qint64 entries = u64(512 + 72) * 512;
+        if (entries < 1024 || entries + 128 > len)
+            return -1;
+        const qint64 lastLba = u64(entries + 40);
+        return lastLba > 0 ? (lastLba + 1) * 512 : -1;
+    }
+
+    if (len >= 512 && (quint8)buf[510] == 0x55 && (quint8)buf[511] == 0xAA) {
+        const qint64 start = u32(446 + 8), count = u32(446 + 12);
+        return start && count ? (start + count) * 512 : -1;
+    }
+    return -1;
+}
+
+/* Nothing larger than this is held back for customization. The Gemstone boot
+   partition ends at 129 MiB; a layout far beyond that is not one this was
+   written for, and asking for gigabytes of temp space is what streaming avoids. */
+static const qint64 maxHeadSize = 512 * 1024 * 1024LL;
+
+void DfuThread::failStream(const QString &msg)
+{
+    _streamFailed = true;
+    _streamErrorReported = true;
+    emit error(msg);
+}
+
+/*
+ * Hold the start of the image in a temporary file until it reaches the end of
+ * the boot partition, then customize it and send it. Returns how many bytes of
+ * buf went into the head, or -1 on failure (already reported).
+ */
+qint64 DfuThread::bufferHead(const char *buf, qint64 len)
+{
+    if (_headBytes == 0) {
+        const qint64 partEnd = firstPartitionEnd(buf, len);
+        if (partEnd <= 0) {
+            failStream(tr("Cannot customize this image: no partition table found at its start."));
+            return -1;
+        }
+        /* One 4 KiB block past the partition, rounded up to whole blocks:
+           DeviceWrapper reads whole 4 KiB blocks and can reach one past the
+           last byte it was asked for. */
+        _headEnd = qMin(((partEnd + 4095) & ~4095LL) + 4096, paddedTo512(_streamImageSize));
+        if (_headEnd > maxHeadSize) {
+            failStream(tr("Cannot customize this image: its first partition ends at %1 MB, "
+                          "beyond the %2 MB that can be held back for customization.")
+                       .arg(partEnd / (1024 * 1024)).arg(maxHeadSize / (1024 * 1024)));
+            return -1;
+        }
+        qDebug() << "Holding back the first" << _headEnd << "bytes of the image for customization";
+
+        QString dir = _tempDir.isEmpty()
+            ? QStandardPaths::writableLocation(QStandardPaths::CacheLocation) : _tempDir;
+        QDir().mkpath(dir);
+        QTemporaryFile tmp(dir + QDir::separator() + "dfu_head_XXXXXX");
+        tmp.setAutoRemove(false);
+        if (!tmp.open()) {
+            failStream(tr("Failed to create temporary file for customizing the image: %1")
+                       .arg(tmp.errorString()));
+            return -1;
+        }
+        _headPath = tmp.fileName();
+        tmp.close();
+
+        _file.setFileName(_headPath);
+        if (!_file.open(QIODevice::ReadWrite | QIODevice::Unbuffered)) {
+            failStream(tr("Failed to open temporary file for customizing the image: %1")
+                       .arg(_file.errorString()));
+            return -1;
+        }
+    }
+
+    const qint64 take = qMin(len, _headEnd - _headBytes);
+    if (_file.write(buf, take) != take) {
+        failStream(tr("Error writing temporary file for customizing the image: %1")
+                   .arg(_file.errorString()));
+        return -1;
+    }
+    _headBytes += take;
+
+    if (_headBytes == _headEnd && !customizeAndSendHead())
+        return -1;
+    return take;
+}
+
+bool DfuThread::customizeAndSendHead()
+{
+    _headPending = false;
+
+    /* _customizeImage() reports its own errors */
+    const bool customized = _customizeImage();
+    _file.close();
+    if (!customized) {
+        _streamFailed = true;
+        _streamErrorReported = true;
+        return false;
+    }
+
+    QFile head(_headPath);
+    if (!head.open(QIODevice::ReadOnly)) {
+        failStream(tr("Failed to read back the customized image: %1").arg(head.errorString()));
+        return false;
+    }
+    QByteArray chunk;
+    while (!(chunk = head.read(IMAGEWRITER_BLOCKSIZE)).isEmpty()) {
+        if (_cancelled)
+            return false;
+        if (!_activeDfu || !_activeDfu->streamChunk(chunk.constData(), chunk.size())) {
+            failStream(tr("DFU transfer failed: %1")
+                       .arg(_activeDfu ? _activeDfu->lastError() : tr("transfer was not open")));
+            return false;
+        }
+    }
+    head.close();
+    QFile::remove(_headPath);
+    _headPath.clear();
+    return true;
+}
+
+bool DfuThread::openStreamToRawemmc()
+{
+    DfuWrapper *dfu = new DfuWrapper(nullptr);
+    setActiveDfu(dfu);
+    connect(dfu, &DfuWrapper::statusMessage, this, [this](const QString &m) {
+        emit preparationStatusUpdate(m);
+    });
+    connect(dfu, &DfuWrapper::streamProgress, this, &DfuThread::onStreamProgress);
+
+    if (!dfu->initialize()) {
+        emit error(tr("Failed to initialise USB: %1").arg(dfu->lastError()));
+        goto fail;
+    }
+    /* U-Boot needs a moment after the bootloader stage before it offers the
+       rawemmc alt-setting, and the caller has already waited; still allow a few
+       attempts rather than failing on the first miss. */
+    for (int attempt = 1; attempt <= 15; attempt++) {
+        if (_cancelled)
+            goto fail;
+        if (dfu->findDevice(DfuWrapper::TI_VENDOR_ID, DfuWrapper::TI_PRODUCT_ID,
+                            DfuWrapper::ALT_RAWEMMC))
+            break;
+        if (attempt == 15) {
+            emit error(tr("No DFU device found (VID:0x%1 PID:0x%2 alt:%3) after %4 retries")
+                       .arg(DfuWrapper::TI_VENDOR_ID, 4, 16, QChar('0'))
+                       .arg(DfuWrapper::TI_PRODUCT_ID, 4, 16, QChar('0'))
+                       .arg(DfuWrapper::ALT_RAWEMMC).arg(attempt));
+            goto fail;
+        }
+        QThread::msleep(1000);
+    }
+
+    if (!dfu->beginStream(paddedTo512(_streamImageSize))) {
+        emit error(tr("Failed to start the DFU transfer: %1").arg(dfu->lastError()));
+        goto fail;
+    }
+    return true;
+
+fail:
+    setActiveDfu(nullptr);
+    dfu->cleanup();
+    delete dfu;
+    return false;
+}
+
+size_t DfuThread::_writeFile(const char *buf, size_t len)
+{
+    if (_ums) {
+        const size_t written = DownloadThread::_writeFile(buf, len);
+        const qint64 done = (qint64)_bytesWritten;
+        if (done - _umsLastReport >= 16 * 1024 * 1024) {
+            _umsLastReport = done;
+            onStreamProgress(done, _streamImageSize > 0 ? _streamImageSize : done);
+        }
+        return written;
+    }
+    if (!_streaming)
+        return DownloadThread::_writeFile(buf, len);
+
+    if (_cancelled || _streamFailed)
+        return len;
+
+    /* Kept in step with the base class so the image hash is still verified.
+       Unlike the base class nothing is held back: the first block cannot be
+       deferred to the end of a sequential transfer, so it goes out in order
+       like every other block. */
+    _writehash.addData(buf, len);
+
+    const char *out = buf;
+    qint64 outLen = (qint64)len;
+    if (_headPending) {
+        const qint64 used = bufferHead(buf, outLen);
+        if (used < 0)
+            return 0;   /* reported; _onWriteError() stays quiet */
+        out += used;
+        outLen -= used;
+    }
+
+    if (outLen && (!_activeDfu || !_activeDfu->streamChunk(out, outLen))) {
+        _streamFailed = true;
+        _streamError = _activeDfu ? _activeDfu->lastError() : tr("transfer was not open");
+        /* Returning short makes the base class call _onWriteError(), which is
+           overridden below to report _streamError. Reporting it from here as
+           well would put two dialogs in front of the user. */
+        return 0;
+    }
+
+    _bytesWritten += len;
+    return len;
+}
+
 bool DfuThread::_openAndPrepareDevice()
 {
-    _tempImageFile = new QTemporaryFile();
+    if (_ums)
+        return DownloadThread::_openAndPrepareDevice();
+    if (_streaming)
+        return openStreamToRawemmc();
+
+    QString tempDir = _tempDir.isEmpty()
+        ? QStandardPaths::writableLocation(QStandardPaths::CacheLocation) : _tempDir;
+    QDir().mkpath(tempDir);
+    _tempImageFile = new QTemporaryFile(tempDir + QDir::separator() + "dfu_image_XXXXXX");
     _tempImageFile->setAutoRemove(false);
 
     if (!_tempImageFile->open()) {
@@ -87,12 +379,88 @@ void DfuThread::run()
         return;
     }
 
-    emit dfuProgress(5, tr("Downloading image..."));
-    DownloadExtractThread::run();
-    waitForExtractThread();
-    if (!_successful) return;
+    /*
+     * Streaming and mass storage both need U-Boot up before the image starts
+     * to arrive, so the bootloader stage runs first for them. The temp-file
+     * path sends it only once the image is extracted: left waiting in DFU
+     * mode through a long extraction, the transfer then failed with
+     * LIBUSB_ERROR_PIPE on Windows.
+     */
+    if (_streaming) {
+        if (!prepareDeviceForImage()) return;
 
-    if (!_geminit.isEmpty() || !_config.isEmpty() || !_cmdline.isEmpty() || !_firstrun.isEmpty() || !_cloudinit.isEmpty()) {
+        switch (switchToMassStorage()) {
+        case UmsResult::Failed:
+            return;   /* already reported; the board has left DFU mode */
+        case UmsResult::Ready:
+            _headPending = false;   /* the disk is customized in place */
+            emit dfuProgress(80, tr("Writing image to the board over USB mass storage..."));
+            DownloadExtractThread::run();
+            waitForExtractThread();
+            if (_errorReported) return;
+            if (_cancelled) { emit error(tr("Cancelled")); return; }
+            if (!_successful) return;
+#ifdef Q_OS_WIN
+            {
+                /* The eject after writing only covers volumes with a drive letter,
+                   and a freshly written disk may have none yet. U-Boot leaves
+                   mass storage mode, and goes on to write the boot binaries, only
+                   on a SCSI eject, so send one to the disk itself. */
+                HANDLE h = CreateFileA(_filename.constData(), GENERIC_READ | GENERIC_WRITE,
+                                       FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 0, NULL);
+                if (h != INVALID_HANDLE_VALUE) {
+                    DWORD unused;
+                    DeviceIoControl(h, IOCTL_STORAGE_EJECT_MEDIA, NULL, 0, NULL, 0, &unused, NULL);
+                    CloseHandle(h);
+                }
+            }
+#endif
+            if (!waitForBoardToLeaveUsb(true)) return;
+            emit dfuProgress(100, tr("Image written to eMMC successfully! Power off the board "
+                                     "and switch the boot mode to eMMC."));
+            QThread::msleep(1000);
+            emit success();
+            return;
+        case UmsResult::Unavailable:
+            break;   /* an older U-Boot: send the image over DFU */
+        }
+    }
+
+    /*
+     * Streaming sends the image as it arrives, to the rawemmc alt-setting the
+     * board offers now that U-Boot is up.
+     */
+    if (_streaming) {
+        emit dfuProgress(80, tr("Sending image to device (this may take several minutes)..."));
+        if (QUrl(QString::fromUtf8(_url)).isLocalFile())
+            emit preparationStatusUpdate(tr("Reading image from cache/local file (no download needed)..."));
+        DownloadExtractThread::run();
+        waitForExtractThread();
+        /* before _cancelled: reporting a failure also sets it */
+        if (_streamFailed || _errorReported) { closeStream(); return; }   /* already reported */
+        if (_cancelled) { closeStream(); emit error(tr("Cancelled")); return; }
+        if (!_successful) { closeStream(); return; }
+
+        const bool finished = _activeDfu && _activeDfu->finishStream();
+        const QString finishError = _activeDfu ? _activeDfu->lastError() : tr("transfer was not open");
+        closeStream();
+        if (!finished) {
+            emit error(tr("DFU transfer failed at the end of the image: %1").arg(finishError));
+            return;
+        }
+    } else {
+        if (QUrl(QString::fromUtf8(_url)).isLocalFile())
+            emit dfuProgress(5, tr("Reading image from cache/local file (no download needed)..."));
+        else
+            emit dfuProgress(5, tr("Downloading image..."));
+        DownloadExtractThread::run();
+        waitForExtractThread();
+        if (_errorReported) return;
+        if (!_successful) return;
+        if (_cancelled) { emit error(tr("Cancelled")); return; }
+    }
+
+    if (!_streaming && (!_geminit.isEmpty() || !_config.isEmpty() || !_cmdline.isEmpty() || !_firstrun.isEmpty() || !_cloudinit.isEmpty())) {
         emit dfuProgress(35, tr("Customizing image..."));
         if (_file.isOpen()) _file.close();
         _file.setFileName(_tempImagePath);
@@ -103,43 +471,384 @@ void DfuThread::run()
         if (!_customizeImage()) return;
         _file.close();
     }
+    if (_cancelled) { emit error(tr("Cancelled")); return; }
 
-    emit dfuProgress(38, tr("Fetching bootloader files..."));
-    if (!fetchBootloaderFiles()) return;
+    if (!_streaming) {
+        if (!prepareDeviceForImage()) return;
 
-    emit dfuProgress(45, tr("Sending bootloader files..."));
-    if (!sendBootloaderFiles()) return;
+        emit dfuProgress(80, tr("Sending image to device (this may take several minutes)..."));
+        if (!sendImageToRawemmc()) return;
+    }
 
-    emit dfuProgress(77, tr("Waiting for device to enter DFU mode..."));
-    QThread::sleep(3);
-
-    emit dfuProgress(80, tr("Sending image to device (this may take several minutes)..."));
-    if (!sendImageToRawemmc()) return;
-
-    emit dfuProgress(95, tr("Writing boot binaries to eMMC (do not power off)..."));
-    QThread::sleep(15);
-
-    emit dfuProgress(100, tr("System image sent successfully!"));
+    if (!waitForBoardToLeaveUsb(false)) return;
+    emit dfuProgress(100, tr("Image written to eMMC successfully! Power off the board "
+                             "and switch the boot mode to eMMC."));
     QThread::msleep(1000);
     emit success();
 }
 
-// Helper: create a DfuWrapper, find the device, transfer a file, clean up.
-bool DfuThread::runDfu(const QString &altSetting, const QString &filePath, bool resetAfter)
+
+/*
+ * The base class finishes by flushing, fsyncing and verifying _file and then
+ * customizing it. In streaming mode _file is not the image - it is closed, or
+ * at most held the head that has already been customized and sent - so none of
+ * that applies. What still does: the image hash, and the download cache.
+ */
+void DfuThread::_writeComplete()
 {
-    DfuWrapper *dfu = new DfuWrapper(nullptr);
+    if (_ums) {
+        /* An ordinary disk: verify, customize in place and eject, as for an SD card */
+        DownloadThread::_writeComplete();
+        return;
+    }
+    if (!_streaming) {
+        DownloadExtractThread::_writeComplete();
+        return;
+    }
+    if (_streamFailed) {
+        /* The extractor only checks a block's result before writing the next
+           one, so a failure on the last block reaches nobody but us */
+        if (!_streamErrorReported)
+            _onWriteError();
+        return;
+    }
+    if (_cancelled)
+        return;
 
-    bool ok = dfu->initialize()
-           && dfu->findDevice(DfuWrapper::TI_VENDOR_ID, DfuWrapper::TI_PRODUCT_ID, altSetting)
-           && (resetAfter ? dfu->downloadFile(filePath, true)
-                          : dfu->downloadFileStreaming(filePath));
+    /* An image that ends before the boot partition does: the head never
+       filled up, so it is still waiting to be customized and sent */
+    if (_headPending && _headBytes > 0 && !customizeAndSendHead())
+        return;
 
-    if (!ok)
-        emit error(tr("DFU failed (alt: %1): %2").arg(altSetting, dfu->lastError()));
+    const QByteArray computedHash = _writehash.result().toHex();
+    qDebug() << "Hash of uncompressed image:" << computedHash;
+    if (!_expectedHash.isEmpty() && _expectedHash != computedHash) {
+        qDebug() << "Mismatch with expected hash:" << _expectedHash;
+        if (_cachefile.isOpen())
+            _cachefile.remove();
+        failStream(tr("Download corrupt. Hash does not match.<br>The data already sent "
+                      "to the board is incomplete: write the image again before booting it."));
+        return;
+    }
+    if (_cacheEnabled && _expectedHash == computedHash) {
+        _cachefile.close();
+        emit cacheFileUpdated(computedHash);
+    }
+    qDebug() << "Streamed image in" << _timer.elapsed() / 1000 << "seconds";
+}
 
+/*
+ * Eject the mass storage disk while it is still open. The image has just
+ * written a new partition table; once the handle is closed Windows rescans
+ * the disk, mounts the partitions and asks to format the Linux one. Ejecting
+ * first takes the medium away before that happens - and makes U-Boot leave
+ * mass storage mode. Elsewhere the regular eject after closing is enough.
+ */
+void DfuThread::_beforeCloseDevice()
+{
+#ifdef Q_OS_WIN
+    if (_ums) {
+        DWORD unused;
+        if (DeviceIoControl(_file.handle(), IOCTL_STORAGE_EJECT_MEDIA, NULL, 0, NULL, 0, &unused, NULL))
+            qDebug() << "Ejected the mass storage disk before closing it";
+        else
+            qDebug() << "Ejecting the open mass storage disk failed:" << GetLastError();
+    }
+#endif
+}
+
+/* Remember that an error has been shown, so run() does not follow it with a
+   second "Cancelled" dialog: reporting an error also sets _cancelled. */
+void DfuThread::_onDownloadError(const QString &msg)
+{
+    _errorReported = true;
+    /* DownloadExtractThread's version also wakes the extract thread, which
+       otherwise waits forever for data after a network error */
+    DownloadExtractThread::_onDownloadError(msg);
+}
+
+void DfuThread::_onWriteError()
+{
+    if (_ums || !_streaming) {
+        DownloadExtractThread::_onWriteError();
+        return;
+    }
+    if (_cancelled || _streamErrorReported)
+        return;
+    _streamErrorReported = true;
+    /* "Error writing file to disk" would be wrong here: nothing was written to
+       a disk, the USB transfer failed. */
+    _onDownloadError(tr("DFU transfer failed: %1")
+                     .arg(_streamError.isEmpty() ? tr("unknown error") : _streamError));
+}
+
+/* The Linux mass storage gadget IDs U-Boot presents in ums mode */
+static const int UMS_VENDOR_ID  = 0x0525;
+static const int UMS_PRODUCT_ID = 0xA4A5;
+static const char *ALT_UMS = "ums";
+
+/*
+ * U-Boot's ums disks, by device path. The inquiry data reads "Linux UMS disk 0",
+ * which is what both the Linux description (vendor + model) and the Windows
+ * friendly name are made from.
+ */
+static QSet<QString> listUmsDisks()
+{
+    QSet<QString> disks;
+    for (const auto &d : Drivelist::ListStorageDevices()) {
+        if (d.isSystem || !(d.isUSB || d.isRemovable))
+            continue;
+        if (QString::fromStdString(d.description).contains(QLatin1String("UMS disk"), Qt::CaseInsensitive))
+            disks.insert(QString::fromStdString(d.device));
+    }
+    return disks;
+}
+
+/*
+ * Ask U-Boot to expose the eMMC as USB mass storage, and find the disk that
+ * appears. Unavailable means U-Boot is still waiting in DFU mode and the image
+ * can go over DFU; Failed means the board may have left DFU mode and the error
+ * has been reported.
+ */
+DfuThread::UmsResult DfuThread::switchToMassStorage()
+{
+#ifdef Q_OS_DARWIN
+    /* Raw disk access goes through authopen on macOS, which is not reliable yet */
+    return UmsResult::Unavailable;
+#else
+    if (qEnvironmentVariableIsSet("GEM_IMAGER_NO_UMS"))
+        return UmsResult::Unavailable;
+
+    /* U-Boot takes a moment to come up after the bootloader stage. Once it
+       offers rawemmc without ums, it is a version that predates mass storage. */
+    bool offered = false;
+    for (int attempt = 1; attempt <= 15 && !offered; attempt++) {
+        if (_cancelled)
+            return UmsResult::Unavailable;
+        for (const char *alt : { ALT_UMS, DfuWrapper::ALT_RAWEMMC }) {
+            DfuWrapper probe;
+            const bool found = probe.initialize()
+                && probe.findDevice(DfuWrapper::TI_VENDOR_ID, DfuWrapper::TI_PRODUCT_ID, alt);
+            probe.cleanup();
+            if (found && !strcmp(alt, ALT_UMS)) { offered = true; break; }
+            if (found) {
+                qDebug() << "U-Boot offers rawemmc but no ums alt-setting; using DFU";
+                return UmsResult::Unavailable;
+            }
+        }
+        if (!offered)
+            QThread::msleep(1000);
+    }
+    if (!offered)
+        return UmsResult::Unavailable;   /* openStreamToRawemmc() will report it */
+
+    const QSet<QString> before = listUmsDisks();
+
+    QTemporaryFile marker(QDir::tempPath() + QDir::separator() + "dfu_ums_XXXXXX");
+    if (!marker.open() || marker.write("UMS1", 4) != 4 || !marker.flush()) {
+        emit error(tr("Failed to create temporary file for DFU image"));
+        return UmsResult::Failed;
+    }
+    marker.close();
+
+    emit dfuProgress(78, tr("Switching the board to USB mass storage mode..."));
+    if (!runDfu(ALT_UMS, marker.fileName(), true))
+        return UmsResult::Failed;   /* runDfu() reported it */
+
+    /* The first time a host sees the mass storage gadget, Windows installs
+       a driver for it before the disk shows up, which can take a while. */
+#ifdef Q_OS_WIN
+    const qint64 timeoutMs = 120000;
+#else
+    const qint64 timeoutMs = 30000;
+#endif
+    QElapsedTimer timer;
+    timer.start();
+    QSet<QString> reported;
+    while (timer.elapsed() < timeoutMs) {
+        if (_cancelled)
+            return UmsResult::Failed;
+        /* Log every disk that appears while waiting, so a disk that is there
+           but not recognised as the board can be told from one that never
+           appeared. */
+        for (const auto &d : Drivelist::ListStorageDevices()) {
+            const QString dev = QString::fromStdString(d.device);
+            if (reported.contains(dev))
+                continue;
+            reported.insert(dev);
+            qDebug() << "Disk while waiting for the board:" << dev
+                     << "description:" << QString::fromStdString(d.description)
+                     << "usb:" << d.isUSB << "removable:" << d.isRemovable
+                     << "system:" << d.isSystem << "size:" << d.size;
+        }
+        const QSet<QString> now = listUmsDisks();
+        for (const QString &disk : now) {
+            if (!before.contains(disk)) {
+                qDebug() << "Board is exposed as USB mass storage at" << disk;
+                _filename = disk.toLatin1();
+                _ums = true;
+                _ejectEnabled = true;
+                return UmsResult::Ready;
+            }
+        }
+        QThread::msleep(1000);
+    }
+
+    emit error(tr("The board switched to USB mass storage mode, but no disk appeared "
+                  "within %1 seconds.<br><br>Power off the board, set the boot switches "
+                  "to DFU mode again, restore power and retry.").arg(timeoutMs / 1000));
+    return UmsResult::Failed;
+#endif
+}
+
+/*
+ * After the last byte the board still has to finish writing to eMMC and then
+ * writes the boot binaries. In DFU mode U-Boot's gadget only drops off the bus
+ * once the data is flushed; in mass storage mode it leaves when the disk is
+ * ejected, and the boot binaries follow. Wait for it to go rather than declare
+ * success while it is still writing. (A second board attached in DFU mode is
+ * waited for too; that is the safe direction to be wrong in.)
+ */
+bool DfuThread::waitForBoardToLeaveUsb(bool massStorage)
+{
+    emit dfuProgress(95, tr("Device is writing to eMMC (do not power off)..."));
+    QElapsedTimer flushTimer;
+    flushTimer.start();
+    const qint64 flushTimeoutMs = (massStorage ? 2 : 15) * 60 * 1000;
+    while (DfuWrapper::isDevicePresent(DfuWrapper::TI_VENDOR_ID, DfuWrapper::TI_PRODUCT_ID)
+           || (massStorage && DfuWrapper::isDevicePresent(UMS_VENDOR_ID, UMS_PRODUCT_ID))) {
+        if (_cancelled) { emit error(tr("Cancelled")); return false; }
+        if (flushTimer.elapsed() > flushTimeoutMs) {
+            if (massStorage)
+                emit error(tr("The image was written, but the board did not leave USB mass "
+                              "storage mode after it was ejected, so the boot binaries may "
+                              "not have been updated.<br>Power off the board, set the boot "
+                              "switches to DFU mode again and retry."));
+            else
+                emit error(tr("The device is still writing to eMMC %1 minutes after the "
+                              "transfer finished.<br>Do NOT power off the board yet: check "
+                              "the serial console and wait until write activity stops.")
+                           .arg(flushTimeoutMs / 60000));
+            return false;
+        }
+        QThread::msleep(500);
+    }
+    /* The boot binaries are written right after the gadget shuts down; give
+       that step a moment to finish before declaring the board safe to power
+       off. */
+    QThread::sleep(massStorage ? 10 : 5);
+    return true;
+}
+
+/* Release the USB device and the libusb context the streaming transfer holds.
+   The temp-file path does this inside runDfu(); the streaming path keeps the
+   wrapper alive across the whole download, so it is closed here instead. */
+void DfuThread::closeStream()
+{
+    if (!_activeDfu)
+        return;
+    DfuWrapper *dfu = _activeDfu;
+    setActiveDfu(nullptr);
     dfu->cleanup();
     delete dfu;
-    return ok;
+}
+
+/* Everything that has to happen before any image data can be sent: get the
+   bootloader files, make sure Windows has a driver bound, push the bootloader
+   stages and give U-Boot a moment to come up. */
+bool DfuThread::prepareDeviceForImage()
+{
+    emit dfuProgress(38, tr("Fetching bootloader files..."));
+    if (!fetchBootloaderFiles()) return false;
+    if (_cancelled) { emit error(tr("Cancelled")); return false; }
+
+    /* A missing Windows driver makes every stage below fail after its own
+       retries, so check for it once here rather than letting the user wait out
+       three rounds of that and then read a libusb error. A device that is not
+       attached yet is not an error: the retry loops wait for it on purpose. */
+    const QString driverHint = DfuDriver::missingDriverHint(DfuWrapper::TI_VENDOR_ID,
+                                                            DfuWrapper::TI_PRODUCT_ID);
+    if (!driverHint.isEmpty()) {
+        emit error(driverHint);
+        return false;
+    }
+
+    emit dfuProgress(45, tr("Sending bootloader files..."));
+    if (!sendBootloaderFiles()) return false;
+    if (_cancelled) { emit error(tr("Cancelled")); return false; }
+
+    emit dfuProgress(77, tr("Waiting for device to enter DFU mode..."));
+    QThread::sleep(3);
+    if (_cancelled) { emit error(tr("Cancelled")); return false; }
+
+    return true;
+}
+
+bool DfuThread::runDfu(const QString &altSetting, const QString &filePath, bool resetAfter)
+{
+    // Bootloader stages are cheap to redo; the multi-minute image stream gets one retry
+    const int maxAttempts = resetAfter ? 3 : 2;
+    QString lastError;
+
+    for (int attempt = 1; attempt <= maxAttempts; attempt++) {
+        if (_cancelled)
+            return false;
+
+        DfuWrapper *dfu = new DfuWrapper(nullptr);
+        setActiveDfu(dfu);
+
+        if (_cancelled) dfu->cancel();
+
+        if (!resetAfter)
+            connect(dfu, &DfuWrapper::streamProgress, this, &DfuThread::onStreamProgress);
+
+        bool ok = dfu->initialize()
+               && dfu->findDevice(DfuWrapper::TI_VENDOR_ID, DfuWrapper::TI_PRODUCT_ID, altSetting)
+               && (resetAfter ? dfu->downloadFile(filePath, true)
+                              : dfu->downloadFileStreaming(filePath));
+
+        bool cancelled = dfu->isCancelled();
+        lastError = dfu->lastError();
+
+        setActiveDfu(nullptr);
+        dfu->cleanup();
+        delete dfu;
+
+        if (ok)
+            return true;
+        if (cancelled || _cancelled)
+            return false;
+
+        if (attempt < maxAttempts) {
+            qDebug() << "DFU attempt" << attempt << "failed for alt" << altSetting << ":" << lastError << "- retrying";
+            emit dfuProgress(resetAfter ? 45 : 80,
+                             tr("DFU transfer failed (%1), retrying...").arg(lastError));
+            QThread::sleep(2);
+        }
+    }
+
+    /* The driver can be unbound mid-run (the board re-enumerates between
+       stages), and then power cycling is the wrong advice. */
+    const QString driverHint = DfuDriver::missingDriverHint(DfuWrapper::TI_VENDOR_ID,
+                                                            DfuWrapper::TI_PRODUCT_ID);
+    if (!driverHint.isEmpty())
+        emit error(tr("DFU transfer failed while sending %1: %2<br><br>%3")
+                   .arg(altSetting, lastError, driverHint));
+    else
+        emit error(tr("DFU transfer failed while sending %1: %2<br><br>"
+                      "Power off the board, set the boot switches to DFU mode again, "
+                      "restore power and retry.").arg(altSetting, lastError));
+    return false;
+}
+
+void DfuThread::onStreamProgress(qint64 bytesSent, qint64 totalBytes)
+{
+    if (totalBytes <= 0) return;
+    int pct = 80 + (int)(15.0 * bytesSent / totalBytes);
+    emit dfuProgress(pct, tr("Sending image: %1 / %2 MB (%3%)")
+                     .arg(bytesSent / (1024 * 1024))
+                     .arg(totalBytes / (1024 * 1024))
+                     .arg((int)(100.0 * bytesSent / totalBytes)));
 }
 
 bool DfuThread::sendBootloaderFiles()
@@ -165,8 +874,115 @@ bool DfuThread::sendBootloaderFiles()
     return true;
 }
 
+/*
+ * When the image is a local file, use the bootloader in its own boot
+ * partition for the DFU stage rather than the one on the server. That is the
+ * bootloader the board ends up with anyway - it is copied to the eMMC boot
+ * partition after the image - and it may be newer than the published one,
+ * e.g. able to offer USB mass storage. Only a U-Boot that knows the DFU boot
+ * flow (bootcmd_dfu) is taken; anything else falls back to the server.
+ */
+/* Where bootloader copies are kept while a write runs: next to the cached
+   ones, not in /tmp, which can be RAM-backed */
+static QString bootloaderTempDir()
+{
+    const QString dir = QStandardPaths::writableLocation(QStandardPaths::CacheLocation)
+        + QDir::separator() + "bootloaders" + QDir::separator() + "t3-gem-o1";
+    QDir().mkpath(dir);
+    return dir;
+}
+
+/* Remove copies already made when a set could not be completed */
+static void discardBootloaderFiles(QString files[3])
+{
+    for (int i = 0; i < 3; i++) {
+        if (!files[i].isEmpty())
+            QFile::remove(files[i]);
+        files[i].clear();
+    }
+}
+
+bool DfuThread::takeBootloaderFromImage()
+{
+    const QUrl url(QString::fromUtf8(_url));
+    if (!url.isLocalFile())
+        return false;
+
+    const QStringList names = {"tiboot3.bin", "tispl.bin", "u-boot.img"};
+    QByteArray contents[3];
+    try {
+        DeviceWrapperFile f;
+        f.setFileName(url.toLocalFile());
+        if (!f.open(QIODevice::ReadOnly))
+            return false;
+        DeviceWrapper dw(&f);
+        DeviceWrapperFatPartition *fat = dw.fatPartition(1);
+        for (int i = 0; i < 3; i++) {
+            if (!fat->fileExists(names[i]))
+                return false;
+            contents[i] = fat->readFile(names[i]);
+            if (contents[i].isEmpty())
+                return false;
+        }
+    } catch (std::exception &e) {
+        /* compressed or not a disk image: nothing to read */
+        qDebug() << "No bootloader taken from the image:" << e.what();
+        return false;
+    }
+
+    if (!contents[2].contains("bootcmd_dfu")) {
+        qDebug() << "The image's U-Boot has no DFU boot flow; using the server's bootloader";
+        return false;
+    }
+
+    for (int i = 0; i < 3; i++) {
+        QTemporaryFile tmp(bootloaderTempDir() + QDir::separator() + "dfu_XXXXXX");
+        tmp.setAutoRemove(false);
+        if (!tmp.open() || tmp.write(contents[i]) != contents[i].size()) {
+            qDebug() << "Could not write" << names[i] << "from the image; using the server's bootloader";
+            tmp.remove();
+            discardBootloaderFiles(_bootloaderFiles);
+            return false;
+        }
+        _bootloaderFiles[i] = tmp.fileName();
+        qDebug() << "Ready" << names[i] << "from the image's boot partition";
+    }
+    return true;
+}
+
 bool DfuThread::fetchBootloaderFiles()
 {
+    /*
+     * For trying out a bootloader before it is published: take tiboot3.bin,
+     * tispl.bin and u-boot.img from this directory instead of the server.
+     * They are copied, because the copies are deleted afterwards.
+     */
+    const QString localDir = qEnvironmentVariable("GEM_IMAGER_BOOTLOADER_DIR");
+    if (!localDir.isEmpty()) {
+        const QStringList names = {"tiboot3.bin", "tispl.bin", "u-boot.img"};
+        for (int i = 0; i < 3; i++) {
+            const QString src = localDir + QDir::separator() + names[i];
+            QTemporaryFile tmp(bootloaderTempDir() + QDir::separator() + "dfu_XXXXXX");
+            tmp.setAutoRemove(false);
+            if (!tmp.open()) {
+                emit error(tr("Failed to create temp file for %1").arg(names[i]));
+                return false;
+            }
+            tmp.close();
+            QFile::remove(tmp.fileName());
+            if (!QFile::copy(src, tmp.fileName())) {
+                emit error(tr("Failed to download bootloader file: %1").arg(src));
+                return false;
+            }
+            _bootloaderFiles[i] = tmp.fileName();
+            qDebug() << "Ready" << names[i] << "from local directory" << src;
+        }
+        return true;
+    }
+
+    if (takeBootloaderFromImage())
+        return true;
+
     QString listUrlStr = QString(BOOTIMG_URL).arg("t3-gem-o1").arg("list.json");
     
     emit dfuProgress(40, tr("Fetching bootloader list..."));
@@ -198,6 +1014,12 @@ bool DfuThread::fetchBootloaderFiles()
         qDebug() << "Updated bootloader hashes from list.json successfully.";
     } else {
         qDebug() << "Failed to fetch list.json from" << listUrlStr << ". Error:" << reply->errorString();
+        if (_expectedTiboot3Hash.isEmpty() || _expectedTisplHash.isEmpty() || _expectedUbootHash.isEmpty()) {
+            emit error(tr("Failed to fetch bootloader list and no fallback hashes available. "
+                         "Check your network connection and try again."));
+            reply->deleteLater();
+            return false;
+        }
     }
     reply->deleteLater();
 
@@ -210,11 +1032,8 @@ bool DfuThread::fetchBootloaderFiles()
     for (int i = 0; i < 3; i++) {
         QString fileName = fileNames[i];
         QByteArray expectedHash = expectedHashes[i];
-#ifdef Q_OS_WIN
-        QTemporaryFile tmp(QCoreApplication::applicationDirPath() + "/dfu_XXXXXX");
-#else
-        QTemporaryFile tmp;
-#endif
+        // Keep temp files out of /tmp: it is RAM-backed (tmpfs) on some distros
+        QTemporaryFile tmp(cacheDir + QDir::separator() + "dfu_XXXXXX");
         tmp.setAutoRemove(false);
         if (!tmp.open()) {
             emit error(tr("Failed to create temp file for %1").arg(fileName));
