@@ -40,8 +40,10 @@ Window {
 
     signal saveSettingsSignal(var settings)
 
-    Keys.onEscapePressed: {
-        popup.close()
+    // Keys only attaches to Items; this is a Window, so use Shortcut instead
+    Shortcut {
+        sequence: "Esc"
+        onActivated: popup.close()
     }
 
     ColumnLayout {

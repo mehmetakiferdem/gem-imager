@@ -4,6 +4,46 @@
 <context>
     <name>DfuThread</name>
     <message>
+        <source>Reading image from cache/local file (no download needed)...</source>
+        <translation>İmaj önbellekten/yerel dosyadan okunuyor (indirme gerekmiyor)...</translation>
+    </message>
+    <message>
+        <source>Fetching bootloader files...</source>
+        <translation>Önyükleyici dosyaları alınıyor...</translation>
+    </message>
+    <message>
+        <source>Fetching bootloader list...</source>
+        <translation>Önyükleyici listesi alınıyor...</translation>
+    </message>
+    <message>
+        <source>Failed to download bootloader file: %1</source>
+        <translation>Önyükleyici dosyası indirilemedi: %1</translation>
+    </message>
+    <message>
+        <source>DFU failed (alt: %1): %2</source>
+        <translation>DFU başarısız oldu (alt: %1): %2</translation>
+    </message>
+    <message>
+        <source>Cancelled</source>
+        <translation>İptal edildi</translation>
+    </message>
+    <message>
+        <source>DFU transfer failed (%1), retrying...</source>
+        <translation>DFU aktarımı başarısız oldu (%1), yeniden deneniyor...</translation>
+    </message>
+    <message>
+        <source>DFU transfer failed while sending %1: %2&lt;br&gt;&lt;br&gt;Power off the board, set the boot switches to DFU mode again, restore power and retry.</source>
+        <translation>%1 gönderilirken DFU aktarımı başarısız oldu: %2&lt;br&gt;&lt;br&gt;Kartın gücünü kesin, boot anahtarlarını yeniden DFU moduna alın, gücü verip tekrar deneyin.</translation>
+    </message>
+    <message>
+        <source>Sending image: %1 / %2 MB (%3%)</source>
+        <translation>İmaj gönderiliyor: %1 / %2 MB (%3%)</translation>
+    </message>
+    <message>
+        <source>Failed to fetch bootloader list and no fallback hashes available. Check your network connection and try again.</source>
+        <translation>Önyükleyici listesi alınamadı ve yedek sağlama değerleri yok. Ağ bağlantınızı kontrol edip tekrar deneyin.</translation>
+    </message>
+    <message>
         <location filename="../dfuthread.cpp" line="49"/>
         <source>Failed to create temporary file for DFU image</source>
         <translation>DFU imajı için geçici dosya oluşturulamadı</translation>
@@ -61,7 +101,7 @@
     <message>
         <location filename="../dfuthread.cpp" line="104"/>
         <source>Writing boot binaries to eMMC (do not power off)...</source>
-        <translation>Önyükleme ikili dosyaları eMMC&apos;ye yazılıyor (gücü kapatmayın)...</translation>
+        <translation>Önyükleme dosyaları eMMC&apos;ye yazılıyor (gücü kapatmayın)...</translation>
     </message>
     <message>
         <location filename="../dfuthread.cpp" line="107"/>
@@ -335,6 +375,14 @@
 </context>
 <context>
     <name>ImageWriter</name>
+    <message>
+        <source>Image found in cache, skipping download</source>
+        <translation>İmaj önbellekte bulundu, indirme atlanıyor</translation>
+    </message>
+    <message>
+        <source>Not enough disk space to prepare the image.&lt;br&gt;About %1 GB of free space is needed to extract the image, but only %2 GB is available.&lt;br&gt;Free up disk space and try again.</source>
+        <translation>İmajı hazırlamak için yeterli disk alanı yok.&lt;br&gt;İmajın açılması için yaklaşık %1 GB boş alan gerekiyor, ancak yalnızca %2 GB mevcut.&lt;br&gt;Disk alanı boşaltıp tekrar deneyin.</translation>
+    </message>
     <message>
         <location filename="../imagewriter.cpp" line="313"/>
         <source>Storage capacity is not large enough.&lt;br&gt;Needs to be at least %1 GB.</source>
@@ -664,6 +712,30 @@
 <context>
     <name>main</name>
 
+    <message>
+        <source>Writing... %1%</source>
+        <translation>Yazılıyor... %1%</translation>
+    </message>
+    <message>
+        <source>Preparing image... %1%</source>
+        <translation>İmaj hazırlanıyor... %1%</translation>
+    </message>
+    <message>
+        <source>DFU Mode (eMMC)</source>
+        <translation>DFU Modu (eMMC)</translation>
+    </message>
+    <message>
+        <source>Network Boot</source>
+        <translation>Network Boot</translation>
+    </message>
+    <message>
+        <source>Writes the image to the card&apos;s internal eMMC memory over the network</source>
+        <translation>İmajı ağ üzerinden kartın dahili eMMC belleğine yazar</translation>
+    </message>
+    <message>
+        <source>No storage device selected.&lt;br&gt;Please choose a storage device and try again.</source>
+        <translation>Depolama aygıtı seçilmedi.&lt;br&gt;Lütfen bir depolama aygıtı seçip tekrar deneyin.</translation>
+    </message>
     <message>
         <location filename="../main.qml" line="134"/>
         <source>CHOOSE DEVICE</source>
