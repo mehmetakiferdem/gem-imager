@@ -784,6 +784,7 @@ void DownloadThread::_writeComplete()
     }
 #endif
 
+    _beforeCloseDevice();
     _closeFiles();
 
 #ifdef Q_OS_DARWIN
