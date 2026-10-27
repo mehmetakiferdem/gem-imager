@@ -507,6 +507,26 @@ void DfuThread::_writeComplete()
     qDebug() << "Streamed image in" << _timer.elapsed() / 1000 << "seconds";
 }
 
+/*
+ * Eject the mass storage disk while it is still open. The image has just
+ * written a new partition table; once the handle is closed Windows rescans
+ * the disk, mounts the partitions and asks to format the Linux one. Ejecting
+ * first takes the medium away before that happens - and makes U-Boot leave
+ * mass storage mode. Elsewhere the regular eject after closing is enough.
+ */
+void DfuThread::_beforeCloseDevice()
+{
+#ifdef Q_OS_WIN
+    if (_ums) {
+        DWORD unused;
+        if (DeviceIoControl(_file.handle(), IOCTL_STORAGE_EJECT_MEDIA, NULL, 0, NULL, 0, &unused, NULL))
+            qDebug() << "Ejected the mass storage disk before closing it";
+        else
+            qDebug() << "Ejecting the open mass storage disk failed:" << GetLastError();
+    }
+#endif
+}
+
 /* Remember that an error has been shown, so run() does not follow it with a
    second "Cancelled" dialog: reporting an error also sets _cancelled. */
 void DfuThread::_onDownloadError(const QString &msg)

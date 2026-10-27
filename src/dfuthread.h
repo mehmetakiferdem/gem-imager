@@ -45,6 +45,7 @@ protected:
     void _writeComplete() override;
     void _onWriteError() override;
     void _onDownloadError(const QString &msg) override;
+    void _beforeCloseDevice() override;
 
 private:
     QString _bootloaderFiles[3];

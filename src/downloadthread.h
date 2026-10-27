@@ -148,6 +148,9 @@ protected:
 
     void _hashData(const char *buf, size_t len);
     virtual void _writeComplete();
+    /* Called once the image is written and flushed, while the device is
+       still open: the last moment to act on the open handle. */
+    virtual void _beforeCloseDevice() {}
     bool _verify();
     int _authopen(const QByteArray &filename);
     virtual bool _openAndPrepareDevice();
