@@ -1579,6 +1579,10 @@ ApplicationWindow {
     }
 
     function onPreparationStatusUpdate(msg) {
+        /* While the image is on its way to the board, DFU status lines would
+           flash "Preparing to write" over the transfer progress */
+        if (isDfuMode && dfuOwnsProgress)
+            return
         progressText.text = qsTr("Preparing to write... (%1)").arg(msg)
     }
 
