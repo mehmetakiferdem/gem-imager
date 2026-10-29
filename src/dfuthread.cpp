@@ -620,16 +620,15 @@ DfuThread::UmsResult DfuThread::switchToMassStorage()
         return UmsResult::Unavailable;
 
     /* U-Boot takes a moment to come up after the bootloader stage. Once it
-       offers rawemmc without ums, it is a version that predates mass storage. */
+       offers rawemmc without ums, it is a version that predates mass storage.
+       Each look is a single one: with findDevice()'s own retries, a U-Boot
+       without ums cost 15 seconds before rawemmc was even looked for. */
     bool offered = false;
     for (int attempt = 1; attempt <= 15 && !offered; attempt++) {
         if (_cancelled)
             return UmsResult::Unavailable;
         for (const char *alt : { ALT_UMS, DfuWrapper::ALT_RAWEMMC }) {
-            DfuWrapper probe;
-            const bool found = probe.initialize()
-                && probe.findDevice(DfuWrapper::TI_VENDOR_ID, DfuWrapper::TI_PRODUCT_ID, alt);
-            probe.cleanup();
+            const bool found = boardOffers(alt);
             if (found && !strcmp(alt, ALT_UMS)) { offered = true; break; }
             if (found) {
                 qDebug() << "U-Boot offers rawemmc but no ums alt-setting; using DFU";
