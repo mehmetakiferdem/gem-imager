@@ -106,7 +106,7 @@ bool DfuWrapper::initialize()
     return true;
 }
 
-bool DfuWrapper::findDevice(int vendorId, int productId, const QString &altSettingName)
+bool DfuWrapper::findDevice(int vendorId, int productId, const QString &altSettingName, int attempts)
 {
     if (!initialized) {
         setError("DFU not initialized");
@@ -119,7 +119,7 @@ bool DfuWrapper::findDevice(int vendorId, int productId, const QString &altSetti
     _altNameBytes = altSettingName.toUtf8();
     match_iface_alt_name = altSettingName.isEmpty() ? nullptr : _altNameBytes.constData();
 
-    for (int attempt = 0; attempt < 15; attempt++) {
+    for (int attempt = 0; attempt < attempts; attempt++) {
         if (isCancelled()) {
             setError("Device search cancelled by user");
             return false;
@@ -135,10 +135,10 @@ bool DfuWrapper::findDevice(int vendorId, int productId, const QString &altSetti
     }
 
     if (!dfu_root) {
-        setError(QString("No DFU device found (VID:0x%1 PID:0x%2 alt:%3) after 15 retries")
+        setError(QString("No DFU device found (VID:0x%1 PID:0x%2 alt:%3) after %4 retries")
                 .arg(vendorId, 4, 16, QChar('0'))
                 .arg(productId, 4, 16, QChar('0'))
-                .arg(altSettingName));
+                .arg(altSettingName).arg(attempts));
         return false;
     }
 

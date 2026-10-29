@@ -860,17 +860,54 @@ bool DfuThread::sendBootloaderFiles()
     };
 
     for (int i = 0; i < 3; i++) {
-        emit dfuProgress(45 + i * 10, tr("Sending %1...").arg(altSettings[i]));
-        if (!runDfu(altSettings[i], _bootloaderFiles[i], true))
-            return false;
-        emit dfuProgress(55 + i * 10, tr("%1 sent").arg(altSettings[i]));
+        for (int attempt = 1; ; attempt++) {
+            emit dfuProgress(45 + i * 10, tr("Sending %1...").arg(altSettings[i]));
+            if (!runDfu(altSettings[i], _bootloaderFiles[i], true))
+                return false;
+            emit dfuProgress(55 + i * 10, tr("%1 sent").arg(altSettings[i]));
 
-        if (i < 2) {
-            emit dfuProgress(55 + i * 10, tr("Waiting for device to reconnect..."));
-            QThread::sleep(2);
+            if (i < 2) {
+                emit dfuProgress(55 + i * 10, tr("Waiting for device to reconnect..."));
+                QThread::sleep(2);
+            }
+
+            if (i != 0 || attempt == 3 || _cancelled || !romStillWaiting())
+                break;
+            qDebug() << "Boot ROM is still waiting for tiboot3.bin after attempt" << attempt
+                     << "- sending it again";
         }
     }
 
+    return true;
+}
+
+/* One look at the bus, without the retries findDevice() makes by default */
+bool DfuThread::boardOffers(const char *altSetting)
+{
+    DfuWrapper probe;
+    const bool found = probe.initialize()
+        && probe.findDevice(DfuWrapper::TI_VENDOR_ID, DfuWrapper::TI_PRODUCT_ID, altSetting, 1);
+    probe.cleanup();
+    return found;
+}
+
+/*
+ * The boot ROM now and then drops the first transfer after power-up: it fails
+ * at 0 bytes with LIBUSB_ERROR_IO, the ROM re-enumerates and waits for
+ * tiboot3.bin again. downloadFile() cannot tell that error from the disconnect
+ * expected when the ROM starts the image, and without this the tispl.bin stage
+ * waited out all its retries for an SPL that was never sent. SPL offers
+ * tispl.bin, the ROM offers "bootloader"; only a ROM seen twice in a row, with
+ * no SPL, counts, so one caught on its way out does not get the file again.
+ */
+bool DfuThread::romStillWaiting()
+{
+    for (int look = 0; look < 2; look++) {
+        if (look > 0)
+            QThread::msleep(1000);
+        if (boardOffers(DfuWrapper::ALT_TISPL) || !boardOffers(DfuWrapper::ALT_BOOTLOADER))
+            return false;
+    }
     return true;
 }
 

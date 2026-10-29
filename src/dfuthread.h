@@ -94,6 +94,8 @@ private:
     bool fetchBootloaderFiles();
     bool takeBootloaderFromImage();
     bool sendBootloaderFiles();
+    static bool boardOffers(const char *altSetting);
+    bool romStillWaiting();
     bool sendImageToRawemmc();
     void onStreamProgress(qint64 bytesSent, qint64 totalBytes);
 };

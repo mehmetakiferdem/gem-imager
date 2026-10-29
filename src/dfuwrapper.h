@@ -32,7 +32,7 @@ public:
     static bool isDevicePresent(int vendorId, int productId);
 
     bool initialize();
-    bool findDevice(int vendorId, int productId, const QString &altSettingName);
+    bool findDevice(int vendorId, int productId, const QString &altSettingName, int attempts = 15);
     bool downloadFile(const QString &filePath, bool resetAfter = true);
     bool downloadFileStreaming(const QString &filePath);
 
