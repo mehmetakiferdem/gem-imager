@@ -589,8 +589,8 @@ static const char *ALT_UMS = "ums";
 
 /*
  * U-Boot's ums disks, by device path. The inquiry data reads "Linux UMS disk 0",
- * which is what both the Linux description (vendor + model) and the Windows
- * friendly name are made from.
+ * which is what the Linux description (vendor + model), the Windows friendly
+ * name and the macOS media name ("Linux UMS disk 0 Media") are made from.
  */
 static QSet<QString> listUmsDisks()
 {
@@ -612,10 +612,6 @@ static QSet<QString> listUmsDisks()
  */
 DfuThread::UmsResult DfuThread::switchToMassStorage()
 {
-#ifdef Q_OS_DARWIN
-    /* Raw disk access goes through authopen on macOS, which is not reliable yet */
-    return UmsResult::Unavailable;
-#else
     if (qEnvironmentVariableIsSet("GEM_IMAGER_NO_UMS"))
         return UmsResult::Unavailable;
 
@@ -697,7 +693,6 @@ DfuThread::UmsResult DfuThread::switchToMassStorage()
                   "within %1 seconds.<br><br>Power off the board, set the boot switches "
                   "to DFU mode again, restore power and retry.").arg(timeoutMs / 1000));
     return UmsResult::Failed;
-#endif
 }
 
 /*
