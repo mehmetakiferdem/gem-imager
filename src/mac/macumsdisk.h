@@ -6,7 +6,6 @@
  * Copyright (C) 2026 T3 Gemstone
  */
 
-#include <QByteArray>
 #include <QList>
 #include <QString>
 #include <DiskArbitration/DiskArbitration.h>
@@ -22,22 +21,22 @@
  * Disk Arbitration peek callback, before anything else sees them, which is
  * why this has to exist before the board is switched to mass storage mode.
  * The partitions the image brings along appear once the disk is closed after
- * writing, and are claimed the same way.
+ * writing, and are claimed the same way; holding them until the board leaves
+ * USB keeps them from being mounted in the meantime.
  */
 class MacUmsDisk
 {
 public:
     MacUmsDisk();
-    ~MacUmsDisk();
+    ~MacUmsDisk();   /* releases the claims; keep it until the board has left */
 
     /*
-     * Release the claims, then unmount and eject the disk: U-Boot leaves mass
-     * storage mode, and writes the boot binaries, only on an eject. The eject
-     * is sent whether or not the unmount succeeded - with nothing mounted,
-     * macOS refuses the unmount, and mountutils then never sent the eject.
-     * device is "/dev/diskN" or "/dev/rdiskN".
+     * U-Boot leaves mass storage mode, and writes the boot binaries, on a SCSI
+     * eject, and macOS never sends one: it marks every USB disk "Manual
+     * Eject" and only detaches it on its own side. Instead, write the string
+     * U-Boot takes for "done" to the last sector of the open disk.
      */
-    bool eject(const QByteArray &device);
+    static bool tellBoardWriteIsDone(int fd);
 
 private:
     static void peek(DADiskRef disk, void *context);
@@ -45,7 +44,6 @@ private:
     static void claimed(DADiskRef disk, DADissenterRef dissenter, void *context);
     static void releaseOnQueue(void *context);
     void releaseClaims();
-    bool ejectOnce(const char *bsdName);
 
     DASessionRef _session = nullptr;
     dispatch_queue_t _queue = nullptr;

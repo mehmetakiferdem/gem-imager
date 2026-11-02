@@ -421,11 +421,11 @@ void DfuThread::run()
                 }
             }
 #endif
-#ifdef Q_OS_DARWIN
-            if (!_macUmsDisk->eject(_filename))
-                qDebug() << "macOS did not eject the board's disk; U-Boot stays in mass storage mode";
-#endif
             if (!waitForBoardToLeaveUsb(true)) return;
+#ifdef Q_OS_DARWIN
+            delete _macUmsDisk;
+            _macUmsDisk = nullptr;
+#endif
             emit dfuProgress(100, tr("Image written to eMMC successfully! Power off the board "
                                      "and switch the boot mode to eMMC."));
             QThread::msleep(1000);
@@ -556,6 +556,10 @@ void DfuThread::_writeComplete()
  */
 void DfuThread::_beforeCloseDevice()
 {
+#ifdef Q_OS_DARWIN
+    if (_ums)
+        MacUmsDisk::tellBoardWriteIsDone(_file.handle());
+#endif
 #ifdef Q_OS_WIN
     if (_ums) {
         DWORD unused;
@@ -699,7 +703,8 @@ DfuThread::UmsResult DfuThread::switchToMassStorage()
                 _filename = disk.toLatin1();
                 _ums = true;
 #ifdef Q_OS_DARWIN
-                /* run() ejects through _macUmsDisk, which holds the disk */
+                /* macOS does not send the eject U-Boot waits for;
+                   _beforeCloseDevice() tells the board instead */
                 _ejectEnabled = false;
 #else
                 _ejectEnabled = true;

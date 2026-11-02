@@ -5,8 +5,12 @@
 
 #include "macumsdisk.h"
 #include <QDebug>
-#include <QProcess>
-#include <QThread>
+#include <errno.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <sys/disk.h>
+#include <sys/ioctl.h>
 
 /* U-Boot's inquiry data: vendor "Linux", product "UMS disk 0". Partitions
    carry their own media name but share the device's vendor and model. */
@@ -74,8 +78,8 @@ void MacUmsDisk::peek(DADiskRef disk, void *context)
     DADiskClaim(disk, kDADiskClaimOptionDefault, release, context, claimed, context);
 }
 
-/* Someone else - the pre-write unmount, Finder - asked for the disk. Keep it:
-   the write needs it, and eject() releases the claims itself. */
+/* Someone else - the pre-write unmount, Finder - asked for the disk. Keep it
+   until the board has left; the claims go with this object. */
 DADissenterRef MacUmsDisk::release(DADiskRef, void *)
 {
     return DADissenterCreate(kCFAllocatorDefault, kDAReturnBusy, CFSTR("Gemstone Imager is writing to this disk"));
@@ -110,82 +114,30 @@ void MacUmsDisk::releaseClaims()
     dispatch_sync_f(_queue, this, releaseOnQueue);
 }
 
-namespace {
-struct Request {
-    dispatch_semaphore_t done;
-    QString result;
-    bool ok = false;
-};
+/* Must match FSG_HOST_DONE_MAGIC in U-Boot's f_mass_storage.c */
+static const char HOST_DONE[] = "U-Boot UMS: host is done, leave mass storage mode";
 
-void requestDone(DADiskRef, DADissenterRef dissenter, void *context)
+bool MacUmsDisk::tellBoardWriteIsDone(int fd)
 {
-    auto req = static_cast<Request *>(context);
-    req->ok = !dissenter;
-    req->result = daStatus(dissenter);
-    dispatch_semaphore_signal(req->done);
-}
-
-/* Wait for a Disk Arbitration callback; false if it never came */
-bool waitFor(Request &req)
-{
-    return dispatch_semaphore_wait(req.done, dispatch_time(DISPATCH_TIME_NOW, 30 * NSEC_PER_SEC)) == 0;
-}
-}
-
-bool MacUmsDisk::ejectOnce(const char *bsdName)
-{
-    if (!_session)
-        return false;
-    DADiskRef disk = DADiskCreateFromBSDName(kCFAllocatorDefault, _session, bsdName);
-    if (!disk) {
-        qDebug() << "Disk Arbitration:" << bsdName << "not found";
+    uint64_t count = 0;
+    uint32_t size = 0;
+    if (::ioctl(fd, DKIOCGETBLOCKCOUNT, &count) != 0 || ::ioctl(fd, DKIOCGETBLOCKSIZE, &size) != 0
+        || count == 0 || size < sizeof(HOST_DONE)) {
+        qDebug() << "Could not get the size of the board's disk:" << strerror(errno);
         return false;
     }
 
-    Request req;
-    req.done = dispatch_semaphore_create(0);
-
-    DADiskUnmount(disk, kDADiskUnmountOptionWhole | kDADiskUnmountOptionForce, requestDone, &req);
-    if (waitFor(req))
-        qDebug() << "Disk Arbitration: unmounting" << bsdName << req.result;
+    void *sector = nullptr;
+    if (posix_memalign(&sector, 4096, size) != 0)
+        return false;
+    memset(sector, 0, size);
+    memcpy(sector, HOST_DONE, sizeof(HOST_DONE));
+    const bool ok = ::pwrite(fd, sector, size, off_t((count - 1) * size)) == ssize_t(size)
+        && ::fsync(fd) == 0;
+    if (!ok)
+        qDebug() << "Telling the board the write is done failed:" << strerror(errno);
     else
-        qDebug() << "Disk Arbitration: no answer to unmounting" << bsdName;
-
-    DADiskEject(disk, kDADiskEjectOptionDefault, requestDone, &req);
-    bool ok = false;
-    if (waitFor(req)) {
-        qDebug() << "Disk Arbitration: ejecting" << bsdName << req.result;
-        ok = req.ok;
-    } else {
-        qDebug() << "Disk Arbitration: no answer to ejecting" << bsdName;
-    }
-
-    dispatch_release(req.done);
-    CFRelease(disk);
+        qDebug() << "Told the board the write is done (sector" << count - 1 << ")";
+    free(sector);
     return ok;
-}
-
-bool MacUmsDisk::eject(const QByteArray &device)
-{
-    releaseClaims();
-
-    QByteArray bsdName = device;
-    if (bsdName.startsWith("/dev/"))
-        bsdName.remove(0, 5);
-    if (bsdName.startsWith("rdisk"))
-        bsdName.remove(0, 1);
-
-    /* Closing the disk after writing makes macOS read the new partition
-       table, and the disk may be briefly unknown to it while it does */
-    for (int attempt = 1; attempt <= 3; attempt++) {
-        if (ejectOnce(bsdName.constData()))
-            return true;
-        QThread::sleep(1);
-    }
-
-    QProcess diskutil;
-    diskutil.start("diskutil", {"eject", "/dev/" + QString::fromLatin1(bsdName)});
-    diskutil.waitForFinished(30000);
-    qDebug() << "diskutil eject:" << diskutil.exitCode() << diskutil.readAll().trimmed();
-    return diskutil.exitStatus() == QProcess::NormalExit && diskutil.exitCode() == 0;
 }
