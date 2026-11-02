@@ -27,6 +27,10 @@ Window {
     title: qsTr("OS Customization")
 
     property bool initialized: false
+    /* t3-gem-vnc is only installed on desktop images: on minimal, kiosk and
+       tablet images enabling VNC did nothing but fail on first boot. An image
+       whose name does not tell its type keeps the option. */
+    property bool vncAvailable: true
     property bool hasSavedSettings: false
     property string config
     property string cmdline
@@ -578,6 +582,7 @@ Window {
                     ImCheckBox {
                         id: chkVNC
                         text: qsTr("Enable VNC")
+                        visible: vncAvailable
                     }
 
                     Text {
@@ -589,6 +594,7 @@ Window {
                     }
 
                     RowLayout {
+                        visible: vncAvailable
                         Text {
                             text: qsTr("VNC Password:")
                             color: chkVNC.checked ? "black" : "grey"
@@ -771,7 +777,7 @@ Window {
                         return
                     }
 
-                    if (chkVNC.checked && fieldVncPassword.text.length == 0)
+                    if (vncAvailable && chkVNC.checked && fieldVncPassword.text.length == 0)
                     {
                         fieldVncPassword.indicateError = true
                         fieldVncPassword.forceActiveFocus()
@@ -989,6 +995,9 @@ Window {
         if (!initialized) {
             initialize()
         }
+        vncAvailable = !/^gemstone-(minimal|kiosk|tablet)-/i.test(imageWriter.srcFileName())
+        if (!vncAvailable)
+            warningVNCPassword.visible = false
 
         //open()
         show()
@@ -1239,8 +1248,9 @@ Window {
             addGemInit("diskpasswd='"+fieldDiskPassword.text+"'")
         }
         addGemInit("writeimagetommc="+ (chkSdToEmmcFB.checked ? 1 : 0))
-        addGemInit("vnc="+ (chkVNC.checked ? 1 : 0))
-        if (chkVNC.checked) {
+        const vnc = vncAvailable && chkVNC.checked
+        addGemInit("vnc="+ (vnc ? 1 : 0))
+        if (vnc) {
             addGemInit("vncpassword='"+ imageWriter.encrypt_vnc_password(fieldVncPassword.text)+"'")
         }
         addGemInit("storagegadget="+ (chkStorageGadget.checked ? 1 : 0))
