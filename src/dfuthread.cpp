@@ -421,6 +421,9 @@ void DfuThread::run()
                 }
             }
 #endif
+#ifdef Q_OS_DARWIN
+            _macUmsDisk->detach(_filename);
+#endif
             if (!waitForBoardToLeaveUsb(true)) return;
 #ifdef Q_OS_DARWIN
             delete _macUmsDisk;

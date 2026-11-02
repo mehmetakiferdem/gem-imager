@@ -6,6 +6,7 @@
  * Copyright (C) 2026 T3 Gemstone
  */
 
+#include <QByteArray>
 #include <QList>
 #include <QString>
 #include <DiskArbitration/DiskArbitration.h>
@@ -37,6 +38,14 @@ public:
      * U-Boot takes for "done" to the last sector of the open disk.
      */
     static bool tellBoardWriteIsDone(int fd);
+
+    /*
+     * Once the disk is closed, release it and detach it on macOS's side,
+     * before U-Boot leaves USB: a disk that disappears without that makes
+     * macOS warn that it was not ejected properly. device is "/dev/diskN"
+     * or "/dev/rdiskN".
+     */
+    void detach(const QByteArray &device);
 
 private:
     static void peek(DADiskRef disk, void *context);

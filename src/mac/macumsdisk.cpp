@@ -141,3 +141,54 @@ bool MacUmsDisk::tellBoardWriteIsDone(int fd)
     free(sector);
     return ok;
 }
+
+namespace {
+struct Request {
+    dispatch_semaphore_t done;
+    QString result;
+};
+
+void requestDone(DADiskRef, DADissenterRef dissenter, void *context)
+{
+    auto req = static_cast<Request *>(context);
+    req->result = daStatus(dissenter);
+    dispatch_semaphore_signal(req->done);
+}
+
+QString waitFor(Request &req)
+{
+    if (dispatch_semaphore_wait(req.done, dispatch_time(DISPATCH_TIME_NOW, 10 * NSEC_PER_SEC)) != 0)
+        return QStringLiteral("no answer");
+    return req.result;
+}
+}
+
+void MacUmsDisk::detach(const QByteArray &device)
+{
+    releaseClaims();
+    if (!_session)
+        return;
+
+    QByteArray bsdName = device;
+    if (bsdName.startsWith("/dev/"))
+        bsdName.remove(0, 5);
+    if (bsdName.startsWith("rdisk"))
+        bsdName.remove(0, 1);
+
+    DADiskRef disk = DADiskCreateFromBSDName(kCFAllocatorDefault, _session, bsdName.constData());
+    if (!disk) {
+        qDebug() << "Disk Arbitration:" << bsdName << "not found";
+        return;
+    }
+
+    /* The eject is sent whether or not the unmount succeeded: with nothing
+       mounted, macOS refuses the unmount */
+    Request req;
+    req.done = dispatch_semaphore_create(0);
+    DADiskUnmount(disk, kDADiskUnmountOptionWhole | kDADiskUnmountOptionForce, requestDone, &req);
+    qDebug() << "Disk Arbitration: unmounting" << bsdName << waitFor(req);
+    DADiskEject(disk, kDADiskEjectOptionDefault, requestDone, &req);
+    qDebug() << "Disk Arbitration: detaching" << bsdName << waitFor(req);
+    dispatch_release(req.done);
+    CFRelease(disk);
+}
