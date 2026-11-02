@@ -22,8 +22,9 @@
  * Disk Arbitration peek callback, before anything else sees them, which is
  * why this has to exist before the board is switched to mass storage mode.
  * The partitions the image brings along appear once the disk is closed after
- * writing, and are claimed the same way; holding them until the board leaves
- * USB keeps them from being mounted in the meantime.
+ * writing. A claim does not keep macOS from mounting those, so mounting them
+ * is refused: a boot partition mounted when the board leaves USB, even one
+ * unmounted just before, makes macOS warn that it was not ejected properly.
  */
 class MacUmsDisk
 {
@@ -49,6 +50,7 @@ public:
 
 private:
     static void peek(DADiskRef disk, void *context);
+    static DADissenterRef approveMount(DADiskRef disk, void *context);
     static DADissenterRef release(DADiskRef disk, void *context);
     static void claimed(DADiskRef disk, DADissenterRef dissenter, void *context);
     static void releaseOnQueue(void *context);

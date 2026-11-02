@@ -57,6 +57,7 @@ MacUmsDisk::MacUmsDisk()
         return;
     }
     DARegisterDiskPeekCallback(_session, nullptr, 0, peek, this);
+    DARegisterDiskMountApprovalCallback(_session, nullptr, approveMount, this);
     _peeking = true;
     DASessionSetDispatchQueue(_session, _queue);
 }
@@ -76,6 +77,14 @@ void MacUmsDisk::peek(DADiskRef disk, void *context)
     if (!isUmsDisk(disk))
         return;
     DADiskClaim(disk, kDADiskClaimOptionDefault, release, context, claimed, context);
+}
+
+DADissenterRef MacUmsDisk::approveMount(DADiskRef disk, void *)
+{
+    if (!isUmsDisk(disk))
+        return nullptr;
+    qDebug() << "Disk Arbitration: not mounting" << DADiskGetBSDName(disk);
+    return DADissenterCreate(kCFAllocatorDefault, kDAReturnNotPermitted, CFSTR("Gemstone Imager is writing to this disk"));
 }
 
 /* Someone else - the pre-write unmount, Finder - asked for the disk. Keep it
@@ -100,6 +109,7 @@ void MacUmsDisk::releaseOnQueue(void *context)
     auto self = static_cast<MacUmsDisk *>(context);
     if (self->_peeking) {
         DAUnregisterCallback(self->_session, reinterpret_cast<void *>(peek), self);
+        DAUnregisterCallback(self->_session, reinterpret_cast<void *>(approveMount), self);
         self->_peeking = false;
     }
     for (DADiskRef disk : self->_claimed) {
