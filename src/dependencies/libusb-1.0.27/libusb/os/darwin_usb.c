@@ -2059,7 +2059,12 @@ static int darwin_reenumerate_device (struct libusb_device_handle *dev_handle, b
   cached_configurations = alloca (sizeof (*cached_configurations) * descriptor.bNumConfigurations);
 
   for (i = 0 ; i < descriptor.bNumConfigurations ; ++i) {
-    (*dpriv->device)->GetConfigurationDescriptorPtr (dpriv->device, i, &cached_configuration);
+    /* a device that has already gone leaves cached_configuration unset */
+    kresult = (*dpriv->device)->GetConfigurationDescriptorPtr (dpriv->device, i, &cached_configuration);
+    if (kresult != kIOReturnSuccess) {
+      dpriv->in_reenumerate = false;
+      return darwin_to_libusb (kresult);
+    }
     memcpy (cached_configurations + i, cached_configuration, sizeof (cached_configurations[i]));
   }
 
