@@ -192,6 +192,8 @@ if (APPLE)
         mac/acceleratedcryptographichash_commoncrypto.cpp
         mac/macfile.cpp
         mac/macfile.h
+        mac/macumsdisk.cpp
+        mac/macumsdisk.h
         dependencies/mountutils/src/darwin/functions.cpp
         mac/macwlancredentials.h
         mac/macwlancredentials.cpp

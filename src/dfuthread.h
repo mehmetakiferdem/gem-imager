@@ -75,6 +75,9 @@ private:
      */
     bool _ums = false;
     qint64 _umsLastReport = 0;
+#ifdef Q_OS_DARWIN
+    class MacUmsDisk *_macUmsDisk = nullptr;
+#endif
     enum class UmsResult { Unavailable, Ready, Failed };
     UmsResult switchToMassStorage();
     bool waitForBoardToLeaveUsb(bool massStorage);

@@ -30,6 +30,9 @@
 #include <windows.h>
 #include <winioctl.h>
 #endif
+#ifdef Q_OS_DARWIN
+#include "mac/macumsdisk.h"
+#endif
 
 #include <QEventLoop>
 #include <QNetworkAccessManager>
@@ -73,6 +76,9 @@ DfuThread::~DfuThread()
 
     if (!_headPath.isEmpty())
         QFile::remove(_headPath);
+#ifdef Q_OS_DARWIN
+    delete _macUmsDisk;
+#endif
 }
 
 bool DfuThread::isImage()
@@ -415,6 +421,10 @@ void DfuThread::run()
                 }
             }
 #endif
+#ifdef Q_OS_DARWIN
+            if (!_macUmsDisk->eject(_filename))
+                qDebug() << "macOS did not eject the board's disk; U-Boot stays in mass storage mode";
+#endif
             if (!waitForBoardToLeaveUsb(true)) return;
             emit dfuProgress(100, tr("Image written to eMMC successfully! Power off the board "
                                      "and switch the boot mode to eMMC."));
@@ -646,6 +656,12 @@ DfuThread::UmsResult DfuThread::switchToMassStorage()
     }
     marker.close();
 
+#ifdef Q_OS_DARWIN
+    /* Before the switch: the disk has to be claimed as it appears */
+    if (!_macUmsDisk)
+        _macUmsDisk = new MacUmsDisk;
+#endif
+
     emit dfuProgress(78, tr("Switching the board to USB mass storage mode..."));
     if (!runDfu(ALT_UMS, marker.fileName(), true))
         return UmsResult::Failed;   /* runDfu() reported it */
@@ -682,7 +698,12 @@ DfuThread::UmsResult DfuThread::switchToMassStorage()
                 qDebug() << "Board is exposed as USB mass storage at" << disk;
                 _filename = disk.toLatin1();
                 _ums = true;
+#ifdef Q_OS_DARWIN
+                /* run() ejects through _macUmsDisk, which holds the disk */
+                _ejectEnabled = false;
+#else
                 _ejectEnabled = true;
+#endif
                 return UmsResult::Ready;
             }
         }
