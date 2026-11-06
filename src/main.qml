@@ -1397,6 +1397,12 @@ ApplicationWindow {
     }
 
     MsgPopup {
+        id: sdBootmodePopup
+        title: qsTr("Boot Mode Switch")
+        imageSource: "icons/sd-card-bootmode.svg"
+    }
+
+    MsgPopup {
         id: quitpopup
         continueButton: false
         yesButton: true
@@ -1619,6 +1625,7 @@ ApplicationWindow {
     }
 
     function onSuccess() {
+        var popup = msgpopup
         msgpopup.title = qsTr("Write Successful")
         if (osbutton.text === qsTr("Erase"))
             msgpopup.text = qsTr("<b>%1</b> has been erased<br><br>You can now remove the SD card from the reader").arg(dstbutton.text)
@@ -1641,6 +1648,13 @@ ApplicationWindow {
             {
                 msgpopup.text = qsTr("<b>%1</b> has been written to <b>%2</b><br><br>The process is complete. You can connect to the board via the serial port.").arg(osbutton.text).arg(dstbutton.text)
             }
+            else if(isGemO1())
+            {
+                // The T3-GEM-O1 only boots from the card once its boot mode
+                // switches are set to SD, as the DFU flow tells the user for eMMC.
+                sdBootmodePopup.text = qsTr("<b>%1</b> has been written to <b>%2</b><br><br>You can now remove the SD card from the reader. With the board powered off, insert the SD card and set the boot mode switches to SD Boot as shown in the image. Upon restoring power, the system will boot from the SD card.").arg(osbutton.text).arg(dstbutton.text)
+                popup = sdBootmodePopup
+            }
             else
             {
                 msgpopup.text = qsTr("<b>%1</b> has been written to <b>%2</b><br><br>You can now remove the SD card from the reader").arg(osbutton.text).arg(dstbutton.text)
@@ -1651,7 +1665,7 @@ ApplicationWindow {
             msgpopup.quitButton = true
         }
 
-        msgpopup.openPopup()
+        popup.openPopup()
         if (!isUniflashMode) {
             // Drive letters can change after a write, so force re-selection for real
             // drives. The uniflash target is fixed and stays selected for repeat writes.
@@ -1660,6 +1674,10 @@ ApplicationWindow {
         }
         isDfuMode = false
         resetWriteButton()
+    }
+
+    function isGemO1() {
+        return hwbutton.text === "T3-GEM-O1" || imageWriter.srcFileName().indexOf("t3-gem-o1") !== -1
     }
 
     function onSerialPortSelected(port) {
