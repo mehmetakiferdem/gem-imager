@@ -42,5 +42,6 @@
         <file>qmlcomponents/ImComboBox.qml</file>
         <file>icons/usb-dfu-bootmode.svg</file>
         <file>icons/emmc-bootmode.svg</file>
+        <file>icons/sd-card-bootmode.svg</file>
     </qresource>
 </RCC>

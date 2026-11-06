@@ -1079,6 +1079,11 @@
         <translation>DFU programlama başarıyla tamamlandı!&lt;br&gt;&lt;br&gt;Kartı kapattıktan sonra, önyükleme modu anahtarlarını görselde gösterildiği gibi eMMC Önyüklemesine ayarlayın. Güç yeniden verildiğinde sistem otomatik olarak başlayacaktır.</translation>
     </message>
     <message>
+        <location filename="../main.qml" line="1654"/>
+        <source>&lt;b&gt;%1&lt;/b&gt; has been written to &lt;b&gt;%2&lt;/b&gt;&lt;br&gt;&lt;br&gt;You can now remove the SD card from the reader. With the board powered off, insert the SD card and set the boot mode switches to SD Boot as shown in the image. Upon restoring power, the system will boot from the SD card.</source>
+        <translation>&lt;b&gt;%1&lt;/b&gt;, &lt;b&gt;%2&lt;/b&gt; üzerine yazıldı&lt;br&gt;&lt;br&gt;SD kartı okuyucudan çıkarabilirsiniz. Kart kapalıyken SD kartı takın ve önyükleme modu anahtarlarını görselde gösterildiği gibi SD Önyüklemesine ayarlayın. Güç yeniden verildiğinde sistem SD karttan başlayacaktır.</translation>
+    </message>
+    <message>
         <location filename="../main.qml" line="1412"/>
         <source>Gemstone Imager is still busy.&lt;br&gt;Are you sure you want to quit?</source>
         <translation>Gemstone Imager hâlâ meşgul.&lt;br&gt;Çıkmak istediğinizden emin misiniz?</translation>
