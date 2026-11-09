@@ -150,7 +150,9 @@ bool DownloadThread::_openAndPrepareDevice()
     {
         _nr = QByteArray::fromStdString(m[1]);
 
-        if (!_nr.isEmpty()) {
+        if (!_nr.isEmpty() && _keepPartitionTable) {
+            qDebug() << "Leaving the partition table of Windows drive #" << _nr << "as it is";
+        } else if (!_nr.isEmpty()) {
             qDebug() << "Removing partition table from Windows drive #" << _nr << "(" << _filename << ")";
 
             QProcess proc;
@@ -215,8 +217,15 @@ bool DownloadThread::_openAndPrepareDevice()
         return false;
     } else if (authopenresult == _file.authOpenError) {
         QString msg = tr("Error running authopen to gain access to disk device '%1'").arg(QString(_filename));
-        msg += "<br>"+tr("Please verify if 'Gemstone Imager' is allowed access to 'removable volumes' in privacy settings (under 'files and folders' or alternatively give it 'full disk access').");
-        QStringList args("x-apple.systempreferences:com.apple.preference.security?Privacy_RemovableVolume");
+        const QString why = _file.lastAuthOpenError();
+        if (!why.isEmpty())
+            msg += "<br>" + tr("Reason: %1").arg(why);
+        /* Writing to /dev/rdiskN is raw device access, which is covered by Full
+           Disk Access; "Removable Volumes" covers files on a mounted volume and
+           is not enough. The pane this used to open was therefore the wrong one,
+           and granting what it asked for changed nothing. */
+        msg += "<br>"+tr("Give 'Gemstone Imager' <b>Full Disk Access</b> in Privacy & Security, then quit and reopen the application - macOS only reads the permission at startup.");
+        QStringList args("x-apple.systempreferences:com.apple.preference.security?Privacy_AllFiles");
         QProcess::execute("open", args);
         emit error(msg);
         return false;
@@ -552,6 +561,7 @@ size_t DownloadThread::_writeFile(const char *buf, size_t len)
         qDebug() << "Write error:" << _file.errorString() << "while writing len:" << len;
     }
 
+
     wh.waitForFinished();
     return (written < 0) ? 0 : written;
 }
@@ -777,6 +787,7 @@ void DownloadThread::_writeComplete()
     }
 #endif
 
+    _beforeCloseDevice();
     _closeFiles();
 
 #ifdef Q_OS_DARWIN
@@ -786,7 +797,8 @@ void DownloadThread::_writeComplete()
 
     if (_ejectEnabled)
     {
-        eject_disk(_filename.constData());
+        const MOUNTUTILS_RESULT ejected = eject_disk(_filename.constData());
+        qDebug() << "Ejecting" << _filename << "returned" << ejected;
 #ifdef Q_OS_LINUX
 #ifndef QT_NO_DBUS
         /* mountutils only implemented unmount and not eject on Linux. Do so through udisks2 */

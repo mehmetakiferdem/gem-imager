@@ -130,7 +130,7 @@ public:
     uint64_t bytesWritten();
 
     virtual bool isImage();
-    size_t _writeFile(const char *buf, size_t len);
+    virtual size_t _writeFile(const char *buf, size_t len);
 
 signals:
     void success();
@@ -147,7 +147,10 @@ protected:
     virtual void _onWriteError();
 
     void _hashData(const char *buf, size_t len);
-    void _writeComplete();
+    virtual void _writeComplete();
+    /* Called once the image is written and flushed, while the device is
+       still open: the last moment to act on the open handle. */
+    virtual void _beforeCloseDevice() {}
     bool _verify();
     int _authopen(const QByteArray &filename);
     virtual bool _openAndPrepareDevice();
@@ -184,6 +187,10 @@ protected:
     QElapsedTimer _timer;
     int _inputBufferSize;
     bool _isNormalFile{false};
+    /* Windows: do not run "diskpart clean" on the drive. "clean" wipes
+       sector 0, and Windows mounts a disk with no MBR as one RAW volume and
+       asks to format it. */
+    bool _keepPartitionTable{false};
 
 #ifdef Q_OS_WIN
     WinFile _file, _volumeFile;

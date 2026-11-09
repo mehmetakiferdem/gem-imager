@@ -3,6 +3,7 @@
  * Copyright (C) 2020 Raspberry Pi Ltd
  */
 
+#include <QDir>
 #include <QFileInfo>
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
@@ -14,6 +15,7 @@
 #include "drivelistmodel.h"
 #include "networkaccessmanagerfactory.h"
 #include "cli.h"
+#include "crashlog.h"
 #include <QMessageLogContext>
 #include <QQuickWindow>
 #include <QTranslator>
@@ -47,12 +49,6 @@ static QTextStream cerr(stderr);
 #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
 //using Qt::endl;
 #define endl  Qt::endl
-#endif
-
-#ifdef Q_OS_WIN
-static void consoleMsgHandler(QtMsgType, const QMessageLogContext &, const QString &str) {
-    cerr << str << endl;
-}
 #endif
 
 #ifdef QT_NO_WIDGETS
@@ -147,7 +143,8 @@ int main(int argc, char *argv[])
 #ifdef Q_OS_LINUX
         if (strcmp(argv[i], "--install-dfu-udev-rules") == 0)
         {
-            const char *rulesPath = "/etc/udev/rules.d/99-gem-imager-dfu.rules";
+            // Must sort before 73-seat-late.rules or TAG+="uaccess" is never processed
+            const char *rulesPath = "/etc/udev/rules.d/60-gem-imager-dfu.rules";
             std::FILE *f = std::fopen(rulesPath, "w");
             if (!f)
             {
@@ -156,14 +153,24 @@ int main(int argc, char *argv[])
             }
             std::fputs(
                 "# Gemstone Imager: TI AM62x DFU device (VID:0451 PID:6165)\n"
+                "# MODE 0666 is the fallback for systems without logind or a plugdev group\n"
                 "SUBSYSTEM==\"usb\", ATTR{idVendor}==\"0451\", ATTR{idProduct}==\"6165\","
-                " TAG+=\"uaccess\", GROUP=\"plugdev\", MODE=\"0664\"\n",
+                " TAG+=\"uaccess\", MODE=\"0666\"\n",
                 f);
             std::fclose(f);
+            // Rule from older versions; its 99- prefix broke uaccess and it relied on plugdev
+            std::remove("/etc/udev/rules.d/99-gem-imager-dfu.rules");
+            std::system("udevadm control --reload-rules");
+            std::system("udevadm trigger --subsystem-match=usb");
             return 0;
         }
 #endif
     }
+
+    QCoreApplication::setOrganizationName("Gemstone");
+    QCoreApplication::setOrganizationDomain("t3gemstone.org");
+    QCoreApplication::setApplicationName("Gemstone Imager");
+    CrashLog::install(argc, argv);
 
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
@@ -210,10 +217,11 @@ int main(int argc, char *argv[])
 #else
     QApplication app(argc, argv);
 #endif
-    app.setOrganizationName("Gemstone");
-    app.setOrganizationDomain("t3gemstone.org");
-    app.setApplicationName("Gemstone Imager");
     app.setWindowIcon(QIcon(":/icons/gem-imager.ico"));
+    /* On Wayland the window icon is not used: the compositor looks the icon up
+       in the .desktop file named after the app id, which otherwise is the
+       executable name and matches none, so a generic icon was shown. */
+    app.setDesktopFileName("org.t3gemstone.gem-imager");
     ImageWriter imageWriter;
     NetworkAccessManagerFactory namf;
     QQmlApplicationEngine engine;
@@ -295,7 +303,7 @@ int main(int argc, char *argv[])
                 freopen("CONOUT$", "w", stdout);
                 freopen("CONOUT$", "w", stderr);
                 std::ios::sync_with_stdio();
-                qInstallMessageHandler(consoleMsgHandler);
+                CrashLog::setConsoleEcho(true);
             }
 #endif
         }
@@ -303,6 +311,7 @@ int main(int argc, char *argv[])
         {
             cerr << "gem-imager [--debug] [--version] [--repo <repository URL>] [--qm <custom qm translation file>] [--disable-telemetry] [<image file to write>]" << endl;
             cerr << "-OR- gem-imager --cli [--disable-verify] [--sha256 <expected hash>] [--debug] [--quiet] <image file to write> <destination drive device>" << endl;
+            cerr << "Log files are written to " << QDir::toNativeSeparators(CrashLog::logDirectory()) << endl;
             return 0;
         }
         else if (args[i] == "--version")
@@ -371,7 +380,11 @@ int main(int argc, char *argv[])
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
 
     if (engine.rootObjects().isEmpty())
+    {
+        qCritical() << "Failed to load the main QML window";
+        CrashLog::markCleanExit(-1);
         return -1;
+    }
 
     QObject *qmlwindow = engine.rootObjects().value(0);
     qmlwindow->connect(&imageWriter, SIGNAL(downloadProgress(QVariant,QVariant)), qmlwindow, SLOT(onDownloadProgress(QVariant,QVariant)));
@@ -432,6 +445,7 @@ int main(int argc, char *argv[])
     }
 #endif
 
+    CrashLog::markCleanExit(rc);
     return rc;
 }
 

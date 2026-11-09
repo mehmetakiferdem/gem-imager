@@ -137,8 +137,11 @@ int dfuload_do_dnload(struct dfu_if *dif, int xfer_size, struct dfu_file *file)
 		do {
 			ret = dfu_get_status(dif, &dst);
 			if (ret < 0) {
-				errx(EX_IOERR, "Error during download get_status (%s)",
-				     libusb_error_name(ret));
+				/* Not errx(), which exits the application: the
+				 * caller decides whether this is the device
+				 * resetting after a bootloader stage */
+				warnx("Error during download get_status (%s)",
+				      libusb_error_name(ret));
 				goto out;
 			}
 
@@ -167,8 +170,8 @@ int dfuload_do_dnload(struct dfu_if *dif, int xfer_size, struct dfu_file *file)
 	/* send one zero sized download request to signalize end */
 	ret = dfu_download(dif->dev_handle, dif->interface, 0, transaction, NULL);
 	if (ret < 0) {
-		errx(EX_IOERR, "Error sending completion packet (%s)",
-		     libusb_error_name(ret));
+		warnx("Error sending completion packet (%s)",
+		      libusb_error_name(ret));
 		goto out;
 	}
 
