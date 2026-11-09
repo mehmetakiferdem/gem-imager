@@ -218,6 +218,10 @@ int main(int argc, char *argv[])
     QApplication app(argc, argv);
 #endif
     app.setWindowIcon(QIcon(":/icons/gem-imager.ico"));
+    /* On Wayland the window icon is not used: the compositor looks the icon up
+       in the .desktop file named after the app id, which otherwise is the
+       executable name and matches none, so a generic icon was shown. */
+    app.setDesktopFileName("org.t3gemstone.gem-imager");
     ImageWriter imageWriter;
     NetworkAccessManagerFactory namf;
     QQmlApplicationEngine engine;

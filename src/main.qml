@@ -63,7 +63,7 @@ ApplicationWindow {
 
             Image {
                 id: image
-                source: "icons/logo_sxs_imager.png"
+                source: "icons/t3_gemstone_logo.png"
 
                 smooth: true
                 antialiasing: true
@@ -997,11 +997,11 @@ ApplicationWindow {
             header: Column {
                 width: parent.width
                 Loader {
-                    sourceComponent: uniflashComponent
+                    sourceComponent: dfuComponent
                     width: parent.width
                 }
                 Loader {
-                    sourceComponent: dfuComponent
+                    sourceComponent: uniflashComponent
                     width: parent.width
                 }
             }
@@ -1068,7 +1068,7 @@ ApplicationWindow {
                 anchors.right: parent.right
                 Layout.topMargin: 1
                 height: showHeader ? 61 : 0;
-                Accessible.name: "TEXAS"
+                Accessible.name: "NETWORK BOOT"
 
                 Rectangle {
                     id: dstbgrect
@@ -1111,7 +1111,7 @@ ApplicationWindow {
                                 Layout.fillWidth: true
                                 font.family: notosans.name
                                 font.pointSize: 16
-                                text: qsTr("Internal eMMC - 32 GB")
+                                text: qsTr("Network Boot")
 
                             }
                             Text {
@@ -1121,7 +1121,7 @@ ApplicationWindow {
                                 Layout.fillWidth: true
                                 font.family: notosans.name
                                 font.pointSize: 12
-                                text: qsTr("Writes the image to the card's internal eMMC memory via Uniflash")
+                                text: qsTr("Writes the image to the card's internal eMMC memory over the network")
                             }
                         }
                     }
@@ -1209,7 +1209,7 @@ ApplicationWindow {
                                 Layout.fillWidth: true
                                 font.family: notosans.name
                                 font.pointSize: 16
-                                text: qsTr("DFU Mode")
+                                text: qsTr("DFU Mode (eMMC)")
 
                             }
                             Text {
@@ -1259,8 +1259,9 @@ ApplicationWindow {
 
         Item {
             id: dstitem
-            anchors.left: parent.left
-            anchors.right: parent.right
+            // parent is briefly null while the delegate is created/destroyed
+            anchors.left: parent ? parent.left : undefined
+            anchors.right: parent ? parent.right : undefined
             Layout.topMargin: 1
             height: 61
             Accessible.name: {
@@ -1400,6 +1401,12 @@ ApplicationWindow {
     }
 
     MsgPopup {
+        id: sdBootmodePopup
+        title: qsTr("Boot Mode Switch")
+        imageSource: "icons/sd-card-bootmode.svg"
+    }
+
+    MsgPopup {
         id: quitpopup
         continueButton: false
         yesButton: true
@@ -1432,13 +1439,18 @@ ApplicationWindow {
             
             // Check if DFU mode is selected
             if (isDfuMode) {
-                cancelwritebutton.enabled = false
-                cancelwritebutton.visible = false
+                cancelwritebutton.enabled = true
+                cancelwritebutton.visible = true
                 cancelverifybutton.enabled = false
                 dfuOwnsProgress = false
         progressText.text = qsTr("Starting DFU operation...");
                 imageWriter.startDfu()
             } else {
+                if (!imageWriter.readyToWrite()) {
+                    // startWrite() would return silently and leave the UI stuck
+                    onError(qsTr("No storage device selected.<br>Please choose a storage device and try again."))
+                    return
+                }
                 cancelwritebutton.enabled = true
                 cancelwritebutton.visible = true
                 cancelverifybutton.enabled = true
@@ -1480,7 +1492,7 @@ ApplicationWindow {
         minimumWidth: 450
         minimumHeight: 400
         id: optionspopup
-        onSaveSettingsSignal: {
+        onSaveSettingsSignal: (settings) => {
             imageWriter.setSavedCustomizationSettings(settings)
             usesavedsettingspopup.hasSavedSettings = true
             confirmwritepopup.askForConfirmation()
@@ -1526,7 +1538,13 @@ ApplicationWindow {
             if (isDfuMode && dfuOwnsProgress)
                 return
 
-            progressText.text = qsTr("Downloading... %1%").arg(Math.floor(newPos*100))
+            if (imageWriter.isNetworkDownload())
+                progressText.text = qsTr("Downloading... %1%").arg(Math.floor(newPos*100))
+            else if (isDfuMode || isUniflashMode)
+                // Extracting to a temp file on the PC; nothing sent to the device yet
+                progressText.text = qsTr("Preparing image... %1%").arg(Math.floor(newPos*100))
+            else
+                progressText.text = qsTr("Writing... %1%").arg(Math.floor(newPos*100))
             progressBar.indeterminate = false
             progressBar.value = newPos
         }
@@ -1580,7 +1598,12 @@ ApplicationWindow {
             dfuOwnsProgress = true
         progressBar.indeterminate = false
         progressBar.value = percentage / 100.0
-        progressText.text = statusMsg
+        progressBar.Material.accent = "#ffffff"
+        progressText.text = statusMsg + "  (" + percentage + "%)"
+        // From 95% on the image is fully sent and the device is flushing it
+        // to eMMC on its own; cancelling can no longer have any effect
+        if (percentage >= 95)
+            cancelwritebutton.enabled = false
     }
 
     function onDfuAuthRequired() {
@@ -1616,6 +1639,7 @@ ApplicationWindow {
     }
 
     function onSuccess() {
+        var popup = msgpopup
         msgpopup.title = qsTr("Write Successful")
         if (osbutton.text === qsTr("Erase"))
             msgpopup.text = qsTr("<b>%1</b> has been erased<br><br>You can now remove the SD card from the reader").arg(dstbutton.text)
@@ -1630,14 +1654,20 @@ ApplicationWindow {
             {
                 resetWriteButton()
                 emmcBootmodePopup.openPopup()
-                imageWriter.setDst("")
-                isDfuMode = false
-                isUniflashMode = false
+                // Keep dst/isDfuMode: the DFU target is a fixed device, so the user
+                // can send another image without re-selecting the destination.
                 return
             }
             else if(isUniflashMode)
             {
                 msgpopup.text = qsTr("<b>%1</b> has been written to <b>%2</b><br><br>The process is complete. You can connect to the board via the serial port.").arg(osbutton.text).arg(dstbutton.text)
+            }
+            else if(isGemO1())
+            {
+                // The T3-GEM-O1 only boots from the card once its boot mode
+                // switches are set to SD, as the DFU flow tells the user for eMMC.
+                sdBootmodePopup.text = qsTr("<b>%1</b> has been written to <b>%2</b><br><br>You can now remove the SD card from the reader. With the board powered off, insert the SD card and set the boot mode switches to SD Boot as shown in the image. Upon restoring power, the system will boot from the SD card.").arg(osbutton.text).arg(dstbutton.text)
+                popup = sdBootmodePopup
             }
             else
             {
@@ -1649,11 +1679,19 @@ ApplicationWindow {
             msgpopup.quitButton = true
         }
 
-        msgpopup.openPopup()
-        imageWriter.setDst("")
+        popup.openPopup()
+        if (!isUniflashMode) {
+            // Drive letters can change after a write, so force re-selection for real
+            // drives. The uniflash target is fixed and stays selected for repeat writes.
+            imageWriter.setDst("")
+            dstbutton.text = qsTr("CHOOSE STORAGE")
+        }
         isDfuMode = false
-        isUniflashMode = false
         resetWriteButton()
+    }
+
+    function isGemO1() {
+        return hwbutton.text === "T3-GEM-O1" || imageWriter.srcFileName().indexOf("t3-gem-o1") !== -1
     }
 
     function onSerialPortSelected(port) {
@@ -1681,6 +1719,12 @@ ApplicationWindow {
     function onFinalizing() {
         progressText.text = qsTr("Finalizing...")
         progressBar.indeterminate = true
+        // All image data is on the card at this point; cancelling would have
+        // no effect anymore. (DFU has its own >=95% rule in onDfuProgress.)
+        if (!isDfuMode) {
+            cancelwritebutton.enabled = false
+            cancelverifybutton.enabled = false
+        }
     }
 
     function onNetworkInfo(msg) {
@@ -2139,7 +2183,7 @@ ApplicationWindow {
         imageWriter.setDst("uniflash", "5242880000")
         isDfuMode = false
         isUniflashMode = true
-        dstbutton.text = qsTr("Onboard emmc")
+        dstbutton.text = qsTr("Network Boot")
         if (imageWriter.readyToWrite()) {
             writebutton.enabled = true
         }
@@ -2150,7 +2194,7 @@ ApplicationWindow {
         imageWriter.setDst("dfu", "0")
         isDfuMode = true
         isUniflashMode = false
-        dstbutton.text = qsTr("DFU Mode")
+        dstbutton.text = qsTr("DFU Mode (eMMC)")
         writebutton.enabled = true
         usbDfuBootmodePopup.openPopup()
     }
@@ -2159,8 +2203,8 @@ ApplicationWindow {
         langbarRect.visible = false
         writebutton.visible = false
         writebutton.enabled = false
-        cancelwritebutton.enabled = false
-        cancelwritebutton.visible = false
+        cancelwritebutton.enabled = true
+        cancelwritebutton.visible = true
         cancelverifybutton.enabled = false
         dfuOwnsProgress = false
         progressText.text = qsTr("Starting DFU operation...");
