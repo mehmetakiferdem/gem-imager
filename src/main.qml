@@ -1372,6 +1372,10 @@ ApplicationWindow {
     }
 
     property bool isDfuMode: false
+    /* Set once the DFU thread is transferring the image and reports progress
+       itself; the polled byte count would otherwise overwrite its text with
+       "Preparing image" every second. */
+    property bool dfuOwnsProgress: false
     property bool isUniflashMode: false
 
     MsgPopup {
@@ -1431,7 +1435,8 @@ ApplicationWindow {
                 cancelwritebutton.enabled = false
                 cancelwritebutton.visible = false
                 cancelverifybutton.enabled = false
-                progressText.text = qsTr("Starting DFU operation...");
+                dfuOwnsProgress = false
+        progressText.text = qsTr("Starting DFU operation...");
                 imageWriter.startDfu()
             } else {
                 cancelwritebutton.enabled = true
@@ -1518,6 +1523,8 @@ ApplicationWindow {
         if (progressBar.value !== newPos) {
             if (progressText.text === qsTr("Cancelling..."))
                 return
+            if (isDfuMode && dfuOwnsProgress)
+                return
 
             progressText.text = qsTr("Downloading... %1%").arg(Math.floor(newPos*100))
             progressBar.indeterminate = false
@@ -1560,10 +1567,17 @@ ApplicationWindow {
     }
 
     function onPreparationStatusUpdate(msg) {
+        /* While the image is on its way to the board, DFU status lines would
+           flash "Preparing to write" over the transfer progress */
+        if (isDfuMode && dfuOwnsProgress)
+            return
         progressText.text = qsTr("Preparing to write... (%1)").arg(msg)
     }
 
     function onDfuProgress(percentage, statusMsg) {
+        /* From 78% on the image itself is on its way to the board */
+        if (percentage >= 78)
+            dfuOwnsProgress = true
         progressBar.indeterminate = false
         progressBar.value = percentage / 100.0
         progressText.text = statusMsg
@@ -2148,6 +2162,7 @@ ApplicationWindow {
         cancelwritebutton.enabled = false
         cancelwritebutton.visible = false
         cancelverifybutton.enabled = false
+        dfuOwnsProgress = false
         progressText.text = qsTr("Starting DFU operation...");
         progressText.visible = true
         progressBar.visible = true
