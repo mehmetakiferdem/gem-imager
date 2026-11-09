@@ -147,7 +147,8 @@ int main(int argc, char *argv[])
 #ifdef Q_OS_LINUX
         if (strcmp(argv[i], "--install-dfu-udev-rules") == 0)
         {
-            const char *rulesPath = "/etc/udev/rules.d/99-gem-imager-dfu.rules";
+            // Must sort before 73-seat-late.rules or TAG+="uaccess" is never processed
+            const char *rulesPath = "/etc/udev/rules.d/60-gem-imager-dfu.rules";
             std::FILE *f = std::fopen(rulesPath, "w");
             if (!f)
             {
@@ -156,10 +157,15 @@ int main(int argc, char *argv[])
             }
             std::fputs(
                 "# Gemstone Imager: TI AM62x DFU device (VID:0451 PID:6165)\n"
+                "# MODE 0666 is the fallback for systems without logind or a plugdev group\n"
                 "SUBSYSTEM==\"usb\", ATTR{idVendor}==\"0451\", ATTR{idProduct}==\"6165\","
-                " TAG+=\"uaccess\", GROUP=\"plugdev\", MODE=\"0664\"\n",
+                " TAG+=\"uaccess\", MODE=\"0666\"\n",
                 f);
             std::fclose(f);
+            // Rule from older versions; its 99- prefix broke uaccess and it relied on plugdev
+            std::remove("/etc/udev/rules.d/99-gem-imager-dfu.rules");
+            std::system("udevadm control --reload-rules");
+            std::system("udevadm trigger --subsystem-match=usb");
             return 0;
         }
 #endif
