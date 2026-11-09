@@ -443,16 +443,16 @@ uint8 getSBoxVal(uint8 input, uint8* sBox) {
 
 void encrypt_3des(uint8* input, uint8* key, uint8* output) {
 	uint8 temp[8];
-	encrypt(input, key, output);
-	decrypt(output, key + 7, temp);
-	encrypt(temp, key + 14, output);
+	des(input, key, output, ENCRYPT);
+	des(output, key + 7, temp, DECRYPT);
+	des(temp, key + 14, output, ENCRYPT);
 }
 
 
 void decrypt_3des(uint8* input, uint8* key, uint8* output) {
 	uint8 temp[8];
-	decrypt(input, key + 14, output);
-	encrypt(output, key + 7, temp);
-	decrypt(temp, key, output);
+	des(input, key + 14, output, DECRYPT);
+	des(output, key + 7, temp, ENCRYPT);
+	des(temp, key, output, DECRYPT);
 }
 

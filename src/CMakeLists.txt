@@ -141,6 +141,16 @@ set(CURL_DISABLE_SMTP ON)
 set(CURL_DISABLE_TELNET ON)
 set(CURL_DISABLE_TFTP ON)
 set(CURL_ZSTD ON)
+
+# These curl options default to ON and link whatever the host happens to have
+# installed. That breaks the macOS universal build, where Homebrew only ships
+# the host architecture, and it makes the vendored build depend on the machine
+# it is compiled on. None of the features are used: images are fetched over
+# plain HTTPS from ASCII hostnames, with no cookies and no SCP/SFTP.
+set(USE_NGHTTP2 OFF)
+set(USE_LIBIDN2 OFF)
+set(CURL_USE_LIBPSL OFF)
+set(CURL_USE_LIBSSH2 OFF)
 set(CURL_ENABLE_EXPORT_TARGET OFF CACHE BOOL "" FORCE)
 set(CURL_DISABLE_INSTALL ON)
 if (APPLE)
@@ -189,7 +199,7 @@ if (APPLE)
         dependencies/drivelist/src/darwin/REDiskList.m
     )
     set(DEPENDENCIES  icons/gem-imager.icns)
-    enable_language(OBJC C)
+    enable_language(C OBJC OBJCXX)
 elseif (UNIX)
     find_package(GnuTLS REQUIRED)
     set(PLATFORM_SOURCES
@@ -435,7 +445,11 @@ elseif(APPLE)
     set(EXTRALIBS ${EXTRALIBS} ${CoreFoundation} ${DiskArbitration} ${Security} ${Cocoa} ${IOKit} ${SystemConfiguration} iconv)
     set_target_properties(${PROJECT_NAME} PROPERTIES MACOSX_BUNDLE YES MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/mac/Info.plist.in)
 
-    find_program(MACDEPLOYQT "macdeployqt" PATHS "${Qt6_ROOT}/bin")
+    # Locate macdeployqt next to the qmake of the Qt we actually resolved,
+    # so this works for any Qt prefix and not just an explicit Qt6_ROOT.
+    get_target_property(QMAKE_EXECUTABLE ${QT}::qmake IMPORTED_LOCATION)
+    get_filename_component(QT_BIN_DIR "${QMAKE_EXECUTABLE}" DIRECTORY)
+    find_program(MACDEPLOYQT_EXECUTABLE NAMES macdeployqt HINTS "${QT_BIN_DIR}" "${Qt6_ROOT}/bin")
     if (NOT MACDEPLOYQT_EXECUTABLE)
         message(FATAL_ERROR "Unable to locate macdeployqt")
     endif()
@@ -445,15 +459,17 @@ elseif(APPLE)
             # Create the .app, leveraging macdeployqt's knowledge of Qt libraries and configuration files
             add_custom_command(TARGET ${PROJECT_NAME}
                 POST_BUILD
-                COMMAND "${MACDEPLOYQT_EXECUTABLE}" "${CMAKE_BINARY_DIR}/${PROJECT_NAME}.app" -qmldir="${CMAKE_CURRENT_SOURCE_DIR}")
+                COMMAND "${MACDEPLOYQT_EXECUTABLE}" "${CMAKE_BINARY_DIR}/${PROJECT_NAME}.app" -qmldir=${CMAKE_CURRENT_SOURCE_DIR})
             add_custom_command(TARGET ${PROJECT_NAME}
                 POST_BUILD
-                COMMAND mv "${CMAKE_BINARY_DIR}/${PROJECT_NAME}.app" "${CMAKE_BINARY_DIR}/GemstoneImager.app")
+                COMMAND ${CMAKE_COMMAND} -E rm -rf "${CMAKE_BINARY_DIR}/GemstoneImager.app"
+                COMMAND ${CMAKE_COMMAND} -E rename "${CMAKE_BINARY_DIR}/${PROJECT_NAME}.app" "${CMAKE_BINARY_DIR}/GemstoneImager.app")
             
             # Sign the .app.
             add_custom_command(TARGET ${PROJECT_NAME}
                 POST_BUILD
-                COMMAND codesign -f --deep --digest-algorithm=sha1,sha256 -o runtime --timestamp -s "${IMAGER_SIGNING_IDENTITY}" "${CMAKE_BINARY_DIR}/GemstoneImager.app")
+                COMMAND codesign -f --deep --digest-algorithm=sha1,sha256 -o runtime --timestamp -s "${IMAGER_SIGNING_IDENTITY}" "${CMAKE_BINARY_DIR}/GemstoneImager.app"
+                VERBATIM)
 
             # Create the .dmg for distribution
             add_custom_command(TARGET ${PROJECT_NAME}
@@ -463,13 +479,15 @@ elseif(APPLE)
             # Sign the .dmg for distribution, but do not initialise notarisation
             add_custom_command(TARGET ${PROJECT_NAME}
                 POST_BUILD
-                COMMAND codesign -f --digest-algorithm=sha1,sha256 -o runtime --timestamp -s "${IMAGER_SIGNING_IDENTITY}" "${CMAKE_BINARY_DIR}/GemstoneImager.dmg")
+                COMMAND codesign -f --digest-algorithm=sha1,sha256 -o runtime --timestamp -s "${IMAGER_SIGNING_IDENTITY}" "${CMAKE_BINARY_DIR}/GemstoneImager.dmg"
+                VERBATIM)
 
             if(IMAGER_NOTARIZE_APP)
                 if(IMAGER_NOTARIZE_KEYCHAIN_PROFILE)
                     add_custom_command(TARGET ${PROJECT_NAME}
                         POST_BUILD
-                        COMMAND xcrun notarytool submit "${CMAKE_BINARY_DIR}/GemstoneImager.dmg" --wait --keychain-profile "${IMAGER_NOTARIZE_KEYCHAIN_PROFILE}")
+                        COMMAND xcrun notarytool submit "${CMAKE_BINARY_DIR}/GemstoneImager.dmg" --wait --keychain-profile "${IMAGER_NOTARIZE_KEYCHAIN_PROFILE}"
+                        VERBATIM)
                     add_custom_command(TARGET ${PROJECT_NAME}
                         POST_BUILD
                         COMMAND xcrun stapler staple "${CMAKE_BINARY_DIR}/GemstoneImager.dmg")
@@ -485,7 +503,11 @@ elseif(APPLE)
         # Unsigned application
         add_custom_command(TARGET ${PROJECT_NAME}
             POST_BUILD
-            COMMAND "${MACDEPLOYQT_EXECUTABLE}" "${CMAKE_BINARY_DIR}/GemstoneImager.app" -qmldir="${CMAKE_CURRENT_SOURCE_DIR}" -always-overwrite -no-strip -dmg)
+            COMMAND ${CMAKE_COMMAND} -E rm -rf "${CMAKE_BINARY_DIR}/GemstoneImager.app"
+            COMMAND ${CMAKE_COMMAND} -E rename "${CMAKE_BINARY_DIR}/${PROJECT_NAME}.app" "${CMAKE_BINARY_DIR}/GemstoneImager.app")
+        add_custom_command(TARGET ${PROJECT_NAME}
+            POST_BUILD
+            COMMAND "${MACDEPLOYQT_EXECUTABLE}" "${CMAKE_BINARY_DIR}/GemstoneImager.app" -qmldir=${CMAKE_CURRENT_SOURCE_DIR} -always-overwrite -no-strip -dmg)
     endif(IMAGER_SIGNED_APP)
 
     add_custom_command(TARGET ${PROJECT_NAME}
