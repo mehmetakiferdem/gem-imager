@@ -863,6 +863,7 @@ bool ImageWriter::isNetworkDownload()
  void ImageWriter::onSuccess()
  {
     stopProgressPolling();
+    qDebug() << "Write finished successfully";
        
     emit success();
 
@@ -877,6 +878,7 @@ bool ImageWriter::isNetworkDownload()
 void ImageWriter::onError(QString msg)
 {
     stopProgressPolling();
+    qDebug() << "Write failed:" << msg;
     emit error(msg);
 
 #ifndef QT_NO_WIDGETS
@@ -898,6 +900,14 @@ void ImageWriter::onFinalizing()
  
  void ImageWriter::onDfuProgress(int percentage, QString statusMsg)
  {
+     /* Log each stage once, not every update of a "%1 / %2 MB" line */
+     QString stage = statusMsg;
+     stage.remove(QRegularExpression("[0-9]+"));
+     if (stage != _lastDfuStatus)
+     {
+         qDebug() << "DFU status" << percentage << "%:" << statusMsg;
+         _lastDfuStatus = stage;
+     }
      emit dfuProgress(percentage, statusMsg);
  }
  
@@ -1725,11 +1735,17 @@ void ImageWriter::_startDfuThread()
      _cloudinitNetwork = cloudinitNetwork;
      _geminit = geminit;
  
-     qDebug() << "Custom config.txt entries:" << config;
-     qDebug() << "Custom cmdline.txt entries:" << cmdline;
-     qDebug() << "Custom firstuse.sh:" << firstrun;
-     qDebug() << "Cloudinit:" << cloudinit;
-     qDebug() << "GemInit:" << geminit;
+     /* Only what was set, never the values: these carry password hashes and
+        the WiFi and VNC passwords, and the log is written to disk. */
+     QStringList geminitKeys;
+     for (const QByteArray &line : geminit.split('\n')) {
+         const int eq = line.indexOf('=');
+         if (eq > 0)
+             geminitKeys << QString::fromLatin1(line.left(eq).trimmed());
+     }
+     qDebug() << "Customization: config.txt" << config.size() << "bytes, cmdline.txt" << cmdline.size()
+              << "bytes, firstrun.sh" << firstrun.size() << "bytes, cloud-init" << cloudinit.size()
+              << "+" << cloudinitNetwork.size() << "bytes, geminit keys:" << geminitKeys.join(QLatin1Char(','));
  }
  
  QString ImageWriter::crypt6(const QByteArray &password)

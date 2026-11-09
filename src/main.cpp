@@ -3,6 +3,7 @@
  * Copyright (C) 2020 Raspberry Pi Ltd
  */
 
+#include <QDir>
 #include <QFileInfo>
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
@@ -14,6 +15,7 @@
 #include "drivelistmodel.h"
 #include "networkaccessmanagerfactory.h"
 #include "cli.h"
+#include "crashlog.h"
 #include <QMessageLogContext>
 #include <QQuickWindow>
 #include <QTranslator>
@@ -47,12 +49,6 @@ static QTextStream cerr(stderr);
 #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
 //using Qt::endl;
 #define endl  Qt::endl
-#endif
-
-#ifdef Q_OS_WIN
-static void consoleMsgHandler(QtMsgType, const QMessageLogContext &, const QString &str) {
-    cerr << str << endl;
-}
 #endif
 
 #ifdef QT_NO_WIDGETS
@@ -171,6 +167,11 @@ int main(int argc, char *argv[])
 #endif
     }
 
+    QCoreApplication::setOrganizationName("Gemstone");
+    QCoreApplication::setOrganizationDomain("t3gemstone.org");
+    QCoreApplication::setApplicationName("Gemstone Imager");
+    CrashLog::install(argc, argv);
+
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 #endif
@@ -216,9 +217,6 @@ int main(int argc, char *argv[])
 #else
     QApplication app(argc, argv);
 #endif
-    app.setOrganizationName("Gemstone");
-    app.setOrganizationDomain("t3gemstone.org");
-    app.setApplicationName("Gemstone Imager");
     app.setWindowIcon(QIcon(":/icons/gem-imager.ico"));
     ImageWriter imageWriter;
     NetworkAccessManagerFactory namf;
@@ -301,7 +299,7 @@ int main(int argc, char *argv[])
                 freopen("CONOUT$", "w", stdout);
                 freopen("CONOUT$", "w", stderr);
                 std::ios::sync_with_stdio();
-                qInstallMessageHandler(consoleMsgHandler);
+                CrashLog::setConsoleEcho(true);
             }
 #endif
         }
@@ -309,6 +307,7 @@ int main(int argc, char *argv[])
         {
             cerr << "gem-imager [--debug] [--version] [--repo <repository URL>] [--qm <custom qm translation file>] [--disable-telemetry] [<image file to write>]" << endl;
             cerr << "-OR- gem-imager --cli [--disable-verify] [--sha256 <expected hash>] [--debug] [--quiet] <image file to write> <destination drive device>" << endl;
+            cerr << "Log files are written to " << QDir::toNativeSeparators(CrashLog::logDirectory()) << endl;
             return 0;
         }
         else if (args[i] == "--version")
@@ -377,7 +376,11 @@ int main(int argc, char *argv[])
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
 
     if (engine.rootObjects().isEmpty())
+    {
+        qCritical() << "Failed to load the main QML window";
+        CrashLog::markCleanExit(-1);
         return -1;
+    }
 
     QObject *qmlwindow = engine.rootObjects().value(0);
     qmlwindow->connect(&imageWriter, SIGNAL(downloadProgress(QVariant,QVariant)), qmlwindow, SLOT(onDownloadProgress(QVariant,QVariant)));
@@ -438,6 +441,7 @@ int main(int argc, char *argv[])
     }
 #endif
 
+    CrashLog::markCleanExit(rc);
     return rc;
 }
 
