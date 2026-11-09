@@ -15,6 +15,7 @@
 #include <QTimer>
 #include <QUrl>
 #include <QSettings>
+#include <QLockFile>
 #include <QVariant>
 #include <QtSerialPort/QSerialPort>
 #include <qstringlistmodel.h>
@@ -67,6 +68,9 @@ public:
 
     /* Return true if url is in our local disk cache */
     Q_INVOKABLE bool isCached(const QUrl &url, const QByteArray &sha256);
+
+    /* Return true if the current write fetches the image over the network */
+    Q_INVOKABLE bool isNetworkDownload();
 
     /* Start polling the list of available drives */
     Q_INVOKABLE void startDriveListPolling();
@@ -222,13 +226,18 @@ protected:
     PowerSaveBlocker _powersave;
     DownloadThread *_thread;
     bool _verifyEnabled, _multipleFilesInZip, _cachingEnabled, _embeddedMode, _online;
+    bool _networkDownload = false;
     QSettings _settings;
+    std::unique_ptr<QLockFile> _instanceLock;
+    QString _lastDfuStatus;
     QMap<QString,QString> _translations;
     bool _customCacheFile;
     QTranslator *_trans;
 
     void _parseCompressedFile();
     void _parseXZFile();
+    void _determineLocalImageSize();
+    bool customizationWritesToImage() const;
     void _startDfuThread();
     QString _pubKeyFileName();
     QString _privKeyFileName();

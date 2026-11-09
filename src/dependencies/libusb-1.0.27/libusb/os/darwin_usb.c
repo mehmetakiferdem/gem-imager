@@ -2052,6 +2052,10 @@ static int darwin_reenumerate_device (struct libusb_device_handle *dev_handle, b
     return LIBUSB_ERROR_NOT_FOUND;
   }
 
+  /* the device object is released when the device leaves the bus */
+  if (!dpriv->device)
+    return LIBUSB_ERROR_NO_DEVICE;
+
   dpriv->in_reenumerate = true;
 
   /* store copies of descriptors so they can be compared after the reset */
@@ -2059,7 +2063,12 @@ static int darwin_reenumerate_device (struct libusb_device_handle *dev_handle, b
   cached_configurations = alloca (sizeof (*cached_configurations) * descriptor.bNumConfigurations);
 
   for (i = 0 ; i < descriptor.bNumConfigurations ; ++i) {
-    (*dpriv->device)->GetConfigurationDescriptorPtr (dpriv->device, i, &cached_configuration);
+    /* a device that has already gone leaves cached_configuration unset */
+    kresult = (*dpriv->device)->GetConfigurationDescriptorPtr (dpriv->device, i, &cached_configuration);
+    if (kresult != kIOReturnSuccess) {
+      dpriv->in_reenumerate = false;
+      return darwin_to_libusb (kresult);
+    }
     memcpy (cached_configurations + i, cached_configuration, sizeof (cached_configurations[i]));
   }
 
@@ -2109,6 +2118,10 @@ static int darwin_reenumerate_device (struct libusb_device_handle *dev_handle, b
       return LIBUSB_ERROR_TIMEOUT;
     }
   }
+
+  /* the device left the bus instead of coming back */
+  if (!dpriv->device)
+    return LIBUSB_ERROR_NO_DEVICE;
 
   /* compare descriptors */
   usbi_dbg (ctx, "darwin/reenumerate_device: checking whether descriptors changed");
