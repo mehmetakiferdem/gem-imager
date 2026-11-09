@@ -27,6 +27,10 @@ Window {
     title: qsTr("OS Customization")
 
     property bool initialized: false
+    /* t3-gem-vnc is only installed on desktop images: on minimal, kiosk and
+       tablet images enabling VNC did nothing but fail on first boot. An image
+       whose name does not tell its type keeps the option. */
+    property bool vncAvailable: true
     property bool hasSavedSettings: false
     property string config
     property string cmdline
@@ -40,8 +44,10 @@ Window {
 
     signal saveSettingsSignal(var settings)
 
-    Keys.onEscapePressed: {
-        popup.close()
+    // Keys only attaches to Items; this is a Window, so use Shortcut instead
+    Shortcut {
+        sequence: "Esc"
+        onActivated: popup.close()
     }
 
     ColumnLayout {
@@ -576,6 +582,7 @@ Window {
                     ImCheckBox {
                         id: chkVNC
                         text: qsTr("Enable VNC")
+                        visible: vncAvailable
                     }
 
                     Text {
@@ -587,6 +594,7 @@ Window {
                     }
 
                     RowLayout {
+                        visible: vncAvailable
                         Text {
                             text: qsTr("VNC Password:")
                             color: chkVNC.checked ? "black" : "grey"
@@ -769,7 +777,7 @@ Window {
                         return
                     }
 
-                    if (chkVNC.checked && fieldVncPassword.text.length == 0)
+                    if (vncAvailable && chkVNC.checked && fieldVncPassword.text.length == 0)
                     {
                         fieldVncPassword.indicateError = true
                         fieldVncPassword.forceActiveFocus()
@@ -987,6 +995,9 @@ Window {
         if (!initialized) {
             initialize()
         }
+        vncAvailable = !/^gemstone-(minimal|kiosk|tablet)-/i.test(imageWriter.srcFileName())
+        if (!vncAvailable)
+            warningVNCPassword.visible = false
 
         //open()
         show()
@@ -1185,8 +1196,13 @@ Window {
             addFirstRun("   done")
             addFirstRun("fi")
 
-            addGemInit("wifiname='"+fieldWifiSSID.text+"'")
-            addGemInit("wifipasswd='"+cryptedPsk+"'")
+            /* config.ini is sourced by bash: an SSID with a quote in it, such
+               as "Kafe's Wi-Fi", left every setting in it unread */
+            addGemInit("wifiname="+escapeshellarg(fieldWifiSSID.text))
+            /* The image's NetworkManager uses iwd, which takes the passphrase
+               but not the 64-digit PSK derived from it, so send the passphrase
+               itself. gem-first-boot removes it from config.ini on first boot. */
+            addGemInit("wifipasswd="+escapeshellarg(isPassphrase ? fieldWifiPassword.text : cryptedPsk))
             addGemInit("wificountry='"+fieldWifiCountry.editText+"'")
 
             cloudinitnetwork  = "version: 2\n"
@@ -1237,8 +1253,9 @@ Window {
             addGemInit("diskpasswd='"+fieldDiskPassword.text+"'")
         }
         addGemInit("writeimagetommc="+ (chkSdToEmmcFB.checked ? 1 : 0))
-        addGemInit("vnc="+ (chkVNC.checked ? 1 : 0))
-        if (chkVNC.checked) {
+        const vnc = vncAvailable && chkVNC.checked
+        addGemInit("vnc="+ (vnc ? 1 : 0))
+        if (vnc) {
             addGemInit("vncpassword='"+ imageWriter.encrypt_vnc_password(fieldVncPassword.text)+"'")
         }
         addGemInit("storagegadget="+ (chkStorageGadget.checked ? 1 : 0))

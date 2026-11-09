@@ -229,6 +229,7 @@ protected:
     bool _networkDownload = false;
     QSettings _settings;
     std::unique_ptr<QLockFile> _instanceLock;
+    QString _lastDfuStatus;
     QMap<QString,QString> _translations;
     bool _customCacheFile;
     QTranslator *_trans;
