@@ -1196,8 +1196,13 @@ Window {
             addFirstRun("   done")
             addFirstRun("fi")
 
-            addGemInit("wifiname='"+fieldWifiSSID.text+"'")
-            addGemInit("wifipasswd='"+cryptedPsk+"'")
+            /* config.ini is sourced by bash: an SSID with a quote in it, such
+               as "Kafe's Wi-Fi", left every setting in it unread */
+            addGemInit("wifiname="+escapeshellarg(fieldWifiSSID.text))
+            /* The image's NetworkManager uses iwd, which takes the passphrase
+               but not the 64-digit PSK derived from it, so send the passphrase
+               itself. gem-first-boot removes it from config.ini on first boot. */
+            addGemInit("wifipasswd="+escapeshellarg(isPassphrase ? fieldWifiPassword.text : cryptedPsk))
             addGemInit("wificountry='"+fieldWifiCountry.editText+"'")
 
             cloudinitnetwork  = "version: 2\n"
