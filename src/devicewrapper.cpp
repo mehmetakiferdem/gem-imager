@@ -17,7 +17,12 @@ DeviceWrapper::DeviceWrapper(DeviceWrapperFile *file, QObject *parent)
 
 DeviceWrapper::~DeviceWrapper()
 {
-    sync();
+    /* A destructor must not throw: that ends the program */
+    try {
+        sync();
+    } catch (const std::exception &e) {
+        qDebug() << "Error writing the last changes to the device:" << e.what();
+    }
 }
 
 void DeviceWrapper::_seekToBlock(quint64 blockNr)
