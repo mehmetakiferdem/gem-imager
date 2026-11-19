@@ -1185,7 +1185,9 @@ bool DfuThread::fetchBootloaderFiles()
     /*
      * For trying out a bootloader before it is published: take tiboot3.bin,
      * tispl.bin and u-boot.img from this directory instead of the server.
-     * They are copied, because the copies are deleted afterwards.
+     * They are copied, because the copies are deleted afterwards. The copy
+     * goes into the temporary file itself: deleting it to QFile::copy() over
+     * its name failed on Windows, where the new file can still be held open.
      */
     const QString localDir = qEnvironmentVariable("GEM_IMAGER_BOOTLOADER_DIR");
     if (!localDir.isEmpty()) {
@@ -1198,9 +1200,12 @@ bool DfuThread::fetchBootloaderFiles()
                 emit error(tr("Failed to create temp file for %1").arg(names[i]));
                 return false;
             }
+            QFile in(src);
+            const bool copied = in.open(QIODevice::ReadOnly) && tmp.write(in.readAll()) == in.size();
             tmp.close();
-            QFile::remove(tmp.fileName());
-            if (!QFile::copy(src, tmp.fileName())) {
+            if (!copied) {
+                qDebug() << "Copying" << src << "failed:" << in.errorString() << tmp.errorString();
+                QFile::remove(tmp.fileName());
                 emit error(tr("Failed to download bootloader file: %1").arg(src));
                 return false;
             }
