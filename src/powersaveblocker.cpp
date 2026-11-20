@@ -28,7 +28,7 @@ PowerSaveBlocker::~PowerSaveBlocker()
 /*
  * Keeps the computer from going to sleep while an image is written. A sleep
  * in the middle of a write leaves the card or the board half written; with
- * a board it also stops Gemstone Imager from noticing when the board has
+ * a board it also stops T3 Gemstone Imager from noticing when the board has
  * finished, so the write seemed to hang until the computer woke up.
  */
 void PowerSaveBlocker::applyBlock(const QString &reason)
@@ -74,7 +74,7 @@ void PowerSaveBlocker::applyBlock(const QString &reason)
     QDBusInterface logind("org.freedesktop.login1", "/org/freedesktop/login1",
                           "org.freedesktop.login1.Manager", QDBusConnection::systemBus());
     QDBusReply<QDBusUnixFileDescriptor> reply = logind.call("Inhibit", "sleep:idle",
-                                                            "Gemstone Imager", reason, "block");
+                                                            "T3 Gemstone Imager", reason, "block");
     _inhibitFd = reply.isValid() ? ::dup(reply.value().fileDescriptor()) : -1;
     _stayingAwake = (_inhibitFd >= 0);
     if (!_stayingAwake)
