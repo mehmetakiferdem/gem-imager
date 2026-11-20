@@ -156,8 +156,12 @@ bool DownloadThread::_openAndPrepareDevice()
             QProcess proc;
             proc.start("diskpart", QStringList());
             proc.waitForStarted();
+            /* "clean" leaves the disk with no MBR at all, which Windows mounts
+               as one RAW volume and offers to format. "convert mbr" gives it
+               an empty partition table instead, so nothing is mounted. */
             proc.write("select disk "+_nr+"\r\n"
                             "clean\r\n"
+                            "convert mbr\r\n"
                             "rescan\r\n");
             proc.closeWriteChannel();
             proc.waitForFinished();
