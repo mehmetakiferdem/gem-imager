@@ -1725,6 +1725,8 @@ Delete "$INSTDIR\uninstall.exe"
 Delete "$INSTDIR\${APP_NAME} website.url"
 !endif
 
+; Unpacked by wdi-simple when the DFU driver section ran
+RMDir /r "$INSTDIR\usb_driver"
 RmDir "$INSTDIR"
 
 !ifdef REG_START_MENU
@@ -1786,8 +1788,8 @@ Function .onInit
   ; so the renamed one does not end up installed next to it
   ${If} ${FileExists} "$PROGRAMFILES\Gemstone Imager\uninstall.exe"
     ExecWait '"$PROGRAMFILES\Gemstone Imager\uninstall.exe" /S _?=$PROGRAMFILES\Gemstone Imager'
-    Delete "$PROGRAMFILES\Gemstone Imager\uninstall.exe"
-    RMDir "$PROGRAMFILES\Gemstone Imager"
+    ; Its uninstaller leaves the driver files wdi-simple unpacked
+    RMDir /r "$PROGRAMFILES\Gemstone Imager"
   ${EndIf}
 !endif
 FunctionEnd
