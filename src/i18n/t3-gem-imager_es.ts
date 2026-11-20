@@ -1,122 +1,122 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="sk_SK">
+<TS version="2.1" language="es_ES">
 <context>
     <name>DfuThread</name>
     <message>
         <location filename="../dfuthread.cpp" line="49"/>
         <source>Failed to create temporary file for DFU image</source>
-        <translation>Nepodarilo sa vytvoriť dočasný súbor pre obrázok DFU</translation>
+        <translation>No se pudo crear el archivo temporal para la imagen DFU</translation>
     </message>
     <message>
         <location filename="../dfuthread.cpp" line="59"/>
         <source>Failed to open temporary file for DFU image</source>
-        <translation>Nepodarilo sa otvoriť dočasný súbor pre obrázok DFU</translation>
+        <translation>No se pudo abrir el archivo temporal para la imagen DFU</translation>
     </message>
     <message>
         <location filename="../dfuthread.cpp" line="68"/>
         <source>Initializing DFU...</source>
-        <translation>Inicializuje sa DFU...</translation>
+        <translation>Inicializando DFU...</translation>
     </message>
     <message>
         <location filename="../dfuthread.cpp" line="71"/>
         <source>DFU mode requires an image URL</source>
-        <translation>Režim DFU vyžaduje adresu URL obrázka</translation>
+        <translation>El modo DFU requiere una URL de imagen</translation>
     </message>
     <message>
         <location filename="../dfuthread.cpp" line="75"/>
         <source>Downloading image...</source>
-        <translation>Sťahuje sa obrázok...</translation>
+        <translation>Descargando imagen...</translation>
     </message>
     <message>
         <location filename="../dfuthread.cpp" line="81"/>
         <source>Customizing image...</source>
-        <translation>Prispôsobenie obrázka...</translation>
+        <translation>Personalizando imagen...</translation>
     </message>
     <message>
         <location filename="../dfuthread.cpp" line="85"/>
         <source>Failed to reopen image for customization: %1</source>
-        <translation>Nepodarilo sa znova otvoriť obrázok na prispôsobenie: %1</translation>
+        <translation>No se pudo volver a abrir la imagen para personalizarla: %1</translation>
     </message>
     <message>
         <location filename="../dfuthread.cpp" line="92"/>
         <source>Extracting bootloader files from image...</source>
-        <translation>Extrahovanie súborov zavádzača z obrázka...</translation>
+        <translation>Extrayendo archivos del gestor de arranque de la imagen...</translation>
     </message>
     <message>
         <location filename="../dfuthread.cpp" line="95"/>
         <source>Sending bootloader files...</source>
-        <translation>Odosielajú sa súbory zavádzača...</translation>
+        <translation>Enviando archivos del gestor de arranque...</translation>
     </message>
     <message>
         <location filename="../dfuthread.cpp" line="98"/>
         <source>Waiting for device to enter DFU mode...</source>
-        <translation>Čaká sa, kým zariadenie vstúpi do režimu DFU...</translation>
+        <translation>Esperando que el dispositivo entre en modo DFU...</translation>
     </message>
     <message>
         <location filename="../dfuthread.cpp" line="101"/>
         <source>Sending image to device (this may take several minutes)...</source>
-        <translation>Odosiela sa obrázok do zariadenia (môže to trvať niekoľko minút)...</translation>
+        <translation>Enviando imagen al dispositivo (esto puede tardar varios minutos)...</translation>
     </message>
     <message>
         <location filename="../dfuthread.cpp" line="104"/>
         <source>Writing boot binaries to eMMC (do not power off)...</source>
-        <translation>Zápis spúšťacích binárnych súborov do eMMC (nevypínať)...</translation>
+        <translation>Escribiendo archivos binarios de arranque en eMMC (no apagar)...</translation>
     </message>
     <message>
         <location filename="../dfuthread.cpp" line="107"/>
         <source>System image sent successfully!</source>
-        <translation>Obrázok systému bol úspešne odoslaný!</translation>
+        <translation>¡Imagen del sistema enviada exitosamente!</translation>
     </message>
     <message>
         <location filename="../dfuthread.cpp" line="123"/>
         <source>DFU failed (alt: %1): %2</source>
-        <translation>DFU zlyhalo (alt: %1): %2</translation>
+        <translation>DFU falló (alt: %1): %2</translation>
     </message>
     <message>
         <location filename="../dfuthread.cpp" line="139"/>
         <source>Sending %1...</source>
-        <translation>Odosiela sa %1...</translation>
+        <translation>Enviando %1...</translation>
     </message>
     <message>
         <location filename="../dfuthread.cpp" line="142"/>
         <source>%1 sent</source>
-        <translation>%1 odoslané</translation>
+        <translation>%1 enviado</translation>
     </message>
     <message>
         <location filename="../dfuthread.cpp" line="145"/>
         <source>Waiting for device to reconnect...</source>
-        <translation>Čaká sa na opätovné pripojenie zariadenia...</translation>
+        <translation>Esperando que el dispositivo se vuelva a conectar...</translation>
     </message>
     <message>
         <location filename="../dfuthread.cpp" line="162"/>
         <source>Failed to reopen image file: %1</source>
-        <translation>Nepodarilo sa znova otvoriť súbor obrázka: %1</translation>
+        <translation>No se pudo volver a abrir el archivo de imagen: %1</translation>
     </message>
     <message>
         <location filename="../dfuthread.cpp" line="174"/>
         <source>Bootloader file not found in image: %1</source>
-        <translation>V obrázku sa nenašiel súbor zavádzača: %1</translation>
+        <translation>El archivo del gestor de arranque no se encuentra en la imagen: %1</translation>
     </message>
     <message>
         <location filename="../dfuthread.cpp" line="185"/>
         <source>Failed to create temp file for %1</source>
-        <translation>Nepodarilo sa vytvoriť dočasný súbor pre %1</translation>
+        <translation>No se pudo crear el archivo temporal para %1</translation>
     </message>
     <message>
         <location filename="../dfuthread.cpp" line="190"/>
         <source>Failed to write temp file for %1</source>
-        <translation>Nepodarilo sa zapísať dočasný súbor pre %1</translation>
+        <translation>No se pudo escribir el archivo temporal para %1</translation>
     </message>
     <message>
         <location filename="../dfuthread.cpp" line="199"/>
         <source>Error reading bootloader files from image: %1</source>
-        <translation>Chyba pri čítaní súborov zavádzača z obrázka: %1</translation>
+        <translation>Error al leer los archivos del gestor de arranque de la imagen: %1</translation>
     </message>
     <message>
         <location filename="../dfuthread.cpp" line="209"/>
         <source>Image not found: %1</source>
-        <translation>Obrázok sa nenašiel: %1</translation>
+        <translation>Imagen no encontrada: %1</translation>
     </message>
 </context>
 <context>
@@ -125,26 +125,22 @@
         <location filename="../downloadextractthread.cpp" line="206"/>
         <location filename="../downloadextractthread.cpp" line="400"/>
         <source>Error extracting archive: %1</source>
-        <translation>Chyba pri rozbaľovaní archívu: %1</translation>
+        <translation>Error extrayendo el archivo: %1</translation>
     </message>
     <message>
         <location filename="../downloadextractthread.cpp" line="271"/>
         <source>Error mounting FAT32 partition</source>
-        <translation>Chyba pri pripájaní partície FAT32</translation>
+        <translation>Error montando la partición FAT32</translation>
     </message>
     <message>
         <location filename="../downloadextractthread.cpp" line="291"/>
         <source>Operating system did not mount FAT32 partition</source>
-        <translation>Operačný systém nepripojil partíciu FAT32</translation>
+        <translation>El sistema operativo no montó la partición FAT32</translation>
     </message>
     <message>
         <location filename="../downloadextractthread.cpp" line="314"/>
         <source>Error changing to directory &apos;%1&apos;</source>
-        <translation>Chyba pri vstupe do adresára &apos;%1&apos;</translation>
-    </message>
-    <message>
-        <source>Error writing to storage</source>
-        <translation type="vanished">Chyba pri zápise na úložisko</translation>
+        <translation>Error cambiando al directorio &apos;%1&apos;</translation>
     </message>
 </context>
 <context>
@@ -152,164 +148,128 @@
     <message>
         <location filename="../downloadthread.cpp" line="119"/>
         <source>unmounting drive</source>
-        <translation>odpájam jednotku</translation>
+        <translation>desmontando unidad</translation>
     </message>
     <message>
         <location filename="../downloadthread.cpp" line="139"/>
         <source>opening drive</source>
-        <translation>otváram jednotku</translation>
+        <translation>abriendo unidad</translation>
     </message>
     <message>
         <location filename="../downloadthread.cpp" line="167"/>
         <source>Error running diskpart: %1</source>
-        <translation>Chyba počas behu diskpart: %1</translation>
+        <translation>Error ejecutando diskpart: %1</translation>
     </message>
     <message>
         <location filename="../downloadthread.cpp" line="188"/>
         <source>Error removing existing partitions</source>
-        <translation>Chyba pri odstraňovaní existujúcich partiícií</translation>
+        <translation>Error eliminando las particiones existentes</translation>
     </message>
     <message>
         <location filename="../downloadthread.cpp" line="214"/>
         <source>Authentication cancelled</source>
-        <translation>Zrušená autentifikácia</translation>
+        <translation>Autenticación cancelada</translation>
     </message>
     <message>
         <location filename="../downloadthread.cpp" line="217"/>
         <source>Error running authopen to gain access to disk device &apos;%1&apos;</source>
-        <translation>Chyba pri spúšťaní authopen v snahe o získanie prístupu na diskové zariadenie &apos;%1&apos;</translation>
+        <translation>Error ejecutando authopen para acceder al dispositivo de disco &apos;%1&apos;</translation>
     </message>
     <message>
         <source>Please verify if &apos;Raspberry Pi Imager&apos; is allowed access to &apos;removable volumes&apos; in privacy settings (under &apos;files and folders&apos; or alternatively give it &apos;full disk access&apos;).</source>
-        <translation type="vanished">Preverte, prosím, či má &apos;Raspberry Pi Imager&apos; prístup k &apos;vymeniteľným nosičom&apos; v nastaveniach súkromia (pod &apos;súbormi a priečinkami&apos;, prípadne mu udeľte &apos;plný prístup k diskom&apos;).</translation>
+        <translation type="vanished">Por favor, compruebe si &apos;Raspberry Pi Imager&apos; tiene permitido el acceso a &apos;volúmenes extraíbles&apos; en los ajustes de privacidad (en &apos;archivos y carpetas&apos; o alternativamente dele &apos;acceso total al disco&apos;).</translation>
     </message>
     <message>
         <location filename="../downloadthread.cpp" line="218"/>
-        <source>Please verify if &apos;Gemstone Imager&apos; is allowed access to &apos;removable volumes&apos; in privacy settings (under &apos;files and folders&apos; or alternatively give it &apos;full disk access&apos;).</source>
-        <translation>Skontrolujte, či má &apos;Gemstone Imager&apos; povolený prístup k &apos;vymeniteľným zväzkom&apos; v nastaveniach ochrany súkromia (v časti &apos;súbory a priečinky&apos; alebo mu udeľte &apos;úplný prístup k disku&apos;).</translation>
+        <source>Please verify if &apos;T3 Gemstone Imager&apos; is allowed access to &apos;removable volumes&apos; in privacy settings (under &apos;files and folders&apos; or alternatively give it &apos;full disk access&apos;).</source>
+        <translation>Verifique si &apos;T3 Gemstone Imager&apos; tiene acceso a &apos;volúmenes extraíbles&apos; en la configuración de privacidad (en &apos;archivos y carpetas&apos; o concédale &apos;acceso completo al disco&apos;).</translation>
     </message>
     <message>
         <location filename="../downloadthread.cpp" line="240"/>
         <source>Cannot open storage device &apos;%1&apos;.</source>
-        <translation>Nepodarilo sa otvoriť zariadenie úložiska &apos;%1&apos;.</translation>
+        <translation>No se puede abrir el dispositivo de almacenamiento &apos;%1&apos;.</translation>
     </message>
     <message>
         <location filename="../downloadthread.cpp" line="282"/>
         <source>discarding existing data on drive</source>
-        <translation>odstraňujem existujúce údaje na jednotke</translation>
+        <translation>descartando datos existentes en la unidad</translation>
     </message>
     <message>
         <location filename="../downloadthread.cpp" line="304"/>
         <source>zeroing out first and last MB of drive</source>
-        <translation>prepisujem prvý a posledný megabajt na jednotke</translation>
+        <translation>poniendo a cero el primer y el último MB de la unidad</translation>
     </message>
     <message>
         <location filename="../downloadthread.cpp" line="310"/>
         <source>Write error while zero&apos;ing out MBR</source>
-        <translation>Chyba zápisu pri prepisovaní MBR nulami</translation>
+        <translation>Error de escritura al poner a cero MBR</translation>
     </message>
     <message>
         <location filename="../downloadthread.cpp" line="322"/>
         <source>Write error while trying to zero out last part of card.&lt;br&gt;Card could be advertising wrong capacity (possible counterfeit).</source>
-        <translation>Chyba zápisu pri prepisovaní poslednej časti karty nulami.&lt;br&gt;Karta pravdepodobne udáva nesprávnu kapacitu (a môže byť falošná).</translation>
+        <translation>Error de escritura al intentar poner a cero la última parte de la tarjeta.&lt;br&gt;La tarjeta podría estar anunciando una capacidad incorrecta (posible falsificación).</translation>
     </message>
     <message>
         <location filename="../downloadthread.cpp" line="412"/>
         <source>starting download</source>
-        <translation>začína sťahovanie</translation>
+        <translation>iniciando descarga</translation>
     </message>
     <message>
         <location filename="../downloadthread.cpp" line="472"/>
         <source>Error downloading: %1</source>
-        <translation>Chyba pri sťahovaní: %1</translation>
+        <translation>Error descargando: %1</translation>
     </message>
     <message>
         <location filename="../downloadthread.cpp" line="669"/>
         <source>Access denied error while writing file to disk.</source>
-        <translation>Odopretý prístup pri zápise súboru na disk.</translation>
+        <translation>Error de acceso denegado escribiendo el archivo en el disco.</translation>
     </message>
     <message>
         <location filename="../downloadthread.cpp" line="674"/>
-        <source>Controlled Folder Access seems to be enabled. Please add both gem-imager.exe and fat32format.exe to the list of allowed apps and try again.</source>
-        <translation>Vyzerá, že máte zapnutý Controlled Folder Access. Pridajte, prosím, gem-imager.exe a fat32format.exe do zoznamu povolených aplikácií a skúste to znovu.</translation>
+        <source>Controlled Folder Access seems to be enabled. Please add both t3-gem-imager.exe and fat32format.exe to the list of allowed apps and try again.</source>
+        <translation>El acceso controlado a carpetas parece estar activado. Añada t3-gem-imager.exe y fat32format.exe a la lista de aplicaciones permitidas y vuelva a intentarlo.</translation>
     </message>
     <message>
         <location filename="../downloadthread.cpp" line="681"/>
         <source>Error writing file to disk</source>
-        <translation>Chyba pri zápise na disk</translation>
+        <translation>Error escribiendo el archivo en el disco</translation>
     </message>
     <message>
         <location filename="../downloadthread.cpp" line="703"/>
         <source>Download corrupt. Hash does not match</source>
-        <translation>Stiahnutý súbor je poškodený. Kontrolný súčet nesedí</translation>
+        <translation>Descarga corrupta. El hash no coincide</translation>
     </message>
     <message>
         <location filename="../downloadthread.cpp" line="715"/>
         <location filename="../downloadthread.cpp" line="767"/>
         <source>Error writing to storage (while flushing)</source>
-        <translation>Chyba pri zápise na úložisko (počas volania flush)</translation>
+        <translation>Error escribiendo en la memoria (durante la limpieza)</translation>
     </message>
     <message>
         <location filename="../downloadthread.cpp" line="722"/>
         <location filename="../downloadthread.cpp" line="774"/>
         <source>Error writing to storage (while fsync)</source>
-        <translation>Chyba pri zápise na úložisko (počas volania fsync)</translation>
+        <translation>Error escribiendo en el almacenamiento (mientras fsync)</translation>
     </message>
     <message>
         <location filename="../downloadthread.cpp" line="757"/>
         <source>Error writing first block (partition table)</source>
-        <translation>Chyba pri zápise prvého bloku (tabuľky partícií)</translation>
+        <translation>Error escribiendo el primer bloque (tabla de particiones)</translation>
     </message>
     <message>
         <location filename="../downloadthread.cpp" line="834"/>
         <source>Error reading from storage.&lt;br&gt;SD card may be broken.</source>
-        <translation>Chyba pri čítaní z úložiska.&lt;br&gt;Karta SD môže byť poškodená.</translation>
+        <translation>Error leyendo del almacenamiento.&lt;br&gt;La tarjeta SD puede estar rota.</translation>
     </message>
     <message>
         <location filename="../downloadthread.cpp" line="853"/>
         <source>Verifying write failed. Contents of SD card is different from what was written to it.</source>
-        <translation>Overovanie zápisu skončilo s chybou. Obsah karty SD sa nezhoduje s tým, čo na ňu bolo zapísané.</translation>
+        <translation>Error verificando la escritura. El contenido de la tarjeta SD es diferente del que se escribió en ella.</translation>
     </message>
     <message>
         <location filename="../downloadthread.cpp" line="908"/>
         <source>Customizing image</source>
-        <translation>Upravujem obraz</translation>
-    </message>
-    <message>
-        <source>Waiting for FAT partition to be mounted</source>
-        <translation type="vanished">Čakám a pripojenie FAT partície</translation>
-    </message>
-    <message>
-        <source>Error mounting FAT32 partition</source>
-        <translation type="vanished">Chyba pri pripájaní partície FAT32</translation>
-    </message>
-    <message>
-        <source>Operating system did not mount FAT32 partition</source>
-        <translation type="vanished">Operačný systém nepripojil partíciu FAT32</translation>
-    </message>
-    <message>
-        <source>Unable to customize. File &apos;%1&apos; does not exist.</source>
-        <translation type="vanished">Prispôsobenie skončilo s chybou. Súbor &apos;%1&apos; neexistuje.</translation>
-    </message>
-    <message>
-        <source>Error creating firstrun.sh on FAT partition</source>
-        <translation type="vanished">Pri vytváraní firstrun.sh na partícii FAT nastala chyba</translation>
-    </message>
-    <message>
-        <source>Error writing to config.txt on FAT partition</source>
-        <translation type="vanished">Chyba pri zápise config.txt na FAT partícii</translation>
-    </message>
-    <message>
-        <source>Error creating user-data cloudinit file on FAT partition</source>
-        <translation type="vanished">Chyba pri vytváraní súboru cloudinit s údajmi používateľa na partícií FAT</translation>
-    </message>
-    <message>
-        <source>Error creating network-config cloudinit file on FAT partition</source>
-        <translation type="vanished">Chyba pri vytváraní súboru cloudinit s nastavením siete na partícií FAT</translation>
-    </message>
-    <message>
-        <source>Error writing to cmdline.txt on FAT partition</source>
-        <translation type="vanished">Chyba pri zápise cmdline.txt na FAT partíciu</translation>
+        <translation>Personalizando imagen</translation>
     </message>
 </context>
 <context>
@@ -319,57 +279,57 @@
         <location filename="../driveformatthread.cpp" line="124"/>
         <location filename="../driveformatthread.cpp" line="185"/>
         <source>Error partitioning: %1</source>
-        <translation>Chyba pri zápise partícií: %1</translation>
+        <translation>Error particionando: %1</translation>
     </message>
     <message>
         <location filename="../driveformatthread.cpp" line="84"/>
         <source>Error starting fat32format</source>
-        <translation>Chyba pri spustení fat32format</translation>
+        <translation>Error iniciando fat32format</translation>
     </message>
     <message>
         <location filename="../driveformatthread.cpp" line="94"/>
         <source>Error running fat32format: %1</source>
-        <translation>Chyba pri spustení fat32format: %1</translation>
+        <translation>Error ejecutando fat32format: %1</translation>
     </message>
     <message>
         <location filename="../driveformatthread.cpp" line="104"/>
         <source>Error determining new drive letter</source>
-        <translation>Chyba pri zisťovaní písmena novej jednotky</translation>
+        <translation>Error determinando la nueva letra de unidad</translation>
     </message>
     <message>
         <location filename="../driveformatthread.cpp" line="109"/>
         <source>Invalid device: %1</source>
-        <translation>Neplatné zariadenie: %1</translation>
+        <translation>Dispositivo no válido: %1</translation>
     </message>
     <message>
         <location filename="../driveformatthread.cpp" line="146"/>
         <source>Error formatting (through udisks2)</source>
-        <translation>Chyba pri formátovaní (pomocou udisks2)</translation>
+        <translation>Error formateando (a través de udisks2)</translation>
     </message>
     <message>
         <location filename="../driveformatthread.cpp" line="174"/>
         <source>Error starting sfdisk</source>
-        <translation>Chyba pri spustení sfdisk</translation>
+        <translation>Error iniciando sfdisk</translation>
     </message>
     <message>
         <location filename="../driveformatthread.cpp" line="199"/>
         <source>Partitioning did not create expected FAT partition %1</source>
-        <translation>Rozdelenie disku nevytvorilo očakávanú FAT partíciu %1</translation>
+        <translation>El particionado no creó la partición FAT %1 esperada</translation>
     </message>
     <message>
         <location filename="../driveformatthread.cpp" line="208"/>
         <source>Error starting mkfs.fat</source>
-        <translation>Chyba pri spustení mkfs.fat</translation>
+        <translation>Error iniciando mkfs.fat</translation>
     </message>
     <message>
         <location filename="../driveformatthread.cpp" line="218"/>
         <source>Error running mkfs.fat: %1</source>
-        <translation>Chyba pri spustení mkfs.fat: %1</translation>
+        <translation>Error ejecutando mkfs.fat: %1</translation>
     </message>
     <message>
         <location filename="../driveformatthread.cpp" line="225"/>
         <source>Formatting not implemented for this platform</source>
-        <translation>Formátovanie nie je na tejto platforme implementované</translation>
+        <translation>Formateo no implementado para esta plataforma</translation>
     </message>
 </context>
 <context>
@@ -377,47 +337,47 @@
     <message>
         <location filename="../imagewriter.cpp" line="313"/>
         <source>Storage capacity is not large enough.&lt;br&gt;Needs to be at least %1 GB.</source>
-        <translation>Kapacita úložiska je nedostatočná&lt;br&gt;Musí byť aspoň %1 GB.</translation>
+        <translation>La capacidad de almacenamiento no es lo suficientemente grande.&lt;br&gt;Necesita ser de al menos %1 GB.</translation>
     </message>
     <message>
         <location filename="../imagewriter.cpp" line="319"/>
         <source>Input file is not a valid disk image.&lt;br&gt;File size %1 bytes is not a multiple of 512 bytes.</source>
-        <translation>Vstupný súbor nie je platným obrazom disku.&lt;br&gt;Veľkosť súboru %1 bajtov nie je násobkom 512 bajtov.</translation>
+        <translation>El archivo de entrada no es una imagen de disco válida.&lt;br&gt;El tamaño del archivo %1 bytes no es múltiplo de 512 bytes.</translation>
     </message>
     <message>
         <location filename="../imagewriter.cpp" line="777"/>
         <source>Downloading and writing image</source>
-        <translation>Sťahujem a zapisujem obraz</translation>
+        <translation>Descargando y escribiendo imagen</translation>
     </message>
     <message>
         <location filename="../imagewriter.cpp" line="939"/>
         <source>DFU mode not selected</source>
-        <translation>Režim DFU nie je vybratý</translation>
+        <translation>Modo DFU no seleccionado</translation>
     </message>
     <message>
         <location filename="../imagewriter.cpp" line="967"/>
         <source>Authentication failed or was cancelled.&lt;br&gt;DFU operation requires elevated privileges to access the USB device.</source>
-        <translation>Overenie sa nepodarilo alebo bolo zrušené.&lt;br&gt;Operácia DFU vyžaduje zvýšené oprávnenia na prístup k zariadeniu USB.</translation>
+        <translation>La autenticación falló o fue cancelada.&lt;br&gt;La operación DFU requiere privilegios elevados para acceder al dispositivo USB.</translation>
     </message>
     <message>
         <location filename="../imagewriter.cpp" line="1047"/>
         <source>Select image</source>
-        <translation>Vyberte obraz</translation>
+        <translation>Seleccionar imagen</translation>
     </message>
     <message>
         <location filename="../imagewriter.cpp" line="1222"/>
         <source>Error synchronizing time. Trying again in 3 seconds</source>
-        <translation>Chyba pri synchronizácii času. Vyskúšam to znova o 3 sekundy</translation>
+        <translation>Error sincronizando la hora. Vuelva a intentarlo en 3 segundos</translation>
     </message>
     <message>
         <location filename="../imagewriter.cpp" line="1234"/>
         <source>STP is enabled on your Ethernet switch. Getting IP will take long time.</source>
-        <translation>Na vašom sieťovom prepínači je povolený protokol STP. Získanie IP bude trvať dlhý čas.</translation>
+        <translation>El comutador de Ethernet tiene el STP activado. La obtención de la IP puede tardar mucho.</translation>
     </message>
     <message>
         <location filename="../imagewriter.cpp" line="1486"/>
         <source>Would you like to prefill the wifi password from the system keychain?</source>
-        <translation>Chcete predvyplniť heslo pre wifi zo systémovej kľúčenky?</translation>
+        <translation>¿Desea rellenar previamente la contraseña wifi desde el llavero del sistema?</translation>
     </message>
 </context>
 <context>
@@ -425,12 +385,12 @@
     <message>
         <location filename="../localfileextractthread.cpp" line="34"/>
         <source>opening image file</source>
-        <translation>otváram súbor s obrazom</translation>
+        <translation>abriendo archivo de imagen</translation>
     </message>
     <message>
         <location filename="../localfileextractthread.cpp" line="39"/>
         <source>Error opening image file</source>
-        <translation>Chyba pri otváraní súboru s obrazom</translation>
+        <translation>Error abriendo archivo de imagen</translation>
     </message>
 </context>
 <context>
@@ -438,22 +398,22 @@
     <message>
         <location filename="../MsgPopup.qml" line="121"/>
         <source>NO</source>
-        <translation>NIE</translation>
+        <translation>NO</translation>
     </message>
     <message>
         <location filename="../MsgPopup.qml" line="130"/>
         <source>YES</source>
-        <translation>ÁNO</translation>
+        <translation>SÍ</translation>
     </message>
     <message>
         <location filename="../MsgPopup.qml" line="139"/>
         <source>CONTINUE</source>
-        <translation>POKRAČOVAŤ</translation>
+        <translation>CONTINUAR</translation>
     </message>
     <message>
         <location filename="../MsgPopup.qml" line="147"/>
         <source>QUIT</source>
-        <translation>UKONČIŤ</translation>
+        <translation>SALIR</translation>
     </message>
 </context>
 <context>
@@ -461,61 +421,53 @@
     <message>
         <location filename="../OptionsPopup.qml" line="27"/>
         <source>OS Customization</source>
-        <translation>Úpravy OS</translation>
-    </message>
-    <message>
-        <source>for this session only</source>
-        <translation type="vanished">iba pre toto sedenie</translation>
-    </message>
-    <message>
-        <source>to always use</source>
-        <translation type="vanished">použiť vždy</translation>
+        <translation>Personalización del SO</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="61"/>
         <source>General</source>
-        <translation>Všeobecné</translation>
+        <translation>General</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="70"/>
         <source>Services</source>
-        <translation>Služby</translation>
+        <translation>Servicios</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="76"/>
         <source>Options</source>
-        <translation>Možnosti</translation>
+        <translation>Opciones</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="110"/>
         <source>Set hostname:</source>
-        <translation>Nastaviť meno počítača (hostname):</translation>
+        <translation>Establecer nombre de anfitrión:</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="139"/>
         <source>Set username and password</source>
-        <translation>Nastaviť meno používateľa a heslo</translation>
+        <translation>Establecer nombre de usuario y contraseña</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="153"/>
         <source>Username:</source>
-        <translation>Meno používateľa:</translation>
+        <translation>Nombre de usuario:</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="179"/>
         <source>Password is required!</source>
-        <translation>Heslo je povinné!</translation>
+        <translation>¡Se requiere contraseña!</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="187"/>
         <location filename="../OptionsPopup.qml" line="264"/>
         <source>Password:</source>
-        <translation>Heslo:</translation>
+        <translation>Contraseña:</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="228"/>
         <source>Configure wireless LAN</source>
-        <translation>Nastaviť wifi</translation>
+        <translation>Configurar LAN inalámbrica</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="242"/>
@@ -525,132 +477,132 @@
     <message>
         <location filename="../OptionsPopup.qml" line="293"/>
         <source>Show password</source>
-        <translation>Zobraziť heslo</translation>
+        <translation>Mostrar contraseña</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="304"/>
         <source>Hidden SSID</source>
-        <translation>Skryté SSID</translation>
+        <translation>SSID oculta</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="315"/>
         <source>Wireless LAN country:</source>
-        <translation>Wifi krajina:</translation>
+        <translation>País de LAN inalámbrica:</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="333"/>
         <source>Set locale settings</source>
-        <translation>Nastavenia miestnych zvyklostí</translation>
+        <translation>Establecer ajustes regionales</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="337"/>
         <source>Time zone:</source>
-        <translation>Časové pásmo:</translation>
+        <translation>Zona horaria:</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="356"/>
         <source>Keyboard layout:</source>
-        <translation>Rozloženie klávesnice:</translation>
+        <translation>Distribución del teclado:</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="375"/>
         <source>Set Disk Encryption (Cryptsetup)</source>
-        <translation>Nastaviť šifrovanie disku (Cryptsetup)</translation>
+        <translation>Configurar cifrado de disco (Cryptsetup)</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="385"/>
         <source>Disk Password:</source>
-        <translation>Heslo disku:</translation>
+        <translation>Contraseña del disco:</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="426"/>
         <source>Write sdcard&apos;s image to eMMC on first boot</source>
-        <translation>Zapísať obraz SD karty na eMMC pri prvom spustení</translation>
+        <translation>Escribir imagen de la tarjeta SD en eMMC en el primer arranque</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="451"/>
         <source>Enable SSH</source>
-        <translation>Povoliť SSH</translation>
+        <translation>Activar SSH</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="467"/>
         <source>Use password authentication</source>
-        <translation>Použiť heslo na prihlásenie</translation>
+        <translation>Usar autenticación por contraseña</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="478"/>
         <source>Allow public-key authentication only</source>
-        <translation>Povoliť iba prihlásenie pomocou verejného kľúča</translation>
+        <translation>Permitir solo la autenticación de clave pública</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="489"/>
         <source>Set authorized_keys for &apos;%1&apos;:</source>
-        <translation>Nastaviť authorized_keys pre &apos;%1&apos;:</translation>
+        <translation>Establecer authorized_keys para &apos;%1&apos;:</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="533"/>
         <source>Delete Key</source>
-        <translation>Odstrániť kľúč</translation>
+        <translation>Eliminar clave</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="552"/>
         <source>RUN SSH-KEYGEN</source>
-        <translation>SPUSTIŤ SSH-KEYGEN</translation>
+        <translation>EJECUTAR SSH-KEYGEN</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="562"/>
         <source>Add SSH Key</source>
-        <translation>Pridať kľúč SSH</translation>
+        <translation>Agregar clave SSH</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="578"/>
         <source>Enable VNC</source>
-        <translation>Povoliť VNC</translation>
+        <translation>Habilitar VNC</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="583"/>
         <source>VNC Password is required!</source>
-        <translation>Heslo VNC je povinné!</translation>
+        <translation>¡Se requiere contraseña VNC!</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="591"/>
         <source>VNC Password:</source>
-        <translation>Heslo VNC:</translation>
+        <translation>Contraseña VNC:</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="610"/>
         <source>Gadgets</source>
-        <translation>Gadgety</translation>
+        <translation>Gadgets</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="616"/>
         <source>Enable Storage Gadget</source>
-        <translation>Povoliť gadget úložiska</translation>
+        <translation>Habilitar gadget de almacenamiento</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="622"/>
         <source>Enable Ethernet Gadget</source>
-        <translation>Povoliť gadget Ethernet</translation>
+        <translation>Habilitar gadget Ethernet</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="628"/>
         <source>Enable Serial Gadgets</source>
-        <translation>Povoliť sériové gadgety</translation>
+        <translation>Habilitar gadgets serie</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="653"/>
         <source>Play sound when finished</source>
-        <translation>Po skončení prehrať zvuk</translation>
+        <translation>Reproducir sonido al finalizar</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="657"/>
         <source>Eject media when finished</source>
-        <translation>Po skončení vysunúť médium</translation>
+        <translation>Expulsar soporte al finalizar</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="676"/>
         <source>Serial Port </source>
-        <translation>Sériový port </translation>
+        <translation>Puerto serie </translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="708"/>
@@ -659,32 +611,12 @@
     </message>
     <message>
         <source>Enable telemetry</source>
-        <translation type="vanished">Povoliť telemetriu</translation>
+        <translation type="vanished">Activar telemetría</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="752"/>
         <source>SAVE</source>
-        <translation>ULOŽIŤ</translation>
-    </message>
-    <message>
-        <source>Disable overscan</source>
-        <translation type="vanished">Vypnúť presnímanie (overscan)</translation>
-    </message>
-    <message>
-        <source>Set password for &apos;pi&apos; user:</source>
-        <translation type="vanished">Nastaviť heslo pre používateľa &apos;pi&apos;:</translation>
-    </message>
-    <message>
-        <source>Set authorized_keys for &apos;pi&apos;:</source>
-        <translation type="vanished">Nastaviť authorized_keys pre &apos;pi&apos;:</translation>
-    </message>
-    <message>
-        <source>Skip first-run wizard</source>
-        <translation type="vanished">Vypnúť sprievodcu prvým spustením</translation>
-    </message>
-    <message>
-        <source>Persistent settings</source>
-        <translation type="vanished">Trvalé nastavenia</translation>
+        <translation>GUARDAR</translation>
     </message>
 </context>
 <context>
@@ -692,7 +624,7 @@
     <message>
         <location filename="../linux/linuxdrivelist.cpp" line="126"/>
         <source>Internal SD card reader</source>
-        <translation>Interná čítačka SD kariet</translation>
+        <translation>Lector de tarjetas SD interno</translation>
     </message>
 </context>
 <context>
@@ -700,32 +632,32 @@
     <message>
         <location filename="../UseSavedSettingsPopup.qml" line="46"/>
         <source>Use OS customization?</source>
-        <translation>Použiť úpravy OS?</translation>
+        <translation>¿Usar la personalización del SO?</translation>
     </message>
     <message>
         <location filename="../UseSavedSettingsPopup.qml" line="98"/>
         <source>Would you like to apply OS customization settings?</source>
-        <translation>Chceli by ste použiť nastavenia, ktoré upravujú operačný systém?</translation>
+        <translation>¿Desea aplicar los ajustes de personalización del SO?</translation>
     </message>
     <message>
         <location filename="../UseSavedSettingsPopup.qml" line="139"/>
         <source>NO</source>
-        <translation>NIE</translation>
+        <translation>NO</translation>
     </message>
     <message>
         <location filename="../UseSavedSettingsPopup.qml" line="120"/>
         <source>NO, CLEAR SETTINGS</source>
-        <translation>NIE, VYČISTIŤ NASTAVENIA</translation>
+        <translation>NO, BORRAR AJUSTES</translation>
     </message>
     <message>
         <location filename="../UseSavedSettingsPopup.qml" line="130"/>
         <source>YES</source>
-        <translation>ÁNO</translation>
+        <translation>SÍ</translation>
     </message>
     <message>
         <location filename="../UseSavedSettingsPopup.qml" line="107"/>
         <source>EDIT SETTINGS</source>
-        <translation>UPRAVIŤ NASTAVENIA</translation>
+        <translation>EDITAR AJUSTES</translation>
     </message>
 </context>
 <context>
@@ -736,210 +668,202 @@
     </message>
     <message>
         <source>Raspberry Pi Device</source>
-        <translation type="vanished">Zariadenie Raspberry Pi</translation>
+        <translation type="vanished">Dispositivo Raspberry Pi</translation>
     </message>
     <message>
         <location filename="../main.qml" line="134"/>
         <source>CHOOSE DEVICE</source>
-        <translation>VYBERTE ZARIADENIE</translation>
+        <translation>ELEGIR DISPOSITIVO</translation>
     </message>
     <message>
         <source>Select this button to choose your target Raspberry Pi</source>
-        <translation type="vanished">Vyberte toto tlačidlo pre výber cieľového Raspberry Pi</translation>
+        <translation type="vanished">Seleccione este botón para elegir su Raspberry Pi objetivo</translation>
     </message>
     <message>
         <location filename="../main.qml" line="160"/>
         <location filename="../main.qml" line="555"/>
         <source>Operating System</source>
-        <translation>Operačný systém</translation>
+        <translation>Sistema operativo</translation>
     </message>
     <message>
         <location filename="../main.qml" line="171"/>
         <location filename="../main.qml" line="1977"/>
         <source>CHOOSE OS</source>
-        <translation>VYBERTE OS</translation>
+        <translation>ELEGIR SO</translation>
     </message>
     <message>
         <location filename="../main.qml" line="183"/>
         <source>Select this button to change the operating system</source>
-        <translation>Pre zmenu operačného systému kliknite na toto tlačidlo</translation>
+        <translation>Seleccione este botón para cambiar el sistema operativo</translation>
     </message>
     <message>
         <location filename="../main.qml" line="197"/>
         <location filename="../main.qml" line="957"/>
         <source>Storage</source>
-        <translation>SD karta</translation>
+        <translation>Almacenamiento</translation>
+    </message>
+    <message>
+        <location filename="../main.qml" line="330"/>
+        <source>Network not ready yet</source>
+        <translation>La red aún no está lista</translation>
+    </message>
+    <message>
+        <location filename="../main.qml" line="1022"/>
+        <source>No storage devices found</source>
+        <translation>No se han encontrado dispositivos de almacenamiento</translation>
     </message>
     <message>
         <location filename="../main.qml" line="208"/>
         <location filename="../main.qml" line="1643"/>
         <source>CHOOSE STORAGE</source>
-        <translation>VYBERTE SD KARTU</translation>
+        <translation>ELEGIR ALMACENAMIENTO</translation>
     </message>
     <message>
-        <source>WRITE</source>
-        <translation type="vanished">ZAPÍSAŤ</translation>
+        <location filename="../main.qml" line="24"/>
+        <source>T3 Gemstone Image Writer %1</source>
+        <translation>T3 Gemstone Image Writer %1</translation>
+    </message>
+    <message>
+        <location filename="../main.qml" line="122"/>
+        <location filename="../main.qml" line="453"/>
+        <source>Gemstone Board</source>
+        <translation>Placa Gemstone</translation>
+    </message>
+    <message>
+        <location filename="../main.qml" line="146"/>
+        <source>Select this button to choose your target Gemstone Board</source>
+        <translation>Seleccione este botón para elegir su Gemstone Board de destino</translation>
     </message>
     <message>
         <location filename="../main.qml" line="222"/>
         <source>Select this button to change the destination storage device</source>
-        <translation>Pre zmenu cieľového zariadenia úložiska kliknite na toto tlačidlo</translation>
+        <translation>Seleccione este botón para cambiar el dispositivo de almacenamiento de destino</translation>
     </message>
     <message>
         <location filename="../main.qml" line="267"/>
         <source>CANCEL WRITE</source>
-        <translation>ZRUŠIŤ ZÁPIS</translation>
+        <translation>CANCELAR ESCRITURA</translation>
     </message>
     <message>
         <location filename="../main.qml" line="270"/>
         <location filename="../main.qml" line="1527"/>
         <location filename="../main.qml" line="1538"/>
         <source>Cancelling...</source>
-        <translation>Ruším operáciu...</translation>
+        <translation>Cancelando...</translation>
     </message>
     <message>
         <location filename="../main.qml" line="282"/>
         <source>CANCEL VERIFY</source>
-        <translation>ZRUŠIŤ OVEROVANIE</translation>
+        <translation>CANCELAR VERIFICACIÓN</translation>
     </message>
     <message>
         <location filename="../main.qml" line="285"/>
         <location filename="../main.qml" line="1561"/>
         <location filename="../main.qml" line="1670"/>
         <source>Finalizing...</source>
-        <translation>Ukončujem...</translation>
+        <translation>Finalizando...</translation>
     </message>
     <message>
         <location filename="../main.qml" line="294"/>
         <source>Next</source>
-        <translation>Ďalej</translation>
+        <translation>Siguiente</translation>
     </message>
     <message>
         <location filename="../main.qml" line="300"/>
         <source>Select this button to start writing the image</source>
-        <translation>Kliknutím na toto tlačidlo spustíte zápis</translation>
-    </message>
-    <message>
-        <source>Select this button to access advanced settings</source>
-        <translation type="vanished">Použite toto tlačidlo na prístup k pokročilým nastaveniam</translation>
-    </message>
-    <message>
-        <location filename="../main.qml" line="24"/>
-        <source>Gemstone Image Writer %1</source>
-        <translation>Gemstone Image Writer %1</translation>
-    </message>
-    <message>
-        <location filename="../main.qml" line="122"/>
-        <location filename="../main.qml" line="453"/>
-        <source>Gemstone Board</source>
-        <translation>Doska Gemstone</translation>
-    </message>
-    <message>
-        <location filename="../main.qml" line="146"/>
-        <source>Select this button to choose your target Gemstone Board</source>
-        <translation>Vyberte toto tlačidlo na výber cieľovej dosky Gemstone</translation>
+        <translation>Seleccione este botón para empezar a escribir la imagen</translation>
     </message>
     <message>
         <location filename="../main.qml" line="320"/>
         <source>Using custom repository: %1</source>
-        <translation>Používa sa vlastný repozitár: %1</translation>
-    </message>
-    <message>
-        <location filename="../main.qml" line="330"/>
-        <source>Network not ready yet</source>
-        <translation>Sieť ešte nie je pripravená</translation>
+        <translation>Usando repositorio personalizado: %1</translation>
     </message>
     <message>
         <location filename="../main.qml" line="339"/>
         <source>Keyboard navigation: &lt;tab&gt; navigate to next button &lt;space&gt; press button/select item &lt;arrow up/down&gt; go up/down in lists</source>
-        <translation>Ovládanie pomocou klávesnice: &lt;tabulátor&gt; prechod na ďalšie tlačidlo &lt;medzerník&gt; stlačenie tlačidla/výber položky &lt;šípka hore/dole&gt; posun hore/dole v zoznamoch</translation>
+        <translation>Navegación por teclado: &lt;tab&gt; navegar al botón siguiente &lt;space&gt; pulsar botón/seleccionar elemento &lt;arrow up/down&gt; subir/bajar en listas</translation>
     </message>
     <message>
         <location filename="../main.qml" line="360"/>
         <source>Language: </source>
-        <translation>Jazyk:</translation>
+        <translation>Idioma: </translation>
     </message>
     <message>
         <location filename="../main.qml" line="383"/>
         <source>Keyboard: </source>
-        <translation>Klávesnica: </translation>
+        <translation>Teclado: </translation>
     </message>
     <message>
         <location filename="../main.qml" line="497"/>
         <source>[ All ]</source>
-        <translation>[ Všetky ]</translation>
+        <translation>[ Todos ]</translation>
     </message>
     <message>
         <location filename="../main.qml" line="653"/>
         <source>Back</source>
-        <translation>Späť</translation>
+        <translation>Volver</translation>
     </message>
     <message>
         <location filename="../main.qml" line="654"/>
         <source>Go back to main menu</source>
-        <translation>Prejsť do hlavnej ponuky</translation>
+        <translation>Volver al menú principal</translation>
     </message>
     <message>
         <location filename="../main.qml" line="900"/>
         <source>Released: %1</source>
-        <translation>Vydané: %1</translation>
+        <translation>Publicado: %1</translation>
     </message>
     <message>
         <location filename="../main.qml" line="910"/>
         <source>Cached on your computer</source>
-        <translation>Uložené na počítači</translation>
+        <translation>En caché en su ordenador</translation>
     </message>
     <message>
         <location filename="../main.qml" line="912"/>
         <source>Local file</source>
-        <translation>Miestny súbor</translation>
+        <translation>Archivo local</translation>
     </message>
     <message>
         <location filename="../main.qml" line="913"/>
         <source>Online - %1 GB download</source>
-        <translation>Online %1 GB na stiahnutie</translation>
-    </message>
-    <message>
-        <location filename="../main.qml" line="1022"/>
-        <source>No storage devices found</source>
-        <translation>Nenašli sa žiadne úložné zariadenia</translation>
+        <translation>En línea - descarga de %1 GB</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1057"/>
         <source>Exclude System Drives</source>
-        <translation>Vylúčiť systémové disky</translation>
+        <translation>Excluir unidades del sistema</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1115"/>
         <source>Internal eMMC - 32 GB</source>
-        <translation>Interný eMMC - 32 GB</translation>
+        <translation>eMMC interno - 32 GB</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1125"/>
         <source>Writes the image to the card&apos;s internal eMMC memory via Uniflash</source>
-        <translation>Zapíše obraz do internej pamäte eMMC karty cez Uniflash</translation>
+        <translation>Escribe la imagen en la memoria eMMC interna de la tarjeta mediante Uniflash</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1213"/>
         <location filename="../main.qml" line="2140"/>
         <source>DFU Mode</source>
-        <translation>Režim DFU</translation>
+        <translation>Modo DFU</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1223"/>
         <source>Program the device via USB DFU (Device Firmware Update)</source>
-        <translation>Naprogramovať zariadenie cez USB DFU (aktualizácia firmvéru)</translation>
+        <translation>Programar el dispositivo mediante USB DFU (actualización de firmware)</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1268"/>
         <source>gigabytes</source>
-        <translation>gigabajty</translation>
+        <translation>gigabytes</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1270"/>
         <location filename="../main.qml" line="1332"/>
         <source>Mounted as %1</source>
-        <translation>Pripojená ako %1</translation>
+        <translation>Montado como %1</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1318"/>
@@ -949,181 +873,169 @@
     <message>
         <location filename="../main.qml" line="1334"/>
         <source>[WRITE PROTECTED]</source>
-        <translation>[OCHRANA PROTI ZÁPISU]</translation>
+        <translation>[PROTEGIDO CONTRA ESCRITURA]</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1336"/>
         <source>SYSTEM</source>
-        <translation>SYSTÉM</translation>
+        <translation>SISTEMA</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1394"/>
         <location filename="../main.qml" line="1401"/>
         <source>Boot Mode Switch</source>
-        <translation>Prepínač režimu spúšťania</translation>
+        <translation>Interruptor de modo de arranque</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1395"/>
         <source>Configure the boot mode switches for DFU Boot as shown in the image.</source>
-        <translation>Nakonfigurujte prepínače režimu spúšťania pre DFU Boot podľa obrázka.</translation>
+        <translation>Configure los interruptores de modo de arranque para el arranque DFU como se muestra en la imagen.</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1402"/>
         <source>DFU programming completed successfully!&lt;br&gt;&lt;br&gt;After powering off the card, set the boot mode switches to eMMC Boot as shown in the image. Upon restoring power, the system will boot automatically.</source>
-        <translation>Programovanie DFU bolo úspešne dokončené!&lt;br&gt;&lt;br&gt;Po vypnutí karty nastavte prepínače režimu spúšťania na eMMC Boot podľa obrázka. Po obnovení napájania sa systém spustí automaticky.</translation>
+        <translation>¡Programación DFU completada con éxito!&lt;br&gt;&lt;br&gt;Después de apagar la tarjeta, configure los interruptores de modo de arranque en eMMC Boot como se muestra en la imagen. Al restaurar la alimentación, el sistema arrancará automáticamente.</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1411"/>
         <source>Are you sure you want to quit?</source>
-        <translation>Skutočne chcete skončiť?</translation>
+        <translation>¿Está seguro de que quiere salir?</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1412"/>
-        <source>Gemstone Imager is still busy.&lt;br&gt;Are you sure you want to quit?</source>
-        <translation>Gemstone Imager je stále zaneprázdnený.&lt;br&gt;Ste si istí, že chcete ukončiť?</translation>
+        <source>T3 Gemstone Imager is still busy.&lt;br&gt;Are you sure you want to quit?</source>
+        <translation>T3 Gemstone Imager todavía está ocupado.&lt;br&gt;¿Está seguro de que desea salir?</translation>
     </message>
     <message>
         <source>Raspberry Pi Imager is still busy.&lt;br&gt;Are you sure you want to quit?</source>
-        <translation type="vanished">Raspberry Pi Imager ešte neskončil.&lt;br&gt;Ste si istý, že chcete skončiť?</translation>
+        <translation type="vanished">Raspberry Pi Imager sigue ocupado.&lt;br&gt;¿Está seguro de que quiere salir?</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1423"/>
         <source>Warning</source>
-        <translation>Varovanie</translation>
+        <translation>Advertencia</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1442"/>
         <location filename="../main.qml" line="2152"/>
         <source>Starting DFU operation...</source>
-        <translation>Spustenie operácie DFU...</translation>
+        <translation>Iniciando operación DFU...</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1448"/>
         <source>Preparing to write...</source>
-        <translation>Príprava zápisu...</translation>
+        <translation>Preparando para escribir...</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1457"/>
         <source>Image will be sent to device via DFU.&lt;br&gt;Are you sure you want to continue?</source>
-        <translation>Obraz bude odoslaný do zariadenia cez DFU.&lt;br&gt;Ste si istí, že chcete pokračovať?</translation>
+        <translation>La imagen se enviará al dispositivo mediante DFU.&lt;br&gt;¿Está seguro de que desea continuar?</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1459"/>
         <source>All existing data on &apos;%1&apos; will be erased.&lt;br&gt;Are you sure you want to continue?</source>
-        <translation>Všetky existujúce dáta na &apos;%1&apos; budú odstránené.&lt;br&gt;Naozaj chcete pokračovať?</translation>
+        <translation>Se borrarán todos los datos existentes en &apos;%1&apos;.&lt;br&gt;¿Está seguro de que desea continuar?</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1475"/>
         <source>Update available</source>
-        <translation>Je dostupná aktualizácia</translation>
+        <translation>Actualización disponible</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1476"/>
         <source>There is a newer version of Imager available.&lt;br&gt;Would you like to visit the website to download it?</source>
-        <translation>Je dostupná nová verzia Imagera.&lt;br&gt;Chcete prejsť na webovú stránku s programom a stiahnuť ho?</translation>
-    </message>
-    <message>
-        <source>Error downloading OS list from Internet</source>
-        <translation type="vanished">Chyba pri sťahovaní zoznamu OS z Internetu</translation>
+        <translation>Hay una versión más reciente de Imager disponible.&lt;br&gt;¿Desea visitar el sitio web para descargarla?</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1530"/>
         <source>Downloading... %1%</source>
-        <translation>Sťahujem... %1%</translation>
+        <translation>Descargando... %1%</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1541"/>
         <source>Sending... %1%</source>
-        <translation>Odosielanie... %1%</translation>
+        <translation>Enviando... %1%</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1564"/>
         <source>Verifying... %1%</source>
-        <translation>Overujem... %1%</translation>
+        <translation>Verificando... %1%</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1571"/>
         <source>Preparing to write... (%1)</source>
-        <translation>Príprava zápisu... (%1)</translation>
+        <translation>Preparando para escribir... (%1)</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1582"/>
         <source>Waiting for authentication to access USB device...</source>
-        <translation>Čakanie na overenie pre prístup k zariadeniu USB...</translation>
+        <translation>Esperando autenticación para acceder al dispositivo USB...</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1605"/>
         <source>Error</source>
-        <translation>Chyba</translation>
+        <translation>Error</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1612"/>
         <source>Write Successful</source>
-        <translation>Zápis úspešne skončil</translation>
+        <translation>Escritura exitosa</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1613"/>
         <location filename="../imagewriter.cpp" line="719"/>
         <source>Erase</source>
-        <translation>Vymazať</translation>
+        <translation>Borrar</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1614"/>
         <source>&lt;b&gt;%1&lt;/b&gt; has been erased&lt;br&gt;&lt;br&gt;You can now remove the SD card from the reader</source>
-        <translation>&lt;b&gt;%1&lt;/b&gt; bola vymazaná&lt;br&gt;&lt;br&gt;Teraz môžete odstrániť SD kartu z čítačky</translation>
+        <translation>&lt;b&gt;%1&lt;/b&gt; se ha borrado&lt;br&gt;&lt;br&gt;Ya puede retirar la tarjeta SD del lector</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1629"/>
         <source>&lt;b&gt;%1&lt;/b&gt; has been written to &lt;b&gt;%2&lt;/b&gt;&lt;br&gt;&lt;br&gt;The process is complete. You can connect to the board via the serial port.</source>
-        <translation>&lt;b&gt;%1&lt;/b&gt; bol zapísaný do &lt;b&gt;%2&lt;/b&gt;.&lt;br&gt;&lt;br&gt;Proces je dokončený. Môžete sa pripojiť k doske cez sériový port.</translation>
+        <translation>&lt;b&gt;%1&lt;/b&gt; ha sido escrito en &lt;b&gt;%2&lt;/b&gt;.&lt;br&gt;&lt;br&gt;El proceso está completo. Puede conectarse a la placa mediante el puerto serie.</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1633"/>
         <source>&lt;b&gt;%1&lt;/b&gt; has been written to &lt;b&gt;%2&lt;/b&gt;&lt;br&gt;&lt;br&gt;You can now remove the SD card from the reader</source>
-        <translation>&lt;b&gt;%1&lt;/b&gt; bol zapísaný na &lt;b&gt;%2&lt;/b&gt;&lt;br&gt;&lt;br&gt;Teraz môžete odstrániť SD kartu z čítačky</translation>
+        <translation>&lt;b&gt;%1&lt;/b&gt; se ha escrito en &lt;b&gt;%2&lt;/b&gt;&lt;br&gt;&lt;br&gt;Ya puede retirar la tarjeta SD del lector</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1798"/>
         <source>Error parsing os_list.json</source>
-        <translation>Chyba pri spracovaní os_list.json</translation>
+        <translation>Error al parsear os_list.json</translation>
     </message>
     <message>
         <location filename="../imagewriter.cpp" line="720"/>
         <source>Format card as FAT32</source>
-        <translation>Formátovať kartu ako FAT32</translation>
+        <translation>Formatear tarjeta como FAT32</translation>
     </message>
     <message>
         <location filename="../imagewriter.cpp" line="726"/>
         <source>Use custom</source>
-        <translation>Použiť vlastný</translation>
+        <translation>Usar personalizado</translation>
     </message>
     <message>
         <location filename="../imagewriter.cpp" line="727"/>
         <source>Select a custom .img from your computer</source>
-        <translation>Použiť vlastný súbor img. na Vašom počítači</translation>
+        <translation>Seleccione un .img personalizado de su ordenador</translation>
     </message>
     <message>
         <location filename="../main.qml" line="2051"/>
         <source>Connect an USB stick containing images first.&lt;br&gt;The images must be located in the root folder of the USB stick.</source>
-        <translation>Najprv pripojte USB kľúč, ktorý obsahuje diskové obrazy.&lt;br&gt;Obrazy sa musia nachádzať v koreňovom priečinku USB kľúča.</translation>
+        <translation>Conecte primero una memoria USB que contenga imágenes.&lt;br&gt;Las imágenes deben estar ubicadas en la carpeta raíz de la memoria USB.</translation>
     </message>
     <message>
         <location filename="../main.qml" line="2129"/>
         <source>Onboard emmc</source>
-        <translation>Vstavaná eMMC</translation>
+        <translation>eMMC integrada</translation>
     </message>
     <message>
         <location filename="../main.qml" line="2165"/>
         <source>SD card is write protected.&lt;br&gt;Push the lock switch on the left side of the card upwards, and try again.</source>
-        <translation>SD karta je chránená proti zápisu.&lt;br&gt;Presuňte prepínač zámku na ľavej strane karty smerom hore a skúste to znova.</translation>
-    </message>
-    <message>
-        <source>Select this button to change the destination SD card</source>
-        <translation type="vanished">Pre zmenu cieľovej SD karty kliknite na toto tlačidlo</translation>
-    </message>
-    <message>
-        <source>&lt;b&gt;%1&lt;/b&gt; has been written to &lt;b&gt;%2&lt;/b&gt;</source>
-        <translation type="vanished">&lt;b&gt;%1&lt;/b&gt; bol zapísaný na &lt;b&gt;%2&lt;/b&gt;</translation>
+        <translation>La tarjeta SD está protegida contra escritura.&lt;br&gt;Pulse hacia arriba el interruptor de bloqueo situado en el lado izquierdo de la tarjeta y vuelva a intentarlo.</translation>
     </message>
 </context>
 </TS>

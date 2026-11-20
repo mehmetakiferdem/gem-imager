@@ -21,7 +21,7 @@ ApplicationWindow {
     minimumWidth: imageWriter.isEmbeddedMode() ? -1 : 800
     minimumHeight: imageWriter.isEmbeddedMode() ? -1 : 600
 
-    title: qsTr("Gemstone Image Writer %1").arg(imageWriter.constantVersion())
+    title: qsTr("T3 Gemstone Image Writer %1").arg(imageWriter.constantVersion())
 
     FontLoader {id: notosans;      source: "fonts/NotoSans-Regular.ttf"}
     FontLoader {id: notosansLight; source: "fonts/NotoSans-Light.ttf"}
@@ -1412,7 +1412,7 @@ ApplicationWindow {
         yesButton: true
         noButton: true
         title: qsTr("Are you sure you want to quit?")
-        text: qsTr("Gemstone Imager is still busy.<br>Are you sure you want to quit?")
+        text: qsTr("T3 Gemstone Imager is still busy.<br>Are you sure you want to quit?")
         onYes: {
             Qt.quit()
         }

@@ -177,7 +177,7 @@ void WriteInPlaceThread::run()
     });
 
     th->setVerifyEnabled(_verifyEnabled);
-    th->setUserAgent(QString("Mozilla/5.0 gem-imager/%1").arg("1.0").toUtf8());
+    th->setUserAgent(QString("Mozilla/5.0 t3-gem-imager/%1").arg("1.0").toUtf8());
     th->setImageCustomization(_config, _cmdline, _firstrun, _cloudinit, _cloudinitNetwork, _geminit, _initFormat, _destination);
 
     th->start();
