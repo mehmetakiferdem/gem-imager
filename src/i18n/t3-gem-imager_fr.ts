@@ -1,122 +1,122 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="de_DE">
+<TS version="2.1" language="fr_FR">
 <context>
     <name>DfuThread</name>
     <message>
         <location filename="../dfuthread.cpp" line="49"/>
         <source>Failed to create temporary file for DFU image</source>
-        <translation>Die temporäre Datei für das DFU-Image konnte nicht erstellt werden</translation>
+        <translation>Échec de la création du fichier temporaire pour l&apos;image DFU</translation>
     </message>
     <message>
         <location filename="../dfuthread.cpp" line="59"/>
         <source>Failed to open temporary file for DFU image</source>
-        <translation>Die temporäre Datei für das DFU-Image konnte nicht geöffnet werden</translation>
+        <translation>Échec de l&apos;ouverture du fichier temporaire pour l&apos;image DFU</translation>
     </message>
     <message>
         <location filename="../dfuthread.cpp" line="68"/>
         <source>Initializing DFU...</source>
-        <translation>DFU wird initialisiert...</translation>
+        <translation>Initialisation de DFU...</translation>
     </message>
     <message>
         <location filename="../dfuthread.cpp" line="71"/>
         <source>DFU mode requires an image URL</source>
-        <translation>Für den DFU-Modus ist eine Bild-URL erforderlich</translation>
+        <translation>Le mode DFU nécessite une URL d&apos;image</translation>
     </message>
     <message>
         <location filename="../dfuthread.cpp" line="75"/>
         <source>Downloading image...</source>
-        <translation>Bild wird heruntergeladen...</translation>
+        <translation>Téléchargement de l&apos;image...</translation>
     </message>
     <message>
         <location filename="../dfuthread.cpp" line="81"/>
         <source>Customizing image...</source>
-        <translation>Bild anpassen...</translation>
+        <translation>Personnalisation de l&apos;image...</translation>
     </message>
     <message>
         <location filename="../dfuthread.cpp" line="85"/>
         <source>Failed to reopen image for customization: %1</source>
-        <translation>Bild konnte zur Anpassung nicht erneut geöffnet werden: %1</translation>
+        <translation>Échec de la réouverture de l&apos;image pour la personnalisation : %1</translation>
     </message>
     <message>
         <location filename="../dfuthread.cpp" line="92"/>
         <source>Extracting bootloader files from image...</source>
-        <translation>Bootloader-Dateien aus Image extrahieren...</translation>
+        <translation>Extraction des fichiers du chargeur de démarrage de l&apos;image...</translation>
     </message>
     <message>
         <location filename="../dfuthread.cpp" line="95"/>
         <source>Sending bootloader files...</source>
-        <translation>Bootloader-Dateien werden gesendet...</translation>
+        <translation>Envoi des fichiers du chargeur de démarrage...</translation>
     </message>
     <message>
         <location filename="../dfuthread.cpp" line="98"/>
         <source>Waiting for device to enter DFU mode...</source>
-        <translation>Warten darauf, dass das Gerät in den DFU-Modus wechselt...</translation>
+        <translation>En attente que l&apos;appareil passe en mode DFU...</translation>
     </message>
     <message>
         <location filename="../dfuthread.cpp" line="101"/>
         <source>Sending image to device (this may take several minutes)...</source>
-        <translation>Bild wird an das Gerät gesendet (dies kann mehrere Minuten dauern)...</translation>
+        <translation>Envoi de l&apos;image à l&apos;appareil (cela peut prendre plusieurs minutes)...</translation>
     </message>
     <message>
         <location filename="../dfuthread.cpp" line="104"/>
         <source>Writing boot binaries to eMMC (do not power off)...</source>
-        <translation>Boot-Binärdateien werden in eMMC geschrieben (nicht ausschalten) ...</translation>
+        <translation>Écriture des binaires de démarrage sur eMMC (ne pas éteindre)...</translation>
     </message>
     <message>
         <location filename="../dfuthread.cpp" line="107"/>
         <source>System image sent successfully!</source>
-        <translation>Systemabbild erfolgreich gesendet!</translation>
+        <translation>Image système envoyée avec succès !</translation>
     </message>
     <message>
         <location filename="../dfuthread.cpp" line="123"/>
         <source>DFU failed (alt: %1): %2</source>
-        <translation>DFU fehlgeschlagen (alt: %1): %2</translation>
+        <translation>Échec du DFU (alt : %1) : %2</translation>
     </message>
     <message>
         <location filename="../dfuthread.cpp" line="139"/>
         <source>Sending %1...</source>
-        <translation>%1 wird gesendet...</translation>
+        <translation>Envoi de %1...</translation>
     </message>
     <message>
         <location filename="../dfuthread.cpp" line="142"/>
         <source>%1 sent</source>
-        <translation>%1 gesendet</translation>
+        <translation>%1 envoyé</translation>
     </message>
     <message>
         <location filename="../dfuthread.cpp" line="145"/>
         <source>Waiting for device to reconnect...</source>
-        <translation>Warten auf die erneute Verbindung des Geräts...</translation>
+        <translation>En attente de la reconnexion de l&apos;appareil...</translation>
     </message>
     <message>
         <location filename="../dfuthread.cpp" line="162"/>
         <source>Failed to reopen image file: %1</source>
-        <translation>Bilddatei konnte nicht erneut geöffnet werden: %1</translation>
+        <translation>Échec de la réouverture du fichier image : %1</translation>
     </message>
     <message>
         <location filename="../dfuthread.cpp" line="174"/>
         <source>Bootloader file not found in image: %1</source>
-        <translation>Bootloader-Datei nicht im Bild gefunden: %1</translation>
+        <translation>Fichier du chargeur de démarrage introuvable dans l&apos;image : %1</translation>
     </message>
     <message>
         <location filename="../dfuthread.cpp" line="185"/>
         <source>Failed to create temp file for %1</source>
-        <translation>Die temporäre Datei für %1 konnte nicht erstellt werden.</translation>
+        <translation>Échec de la création du fichier temporaire pour %1</translation>
     </message>
     <message>
         <location filename="../dfuthread.cpp" line="190"/>
         <source>Failed to write temp file for %1</source>
-        <translation>Die temporäre Datei für %1 konnte nicht geschrieben werden.</translation>
+        <translation>Échec de l&apos;écriture du fichier temporaire pour %1</translation>
     </message>
     <message>
         <location filename="../dfuthread.cpp" line="199"/>
         <source>Error reading bootloader files from image: %1</source>
-        <translation>Fehler beim Lesen der Bootloader-Dateien aus dem Image: %1</translation>
+        <translation>Erreur lors de la lecture des fichiers du chargeur de démarrage à partir de l&apos;image : %1</translation>
     </message>
     <message>
         <location filename="../dfuthread.cpp" line="209"/>
         <source>Image not found: %1</source>
-        <translation>Bild nicht gefunden: %1</translation>
+        <translation>Image introuvable : %1</translation>
     </message>
 </context>
 <context>
@@ -125,26 +125,26 @@
         <location filename="../downloadextractthread.cpp" line="206"/>
         <location filename="../downloadextractthread.cpp" line="400"/>
         <source>Error extracting archive: %1</source>
-        <translation>Fehler beim Entpacken des Archivs: %1</translation>
+        <translation>Erreur lors de l&apos;extraction de l&apos;archive&#xa0;: %1</translation>
     </message>
     <message>
         <location filename="../downloadextractthread.cpp" line="271"/>
         <source>Error mounting FAT32 partition</source>
-        <translation>Fehler beim Einbinden der FAT32-Partition</translation>
+        <translation>Erreur lors du montage de la partition FAT32</translation>
     </message>
     <message>
         <location filename="../downloadextractthread.cpp" line="291"/>
         <source>Operating system did not mount FAT32 partition</source>
-        <translation>Das Betriebssystem band die FAT32-Partition nicht ein</translation>
+        <translation>Le système d&apos;exploitation n&apos;a pas monté la partition FAT32</translation>
     </message>
     <message>
         <location filename="../downloadextractthread.cpp" line="314"/>
         <source>Error changing to directory &apos;%1&apos;</source>
-        <translation>Fehler beim Wechseln in den Ordner &quot;%1&quot;</translation>
+        <translation>Erreur lors du changement du répertoire &apos;%1&apos;</translation>
     </message>
     <message>
         <source>Error writing to storage</source>
-        <translation type="vanished">Fehler beim Schreiben auf den Speicher</translation>
+        <translation type="vanished">Erreur d&apos;écriture vers le stockage</translation>
     </message>
 </context>
 <context>
@@ -152,165 +152,164 @@
     <message>
         <location filename="../downloadthread.cpp" line="119"/>
         <source>unmounting drive</source>
-        <translation>Laufwerk wird ausgehängt</translation>
+        <translation>démontage du disque</translation>
     </message>
     <message>
         <location filename="../downloadthread.cpp" line="139"/>
         <source>opening drive</source>
-        <translation>Laufwerk wird geöffnet</translation>
+        <translation>ouverture du disque</translation>
     </message>
     <message>
         <location filename="../downloadthread.cpp" line="167"/>
         <source>Error running diskpart: %1</source>
-        <translation>Fehler beim Ausführen von Diskpart: %1</translation>
+        <translation>Erreur lors de l&apos;exécution de diskpart&#xa0;: %1</translation>
     </message>
     <message>
         <location filename="../downloadthread.cpp" line="188"/>
         <source>Error removing existing partitions</source>
-        <translation>Fehler beim Entfernen von existierenden Partitionen</translation>
+        <translation>Erreur lors de la suppression des partitions existantes</translation>
     </message>
     <message>
         <location filename="../downloadthread.cpp" line="214"/>
         <source>Authentication cancelled</source>
-        <translation>Authentifizierung abgebrochen</translation>
+        <translation>Authentification annulée</translation>
     </message>
     <message>
         <location filename="../downloadthread.cpp" line="217"/>
         <source>Error running authopen to gain access to disk device &apos;%1&apos;</source>
-        <translation>Fehler beim Ausführen von authopen, um Zugriff auf Geräte zu erhalten &apos;%1&apos;</translation>
+        <translation>Erreur lors de l&apos;exécution d&apos;authopen pour accéder au périphérique du stockage &apos;%1&apos;</translation>
     </message>
     <message>
         <source>Please verify if &apos;Raspberry Pi Imager&apos; is allowed access to &apos;removable volumes&apos; in privacy settings (under &apos;files and folders&apos; or alternatively give it &apos;full disk access&apos;).</source>
-        <translatorcomment>Not sure if current macOS has that option (or if it got moved/renamed)</translatorcomment>
-        <translation type="obsolete">Bitte stellen Sie sicher, dass &apos;Raspberry Pi Imager&apos; Zugriff auf &apos;removable volumes&apos; in privacy settings hat (unter &apos;files and folders&apos;. Sie können ihm auch &apos;full disk access&apos; geben).</translation>
+        <translation type="vanished">Veuillez vérifier dans les réglages de confidentialité (sous &apos;fichiers et dossiers&apos;) si &apos;Raspberry Pi Imager&apos; est autorisé à accéder aux volumes amovibles (ou bien donnez-lui accès complet au disque).</translation>
     </message>
     <message>
         <location filename="../downloadthread.cpp" line="218"/>
-        <source>Please verify if &apos;Gemstone Imager&apos; is allowed access to &apos;removable volumes&apos; in privacy settings (under &apos;files and folders&apos; or alternatively give it &apos;full disk access&apos;).</source>
-        <translation>Bitte prüfen Sie, ob &apos;Gemstone Imager&apos; in den Datenschutzeinstellungen Zugriff auf &apos;Wechseldatenträger&apos; hat (unter &apos;Dateien und Ordner&apos; oder erteilen Sie alternativ &apos;Vollzugriff auf den Datenträger&apos;).</translation>
+        <source>Please verify if &apos;T3 Gemstone Imager&apos; is allowed access to &apos;removable volumes&apos; in privacy settings (under &apos;files and folders&apos; or alternatively give it &apos;full disk access&apos;).</source>
+        <translation>Veuillez vérifier si &apos;T3 Gemstone Imager&apos; est autorisé à accéder aux &apos;volumes amovibles&apos; dans les paramètres de confidentialité (sous &apos;fichiers et dossiers&apos; ou accordez-lui &apos;l&apos;accès complet au disque&apos;).</translation>
     </message>
     <message>
         <location filename="../downloadthread.cpp" line="240"/>
         <source>Cannot open storage device &apos;%1&apos;.</source>
-        <translation>Speichergerät &apos;%1&apos; kann nicht geöffnet werden.</translation>
+        <translation>Impossible d&apos;ouvrir le périphérique de stockage &apos;%1&apos;.</translation>
     </message>
     <message>
         <location filename="../downloadthread.cpp" line="282"/>
         <source>discarding existing data on drive</source>
-        <translation>Vorhandene Daten auf dem Medium werden gelöscht</translation>
+        <translation>suppression des données existantes sur le disque</translation>
     </message>
     <message>
         <location filename="../downloadthread.cpp" line="304"/>
         <source>zeroing out first and last MB of drive</source>
-        <translation>Erstes und letztes Megabyte des Mediums werden überschrieben</translation>
+        <translation>mise à zéro du premier et du dernier Mo du disque</translation>
     </message>
     <message>
         <location filename="../downloadthread.cpp" line="310"/>
         <source>Write error while zero&apos;ing out MBR</source>
-        <translation>Schreibfehler während des Löschens des MBR</translation>
+        <translation>Erreur d&apos;écriture lors du formatage du MBR</translation>
     </message>
     <message>
         <location filename="../downloadthread.cpp" line="322"/>
         <source>Write error while trying to zero out last part of card.&lt;br&gt;Card could be advertising wrong capacity (possible counterfeit).</source>
-        <translation>Fehler beim Löschen des letzten Teiles der Speicherkarte.&lt;br&gt;Die Speicherkarte könnte mit einer falschen Größe beworben sein (möglicherweise Betrug).</translation>
+        <translation>Erreur d&apos;écriture lors de la tentative de formatage de la dernière partie de la carte.&lt;br&gt;La carte annonce peut-être une capacité erronée (contrefaçon possible).</translation>
     </message>
     <message>
         <location filename="../downloadthread.cpp" line="412"/>
         <source>starting download</source>
-        <translation>Download wird gestartet</translation>
+        <translation>début du téléchargement</translation>
     </message>
     <message>
         <location filename="../downloadthread.cpp" line="472"/>
         <source>Error downloading: %1</source>
-        <translation>Fehler beim Herunterladen: %1</translation>
+        <translation>Erreur de téléchargement&#xa0;: %1</translation>
     </message>
     <message>
         <location filename="../downloadthread.cpp" line="669"/>
         <source>Access denied error while writing file to disk.</source>
-        <translation>Zugriff verweigert-Fehler beim Schreiben auf den Datenträger.</translation>
+        <translation>Accès refusé lors de l&apos;écriture d&apos;un fichier sur le disque.</translation>
     </message>
     <message>
         <location filename="../downloadthread.cpp" line="674"/>
-        <source>Controlled Folder Access seems to be enabled. Please add both gem-imager.exe and fat32format.exe to the list of allowed apps and try again.</source>
-        <translation>&quot;Überwachter Ordnerzugriff&quot; scheint aktiviert zu sein. Bitte fügen Sie sowohl gem-imager.exe als auch fat32format.exe zur Liste der erlaubten Apps hinzu und versuchen sie es erneut.</translation>
+        <source>Controlled Folder Access seems to be enabled. Please add both t3-gem-imager.exe and fat32format.exe to the list of allowed apps and try again.</source>
+        <translation>L&apos;accès contrôlé aux dossiers semble être activé. Veuillez ajouter t3-gem-imager.exe et fat32format.exe à la liste des applications autorisées et réessayez.</translation>
     </message>
     <message>
         <location filename="../downloadthread.cpp" line="681"/>
         <source>Error writing file to disk</source>
-        <translation>Fehler beim Schreiben der Datei auf den Speicher</translation>
+        <translation>Erreur d&apos;écriture de fichier sur le disque</translation>
     </message>
     <message>
         <location filename="../downloadthread.cpp" line="703"/>
         <source>Download corrupt. Hash does not match</source>
-        <translation>Download beschädigt. Prüfsumme stimmt nicht überein</translation>
+        <translation>Téléchargement corrompu. La signature ne correspond pas</translation>
     </message>
     <message>
         <location filename="../downloadthread.cpp" line="715"/>
         <location filename="../downloadthread.cpp" line="767"/>
         <source>Error writing to storage (while flushing)</source>
-        <translation>Fehler beim Schreiben auf den Speicher (während flushing)</translation>
+        <translation>Erreur d&apos;écriture dans le stockage (lors du formatage)</translation>
     </message>
     <message>
         <location filename="../downloadthread.cpp" line="722"/>
         <location filename="../downloadthread.cpp" line="774"/>
         <source>Error writing to storage (while fsync)</source>
-        <translation>Fehler beim Schreiben auf den Speicher (während fsync)</translation>
+        <translation>Erreur d&apos;écriture dans le stockage (pendant l&apos;exécution de fsync)</translation>
     </message>
     <message>
         <location filename="../downloadthread.cpp" line="757"/>
         <source>Error writing first block (partition table)</source>
-        <translation>Fehler beim Schreiben des ersten Blocks (Partitionstabelle)</translation>
+        <translation>Erreur lors de l&apos;écriture du premier bloc (table de partition)</translation>
     </message>
     <message>
         <location filename="../downloadthread.cpp" line="834"/>
         <source>Error reading from storage.&lt;br&gt;SD card may be broken.</source>
-        <translation>Fehler beim Lesen vom Speicher.&lt;br&gt;Die SD-Karte könnte defekt sein.</translation>
+        <translation>Erreur de lecture du stockage.&lt;br&gt;La carte SD est peut-être défectueuse.</translation>
     </message>
     <message>
         <location filename="../downloadthread.cpp" line="853"/>
         <source>Verifying write failed. Contents of SD card is different from what was written to it.</source>
-        <translation>Verifizierung fehlgeschlagen. Der Inhalt der SD-Karte weicht von dem Inhalt ab, der geschrieben werden sollte.</translation>
+        <translation>La vérification de l&apos;écriture à échoué. Le contenu de la carte SD est différent de ce qui y a été écrit.</translation>
     </message>
     <message>
         <location filename="../downloadthread.cpp" line="908"/>
         <source>Customizing image</source>
-        <translation>Image modifizieren</translation>
+        <translation>Personnalisation de l&apos;image</translation>
     </message>
     <message>
         <source>Waiting for FAT partition to be mounted</source>
-        <translation type="vanished">Warten auf das Einbinden der FAT-Partition</translation>
+        <translation type="vanished">En attente du montage de la partition FAT</translation>
     </message>
     <message>
         <source>Error mounting FAT32 partition</source>
-        <translation type="vanished">Fehler beim Einbinden der FAT32-Partition</translation>
+        <translation type="vanished">Erreur lors du montage de la partition FAT32</translation>
     </message>
     <message>
         <source>Operating system did not mount FAT32 partition</source>
-        <translation type="vanished">Das Betriebssystem hat die FAT32-Partition nicht eingebunden.</translation>
+        <translation type="vanished">Le système d&apos;exploitation n&apos;a pas monté la partition FAT32</translation>
     </message>
     <message>
         <source>Unable to customize. File &apos;%1&apos; does not exist.</source>
-        <translation type="vanished">Modifizieren fehlgeschlagen. Die Datei &apos;%1&apos; existiert nicht.</translation>
+        <translation type="vanished">Impossible de personnaliser. Le fichier &apos;%1&apos; n&apos;existe pas.</translation>
     </message>
     <message>
         <source>Error creating firstrun.sh on FAT partition</source>
-        <translation type="vanished">Fehler beim Erstellen von firstrun.sh auf der FAT-Partition</translation>
+        <translation type="vanished">Erreur lors de la création de firstrun.sh sur la partition FAT</translation>
     </message>
     <message>
         <source>Error writing to config.txt on FAT partition</source>
-        <translation type="vanished">Fehler beim Schreiben in config.txt auf der FAT-Partition</translation>
+        <translation type="vanished">Erreur lors de la création de config.txt sur la partition FAT</translation>
     </message>
     <message>
         <source>Error creating user-data cloudinit file on FAT partition</source>
-        <translation type="vanished">Fehler beim Erstellen der user-data cloudinit Datei auf der FAT-Partition</translation>
+        <translation type="vanished">Erreur lors de la création du fichier user-data cloudinit sur la partition FAT</translation>
     </message>
     <message>
         <source>Error creating network-config cloudinit file on FAT partition</source>
-        <translation type="vanished">Fehler beim Erstellen der network-config cloudinit Datei auf der FAT-Partition</translation>
+        <translation type="vanished">Erreur lors de la création du fichier network-config cloudinit sur la partition FAT</translation>
     </message>
     <message>
         <source>Error writing to cmdline.txt on FAT partition</source>
-        <translation type="vanished">Fehler beim Schreiben in cmdline.txt auf der FAT-Partition</translation>
+        <translation type="vanished">Erreur lors de l&apos;écriture de cmdline.txt sur la partition FAT</translation>
     </message>
 </context>
 <context>
@@ -320,57 +319,57 @@
         <location filename="../driveformatthread.cpp" line="124"/>
         <location filename="../driveformatthread.cpp" line="185"/>
         <source>Error partitioning: %1</source>
-        <translation>Fehler beim Partitionieren: %1</translation>
+        <translation>Erreur de partitionnement&#xa0;: %1</translation>
     </message>
     <message>
         <location filename="../driveformatthread.cpp" line="84"/>
         <source>Error starting fat32format</source>
-        <translation>Fehler beim Starten von fat32format</translation>
+        <translation>Erreur lors du démarrage de fat32format</translation>
     </message>
     <message>
         <location filename="../driveformatthread.cpp" line="94"/>
         <source>Error running fat32format: %1</source>
-        <translation>Fehler beim Ausführen von fat32format: %1</translation>
+        <translation>Erreur lors de l&apos;exécution de fat32format&#xa0;: %1</translation>
     </message>
     <message>
         <location filename="../driveformatthread.cpp" line="104"/>
         <source>Error determining new drive letter</source>
-        <translation>Fehler beim Festlegen eines neuen Laufwerksbuchstabens</translation>
+        <translation>Erreur lors de la détermination de la nouvelle lettre du stockage</translation>
     </message>
     <message>
         <location filename="../driveformatthread.cpp" line="109"/>
         <source>Invalid device: %1</source>
-        <translation>Ungültiges Gerät: %1</translation>
+        <translation>Périphérique non valide&#xa0;: %1</translation>
     </message>
     <message>
         <location filename="../driveformatthread.cpp" line="146"/>
         <source>Error formatting (through udisks2)</source>
-        <translation>Fehler beim Formatieren (mit udisks2)</translation>
+        <translation>Erreur de formatage (via udisks2)</translation>
     </message>
     <message>
         <location filename="../driveformatthread.cpp" line="174"/>
         <source>Error starting sfdisk</source>
-        <translation>Fehler beim Starten von sfdisk</translation>
+        <translation>Erreur lors du démarrage de sfdisk</translation>
     </message>
     <message>
         <location filename="../driveformatthread.cpp" line="199"/>
         <source>Partitioning did not create expected FAT partition %1</source>
-        <translation>Partitionierung hat nicht die erwartete FAT-partition %1 erstellt</translation>
+        <translation>Le partitionnement n&apos;a pas créé la partition FAT %1 attendue</translation>
     </message>
     <message>
         <location filename="../driveformatthread.cpp" line="208"/>
         <source>Error starting mkfs.fat</source>
-        <translation>Fehler beim Starten von mkfs.fat</translation>
+        <translation>Erreur lors du démarrage de mkfs.fat</translation>
     </message>
     <message>
         <location filename="../driveformatthread.cpp" line="218"/>
         <source>Error running mkfs.fat: %1</source>
-        <translation>Fehler beim Ausführen von mkfs.fat: %1</translation>
+        <translation>Erreur lors de l&apos;exécution de mkfs.fat&#xa0;: %1</translation>
     </message>
     <message>
         <location filename="../driveformatthread.cpp" line="225"/>
         <source>Formatting not implemented for this platform</source>
-        <translation>Formatieren wird auf dieser Platform nicht unterstützt</translation>
+        <translation>Formatage non implémenté pour cette plateforme</translation>
     </message>
 </context>
 <context>
@@ -378,47 +377,47 @@
     <message>
         <location filename="../imagewriter.cpp" line="313"/>
         <source>Storage capacity is not large enough.&lt;br&gt;Needs to be at least %1 GB.</source>
-        <translation>Die Speicherkapazität ist nicht groß genug.&lt;br&gt;Sie muss mindestens %1 GB betragen.</translation>
+        <translation>La capacité de stockage n&apos;est pas assez grande.&lt;br&gt;Elle doit être d&apos;au moins %1 Go.</translation>
     </message>
     <message>
         <location filename="../imagewriter.cpp" line="319"/>
         <source>Input file is not a valid disk image.&lt;br&gt;File size %1 bytes is not a multiple of 512 bytes.</source>
-        <translation>Die Eingabedatei ist kein gültiges Disk-Image.&lt;br&gt;Die Dateigröße%1 Bytes ist kein Vielfaches von 512 Bytes.</translation>
+        <translation>Le fichier source n&apos;est pas une image disque valide.&lt;br&gt;La taille du fichier (d&apos;%1 octets) n&apos;est pas un multiple de 512 octets.</translation>
     </message>
     <message>
         <location filename="../imagewriter.cpp" line="777"/>
         <source>Downloading and writing image</source>
-        <translation>Image herunterladen und schreiben</translation>
+        <translation>Téléchargement et écriture de l&apos;image</translation>
     </message>
     <message>
         <location filename="../imagewriter.cpp" line="939"/>
         <source>DFU mode not selected</source>
-        <translation>DFU-Modus nicht ausgewählt</translation>
+        <translation>Mode DFU non sélectionné</translation>
     </message>
     <message>
         <location filename="../imagewriter.cpp" line="967"/>
         <source>Authentication failed or was cancelled.&lt;br&gt;DFU operation requires elevated privileges to access the USB device.</source>
-        <translation>Authentifizierung fehlgeschlagen oder abgebrochen.&lt;br&gt;DFU-Vorgang erfordert erhöhte Rechte für den Zugriff auf das USB-Gerät.</translation>
+        <translation>L&apos;authentification a échoué ou a été annulée.&lt;br&gt;L&apos;opération DFU nécessite des privilèges élevés pour accéder au périphérique USB.</translation>
     </message>
     <message>
         <location filename="../imagewriter.cpp" line="1047"/>
         <source>Select image</source>
-        <translation>Image wählen</translation>
+        <translation>Sélectionner l&apos;image</translation>
     </message>
     <message>
         <location filename="../imagewriter.cpp" line="1222"/>
         <source>Error synchronizing time. Trying again in 3 seconds</source>
-        <translation>Fehler beim Synchronisieren der Zeit. Neuer Versuch in 3 Sekunden</translation>
+        <translation>Erreur de synchronisation de l&apos;heure. Nouvelle tentative dans 3 secondes</translation>
     </message>
     <message>
         <location filename="../imagewriter.cpp" line="1234"/>
         <source>STP is enabled on your Ethernet switch. Getting IP will take long time.</source>
-        <translation>STP ist auf Ihrem Ethernet-Switch aktiviert. Das Abrufen der IP wird lange dauern.</translation>
+        <translation>Le protocole STP est activé sur votre commutateur Ethernet. L&apos;obtention de l&apos;adresse IP prendra beaucoup de temps.</translation>
     </message>
     <message>
         <location filename="../imagewriter.cpp" line="1486"/>
         <source>Would you like to prefill the wifi password from the system keychain?</source>
-        <translation>Möchten Sie das Wifi-Passwort aus dem System-Schlüsselbund vorab ausfüllen?</translation>
+        <translation>Voulez-vous pré-remplir le mot de passe Wi-Fi à partir du trousseau du système&#xa0;?</translation>
     </message>
 </context>
 <context>
@@ -426,12 +425,12 @@
     <message>
         <location filename="../localfileextractthread.cpp" line="34"/>
         <source>opening image file</source>
-        <translation>Abbilddatei wird geöffnet</translation>
+        <translation>ouverture de l&apos;image disque</translation>
     </message>
     <message>
         <location filename="../localfileextractthread.cpp" line="39"/>
         <source>Error opening image file</source>
-        <translation>Fehler beim Öffnen der Imagedatei</translation>
+        <translation>Erreur lors de l&apos;ouverture de l&apos;image disque</translation>
     </message>
 </context>
 <context>
@@ -439,22 +438,22 @@
     <message>
         <location filename="../MsgPopup.qml" line="121"/>
         <source>NO</source>
-        <translation>NEIN</translation>
+        <translation>NON</translation>
     </message>
     <message>
         <location filename="../MsgPopup.qml" line="130"/>
         <source>YES</source>
-        <translation>JA</translation>
+        <translation>OUI</translation>
     </message>
     <message>
         <location filename="../MsgPopup.qml" line="139"/>
         <source>CONTINUE</source>
-        <translation>WEITER</translation>
+        <translation>CONTINUER</translation>
     </message>
     <message>
         <location filename="../MsgPopup.qml" line="147"/>
         <source>QUIT</source>
-        <translation>BEENDEN</translation>
+        <translation>QUITTER</translation>
     </message>
 </context>
 <context>
@@ -462,200 +461,200 @@
     <message>
         <location filename="../OptionsPopup.qml" line="27"/>
         <source>OS Customization</source>
-        <translation>OS Anpassungen</translation>
+        <translation>Personnalisation de l&apos;OS</translation>
     </message>
     <message>
         <source>OS customization options</source>
-        <translation type="vanished">OS Anpassungen Optionen</translation>
+        <translation type="vanished">Options de personnalisation de l&apos;OS</translation>
     </message>
     <message>
         <source>for this session only</source>
-        <translation type="vanished">nur für diese Sitzung</translation>
+        <translation type="vanished">pour cette session uniquement</translation>
     </message>
     <message>
         <source>to always use</source>
-        <translation type="vanished">immer verwenden</translation>
+        <translation type="vanished">pour toutes les sessions</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="61"/>
         <source>General</source>
-        <translation>Allgemein</translation>
+        <translation>Général</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="70"/>
         <source>Services</source>
-        <translation>Dienste</translation>
+        <translation>Services</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="76"/>
         <source>Options</source>
-        <translation>Optionen</translation>
+        <translation>Options</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="110"/>
         <source>Set hostname:</source>
-        <translation>Hostname:</translation>
+        <translation>Nom d&apos;hôte</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="139"/>
         <source>Set username and password</source>
-        <translation>Benutzername und Passwort festlegen</translation>
+        <translation>Définir nom d&apos;utilisateur et mot de passe</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="153"/>
         <source>Username:</source>
-        <translation>Benutzername:</translation>
+        <translation>Nom d&apos;utilisateur&#xa0;:</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="179"/>
         <source>Password is required!</source>
-        <translation>Passwort erforderlich!</translation>
+        <translation>Mot de passe requis !</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="187"/>
         <location filename="../OptionsPopup.qml" line="264"/>
         <source>Password:</source>
-        <translation>Passwort:</translation>
+        <translation>Mot de passe&#xa0;:</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="228"/>
         <source>Configure wireless LAN</source>
-        <translation>Wifi einrichten</translation>
+        <translation>Configurer le Wi-Fi</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="242"/>
         <source>SSID:</source>
-        <translation>SSID:</translation>
+        <translation>SSID&#xa0;:</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="293"/>
         <source>Show password</source>
-        <translation>Passwort anzeigen</translation>
+        <translation>Afficher le mot de passe</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="304"/>
         <source>Hidden SSID</source>
-        <translation>Verborgene SSID</translation>
+        <translation>SSID caché</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="315"/>
         <source>Wireless LAN country:</source>
-        <translation>Wifi-Land:</translation>
+        <translation>Pays Wi-Fi&#xa0;:</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="333"/>
         <source>Set locale settings</source>
-        <translation>Spracheinstellungen festlegen</translation>
+        <translation>Définir les réglages locaux</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="337"/>
         <source>Time zone:</source>
-        <translation>Zeitzone:</translation>
+        <translation>Fuseau horaire&#xa0;:</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="356"/>
         <source>Keyboard layout:</source>
-        <translation>Tastaturlayout:</translation>
+        <translation>Type de clavier&#xa0;:</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="375"/>
         <source>Set Disk Encryption (Cryptsetup)</source>
-        <translation>Festplattenverschlüsselung einrichten (Cryptsetup)</translation>
+        <translation>Configurer le chiffrement du disque (Cryptsetup)</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="385"/>
         <source>Disk Password:</source>
-        <translation>Festplattenpasswort:</translation>
+        <translation>Mot de passe du disque :</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="426"/>
         <source>Write sdcard&apos;s image to eMMC on first boot</source>
-        <translation>SD-Karten-Image beim ersten Start auf eMMC schreiben</translation>
+        <translation>Écrire l&apos;image de la carte SD sur l&apos;eMMC au premier démarrage</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="451"/>
         <source>Enable SSH</source>
-        <translation>SSH aktivieren</translation>
+        <translation>Activer SSH</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="467"/>
         <source>Use password authentication</source>
-        <translation>Passwort zur Authentifizierung verwenden</translation>
+        <translation>Utiliser un mot de passe pour l&apos;authentification</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="478"/>
         <source>Allow public-key authentication only</source>
-        <translation>Authentifizierung via Public-Key</translation>
+        <translation>Authentification via clef publique</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="489"/>
         <source>Set authorized_keys for &apos;%1&apos;:</source>
-        <translation>authorized_keys für &apos;%1&apos;:</translation>
+        <translation>Définir authorized_keys pour &apos;%1&apos;&#xa0;:</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="533"/>
         <source>Delete Key</source>
-        <translation>Schlüssel löschen</translation>
+        <translation>Supprimer la clé</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="552"/>
         <source>RUN SSH-KEYGEN</source>
-        <translation>SSH-KEYGEN ausführen</translation>
+        <translation>LANCER SSH-KEYGEN</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="562"/>
         <source>Add SSH Key</source>
-        <translation>SSH-Schlüssel hinzufügen</translation>
+        <translation>Ajouter une clé SSH</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="578"/>
         <source>Enable VNC</source>
-        <translation>VNC aktivieren</translation>
+        <translation>Activer VNC</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="583"/>
         <source>VNC Password is required!</source>
-        <translation>VNC-Passwort erforderlich!</translation>
+        <translation>Mot de passe VNC requis !</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="591"/>
         <source>VNC Password:</source>
-        <translation>VNC-Passwort:</translation>
+        <translation>Mot de passe VNC :</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="610"/>
         <source>Gadgets</source>
-        <translation>Geräte-Module</translation>
+        <translation>Gadgets</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="616"/>
         <source>Enable Storage Gadget</source>
-        <translation>Speicher-Modul aktivieren</translation>
+        <translation>Activer le gadget de stockage</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="622"/>
         <source>Enable Ethernet Gadget</source>
-        <translation>Ethernet-Modul aktivieren</translation>
+        <translation>Activer le gadget Ethernet</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="628"/>
         <source>Enable Serial Gadgets</source>
-        <translation>Serielle Module aktivieren</translation>
+        <translation>Activer les gadgets série</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="653"/>
         <source>Play sound when finished</source>
-        <translation>Tonsignal nach Beenden abspielen</translation>
+        <translation>Jouer un son quand terminé</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="657"/>
         <source>Eject media when finished</source>
-        <translation>Medien nach Beenden auswerfen</translation>
+        <translation>Éjecter le média quand terminé</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="676"/>
         <source>Serial Port </source>
-        <translation>Serieller Port </translation>
+        <translation>Port série </translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="708"/>
@@ -664,28 +663,16 @@
     </message>
     <message>
         <source>Enable telemetry</source>
-        <translation type="vanished">Telemetrie aktivieren</translation>
+        <translation type="vanished">Activer la télémétrie</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="752"/>
         <source>SAVE</source>
-        <translation>SPEICHERN</translation>
-    </message>
-    <message>
-        <source>Disable overscan</source>
-        <translation type="vanished">Overscan deaktivieren</translation>
-    </message>
-    <message>
-        <source>Set password for &apos;%1&apos; user:</source>
-        <translation type="vanished">Passwort für &apos;%1&apos;:</translation>
-    </message>
-    <message>
-        <source>Skip first-run wizard</source>
-        <translation type="vanished">Einrichtungsassistent überspringen</translation>
+        <translation>ENREGISTRER</translation>
     </message>
     <message>
         <source>Persistent settings</source>
-        <translation type="vanished">Dauerhafte Einstellungen</translation>
+        <translation type="vanished">Réglages permanents</translation>
     </message>
 </context>
 <context>
@@ -693,7 +680,7 @@
     <message>
         <location filename="../linux/linuxdrivelist.cpp" line="126"/>
         <source>Internal SD card reader</source>
-        <translation>Interner SD-Kartenleser</translation>
+        <translation>Lecteur de carte SD interne</translation>
     </message>
 </context>
 <context>
@@ -701,32 +688,32 @@
     <message>
         <location filename="../UseSavedSettingsPopup.qml" line="46"/>
         <source>Use OS customization?</source>
-        <translation>OS Anpassungen anwenden?</translation>
+        <translation>Utiliser la personnalisation de l&apos;OS&#xa0;?</translation>
     </message>
     <message>
         <location filename="../UseSavedSettingsPopup.qml" line="98"/>
         <source>Would you like to apply OS customization settings?</source>
-        <translation>Möchten Sie die vorher festgelegten OS Anpassungen anwenden?</translation>
+        <translation>Voulez-vous appliquer les réglages de personnalisation de l&apos;OS&#xa0;?</translation>
     </message>
     <message>
         <location filename="../UseSavedSettingsPopup.qml" line="139"/>
         <source>NO</source>
-        <translation>NEIN</translation>
+        <translation>NON</translation>
     </message>
     <message>
         <location filename="../UseSavedSettingsPopup.qml" line="120"/>
         <source>NO, CLEAR SETTINGS</source>
-        <translation>NEIN, EINSTELLUNGEN LÖSCHEN</translation>
+        <translation>NON, EFFACER LES RÉGLAGES</translation>
     </message>
     <message>
         <location filename="../UseSavedSettingsPopup.qml" line="130"/>
         <source>YES</source>
-        <translation>JA</translation>
+        <translation>OUI</translation>
     </message>
     <message>
         <location filename="../UseSavedSettingsPopup.qml" line="107"/>
         <source>EDIT SETTINGS</source>
-        <translation>EINSTELLUNGEN BEARBEITEN</translation>
+        <translation>MODIFIER RÉGLAGES</translation>
     </message>
 </context>
 <context>
@@ -737,398 +724,398 @@
     </message>
     <message>
         <source>Raspberry Pi Device</source>
-        <translation type="vanished">Raspberry Pi Modell</translation>
+        <translation type="vanished">Modèle de Raspberry Pi</translation>
     </message>
     <message>
         <location filename="../main.qml" line="134"/>
         <source>CHOOSE DEVICE</source>
-        <translation>MODELL WÄHLEN</translation>
+        <translation>CHOISIR LE MODÈLE</translation>
     </message>
     <message>
         <source>Select this button to choose your target Raspberry Pi</source>
-        <translation type="vanished">Klicken Sie auf diesen Knopf, um den gewünschten Raspberry Pi auszuwählen</translation>
+        <translation type="vanished">Sélectionner ce bouton pour choisir le modèle de votre Raspberry Pi</translation>
     </message>
     <message>
         <location filename="../main.qml" line="160"/>
         <location filename="../main.qml" line="555"/>
         <source>Operating System</source>
-        <translation>Betriebssystem (OS)</translation>
+        <translation>Système d&apos;exploitation</translation>
     </message>
     <message>
         <location filename="../main.qml" line="171"/>
         <location filename="../main.qml" line="1977"/>
         <source>CHOOSE OS</source>
-        <translation>OS WÄHLEN</translation>
+        <translation>CHOISIR L&apos;OS</translation>
     </message>
     <message>
         <location filename="../main.qml" line="183"/>
         <source>Select this button to change the operating system</source>
-        <translation>Klicken Sie auf diesen Knopf, um das Betriebssystem zu ändern</translation>
+        <translation>Sélectionner ce bouton pour changer le système d&apos;exploitation</translation>
     </message>
     <message>
         <location filename="../main.qml" line="197"/>
         <location filename="../main.qml" line="957"/>
         <source>Storage</source>
-        <translation>SD-Karte</translation>
+        <translation>Stockage</translation>
     </message>
     <message>
         <location filename="../main.qml" line="330"/>
         <source>Network not ready yet</source>
-        <translation>Netzwerk noch nicht bereit</translation>
+        <translation>Le réseau n&apos;est pas encore prêt</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1022"/>
         <source>No storage devices found</source>
-        <translation>Keine SD-Karte gefunden</translation>
+        <translation>Aucun périphérique de stockage trouvé</translation>
     </message>
     <message>
         <location filename="../main.qml" line="208"/>
         <location filename="../main.qml" line="1643"/>
         <source>CHOOSE STORAGE</source>
-        <translation>SD-KARTE WÄHLEN</translation>
+        <translation>CHOISIR LE STOCKAGE</translation>
     </message>
     <message>
         <source>WRITE</source>
-        <translation type="vanished">SCHREIBEN</translation>
+        <translation type="vanished">ÉCRIRE</translation>
     </message>
     <message>
         <location filename="../main.qml" line="222"/>
         <source>Select this button to change the destination storage device</source>
-        <translation>Klicken Sie auf diesen Knopf, um das Ziel-Speichermedium zu ändern</translation>
+        <translation>Sélectionner ce bouton pour modifier le périphérique de stockage de destination</translation>
     </message>
     <message>
         <location filename="../main.qml" line="267"/>
         <source>CANCEL WRITE</source>
-        <translation>SCHREIBEN ABBRECHEN</translation>
+        <translation>ANNULER L&apos;ÉCRITURE</translation>
     </message>
     <message>
         <location filename="../main.qml" line="270"/>
         <location filename="../main.qml" line="1527"/>
         <location filename="../main.qml" line="1538"/>
         <source>Cancelling...</source>
-        <translation>Abbrechen...</translation>
+        <translation>Annulation...</translation>
     </message>
     <message>
         <location filename="../main.qml" line="282"/>
         <source>CANCEL VERIFY</source>
-        <translation>VERIFIZIERUNG ABBRECHEN</translation>
+        <translation>ANNULER LA VÉRIFICATION</translation>
     </message>
     <message>
         <location filename="../main.qml" line="285"/>
         <location filename="../main.qml" line="1561"/>
         <location filename="../main.qml" line="1670"/>
         <source>Finalizing...</source>
-        <translation>Finalisieren...</translation>
+        <translation>Finalisation...</translation>
     </message>
     <message>
         <location filename="../main.qml" line="294"/>
         <source>Next</source>
-        <translation>Weiter</translation>
+        <translation>Suivant</translation>
     </message>
     <message>
         <location filename="../main.qml" line="300"/>
         <source>Select this button to start writing the image</source>
-        <translation>Klicken Sie auf diesen Knopf, um mit dem Schreiben zu beginnen</translation>
+        <translation>Sélectionner ce bouton pour commencer l&apos;écriture de l&apos;image</translation>
     </message>
     <message>
         <source>Select this button to access advanced settings</source>
-        <translation type="vanished">Klicken Sie auf diesen Knopf, um zu den erweiterten Einstellungen zu gelangen.</translation>
+        <translation type="vanished">Sélectionner ce bouton pour accéder aux réglages avancés</translation>
     </message>
     <message>
         <location filename="../main.qml" line="320"/>
         <source>Using custom repository: %1</source>
-        <translation>Verwende benutzerdefiniertes Repository: %1</translation>
+        <translation>Utilisation d&apos;un dépôt personnalisé&#xa0;: %1</translation>
     </message>
     <message>
         <location filename="../main.qml" line="339"/>
         <source>Keyboard navigation: &lt;tab&gt; navigate to next button &lt;space&gt; press button/select item &lt;arrow up/down&gt; go up/down in lists</source>
-        <translation>Tastaturnavigation: &lt;Tab&gt; zum nächsten Knopf navigieren &lt;Leertaste&gt; Knopf drücken/Element auswählen &lt;Pfeil hoch/runter&gt; in Listen nach oben/unten gehen</translation>
+        <translation>Navigation au clavier&#xa0;: &lt;tab&gt; passer au bouton suivant &lt;espace&gt; presser un bouton/sélectionner un élément &lt;flèche haut/bas&gt; monter/descendre dans les listes</translation>
     </message>
     <message>
         <location filename="../main.qml" line="360"/>
         <source>Language: </source>
-        <translation>Sprache: </translation>
+        <translation>Langue&#xa0;: </translation>
     </message>
     <message>
         <location filename="../main.qml" line="383"/>
         <source>Keyboard: </source>
-        <translation>Tastatur: </translation>
+        <translation>Clavier&#xa0;: </translation>
     </message>
     <message>
         <source>Pi model:</source>
-        <translation type="vanished">Pi Modell:</translation>
+        <translation type="vanished">Modèle RPi&#xa0;:</translation>
     </message>
     <message>
         <location filename="../main.qml" line="24"/>
-        <source>Gemstone Image Writer %1</source>
-        <translation>Gemstone Image Writer %1</translation>
+        <source>T3 Gemstone Image Writer %1</source>
+        <translation>T3 Gemstone Image Writer %1</translation>
     </message>
     <message>
         <location filename="../main.qml" line="122"/>
         <location filename="../main.qml" line="453"/>
         <source>Gemstone Board</source>
-        <translation>Gemstone Board</translation>
+        <translation>Carte Gemstone</translation>
     </message>
     <message>
         <location filename="../main.qml" line="146"/>
         <source>Select this button to choose your target Gemstone Board</source>
-        <translation>Diese Schaltfläche auswählen, um das Ziel-Gemstone Board zu wählen</translation>
+        <translation>Sélectionnez ce bouton pour choisir votre carte Gemstone cible</translation>
     </message>
     <message>
         <location filename="../main.qml" line="497"/>
         <source>[ All ]</source>
-        <translation>[ Alle ]</translation>
+        <translation>[ Tous ]</translation>
     </message>
     <message>
         <location filename="../main.qml" line="653"/>
         <source>Back</source>
-        <translation>Zurück</translation>
+        <translation>Retour</translation>
     </message>
     <message>
         <location filename="../main.qml" line="654"/>
         <source>Go back to main menu</source>
-        <translation>Zurück zum Hauptmenü</translation>
+        <translation>Retour au menu principal</translation>
     </message>
     <message>
         <location filename="../main.qml" line="900"/>
         <source>Released: %1</source>
-        <translation>Veröffentlicht: %1</translation>
+        <translation>Publié le&#xa0;: %1</translation>
     </message>
     <message>
         <location filename="../main.qml" line="910"/>
         <source>Cached on your computer</source>
-        <translation>Auf Ihrem Computer zwischengespeichert</translation>
+        <translation>Mis en cache sur votre ordinateur</translation>
     </message>
     <message>
         <location filename="../main.qml" line="912"/>
         <source>Local file</source>
-        <translation>Lokale Datei</translation>
+        <translation>Fichier local</translation>
     </message>
     <message>
         <location filename="../main.qml" line="913"/>
         <source>Online - %1 GB download</source>
-        <translation>Online - %1 GB Download</translation>
+        <translation>En ligne - %1 GO à télécharger</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1057"/>
         <source>Exclude System Drives</source>
-        <translation>Systemlaufwerke ausschließen</translation>
+        <translation>Exclure les lecteurs système</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1115"/>
         <source>Internal eMMC - 32 GB</source>
-        <translation>Internes eMMC - 32 GB</translation>
+        <translation>eMMC interne - 32 Go</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1125"/>
         <source>Writes the image to the card&apos;s internal eMMC memory via Uniflash</source>
-        <translation>Schreibt das Image über Uniflash in den internen eMMC-Speicher der Karte</translation>
+        <translation>Écrit l&apos;image dans la mémoire eMMC interne de la carte via Uniflash</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1213"/>
         <location filename="../main.qml" line="2140"/>
         <source>DFU Mode</source>
-        <translation>DFU-Modus</translation>
+        <translation>Mode DFU</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1223"/>
         <source>Program the device via USB DFU (Device Firmware Update)</source>
-        <translation>Gerät über USB DFU (Device Firmware Update) programmieren</translation>
+        <translation>Programmer l&apos;appareil via USB DFU (mise à jour du firmware)</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1268"/>
         <source>gigabytes</source>
-        <translation>Gigabyte</translation>
+        <translation>gigaoctets</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1270"/>
         <location filename="../main.qml" line="1332"/>
         <source>Mounted as %1</source>
-        <translation>Als %1 eingebunden</translation>
+        <translation>Monté sur %1</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1318"/>
         <source>GB</source>
-        <translation>GB</translation>
+        <translation>Go</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1334"/>
         <source>[WRITE PROTECTED]</source>
-        <translation>[SCHREIBGESCHÜTZT]</translation>
+        <translation>[PROTÉGÉ EN ÉCRITURE]</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1336"/>
         <source>SYSTEM</source>
-        <translation>SYSTEM</translation>
+        <translation>SYSTÈME</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1394"/>
         <location filename="../main.qml" line="1401"/>
         <source>Boot Mode Switch</source>
-        <translation>Boot-Modus-Schalter</translation>
+        <translation>Commutateur de mode de démarrage</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1395"/>
         <source>Configure the boot mode switches for DFU Boot as shown in the image.</source>
-        <translation>Boot-Modus-Schalter für DFU-Boot konfigurieren, wie in der Abbildung gezeigt.</translation>
+        <translation>Configurez les commutateurs de mode de démarrage pour le démarrage DFU comme indiqué sur l&apos;image.</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1402"/>
         <source>DFU programming completed successfully!&lt;br&gt;&lt;br&gt;After powering off the card, set the boot mode switches to eMMC Boot as shown in the image. Upon restoring power, the system will boot automatically.</source>
-        <translation>DFU-Programmierung erfolgreich abgeschlossen!&lt;br&gt;&lt;br&gt;Schalten Sie die Karte aus und stellen Sie die Boot-Modus-Schalter auf eMMC-Boot um, wie in der Abbildung gezeigt. Nach dem Einschalten startet das System automatisch.</translation>
+        <translation>Programmation DFU terminée avec succès !&lt;br&gt;&lt;br&gt;Après avoir éteint la carte, réglez les commutateurs de mode de démarrage sur eMMC Boot comme indiqué sur l&apos;image. Au rétablissement de l&apos;alimentation, le système démarrera automatiquement.</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1411"/>
         <source>Are you sure you want to quit?</source>
-        <translation>Sind Sie sicher, dass Sie beenden möchten?</translation>
+        <translation>Voulez-vous vraiment quitter&#xa0;?</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1412"/>
-        <source>Gemstone Imager is still busy.&lt;br&gt;Are you sure you want to quit?</source>
-        <translation>Gemstone Imager ist noch beschäftigt.&lt;br&gt;Möchten Sie wirklich beenden?</translation>
+        <source>T3 Gemstone Imager is still busy.&lt;br&gt;Are you sure you want to quit?</source>
+        <translation>T3 Gemstone Imager est encore occupé.&lt;br&gt;Êtes-vous sûr de vouloir quitter ?</translation>
     </message>
     <message>
         <source>Raspberry Pi Imager is still busy.&lt;br&gt;Are you sure you want to quit?</source>
-        <translation type="vanished">Der Raspberry Pi Imager ist noch beschäftigt. &lt;br&gt;Möchten Sie wirklich beenden?</translation>
+        <translation type="vanished">Raspberry Pi Imager est encore occupé.&lt;br&gt;Voulez-vous vraiment quitter&#xa0;?</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1423"/>
         <source>Warning</source>
-        <translation>Warnung</translation>
+        <translation>Attention</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1442"/>
         <location filename="../main.qml" line="2152"/>
         <source>Starting DFU operation...</source>
-        <translation>DFU-Vorgang wird gestartet...</translation>
+        <translation>Démarrage de l&apos;opération DFU...</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1448"/>
         <source>Preparing to write...</source>
-        <translation>Schreiben wird vorbereitet...</translation>
+        <translation>Préparation de l&apos;écriture...</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1457"/>
         <source>Image will be sent to device via DFU.&lt;br&gt;Are you sure you want to continue?</source>
-        <translation>Image wird über DFU an das Gerät gesendet.&lt;br&gt;Möchten Sie wirklich fortfahren?</translation>
+        <translation>L&apos;image sera envoyée au périphérique via DFU.&lt;br&gt;Êtes-vous sûr de vouloir continuer ?</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1459"/>
         <source>All existing data on &apos;%1&apos; will be erased.&lt;br&gt;Are you sure you want to continue?</source>
-        <translation>Alle vorhandenen Daten auf &apos;%1&apos; werden gelöscht.&lt;br&gt;Möchten Sie wirklich fortfahren?</translation>
+        <translation>Toutes les données sur le périphérique de stockage &apos;%1&apos; vont être supprimées.&lt;br&gt;Voulez-vous vraiment continuer&#xa0;?</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1475"/>
         <source>Update available</source>
-        <translation>Update verfügbar</translation>
+        <translation>Mise à jour disponible</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1476"/>
         <source>There is a newer version of Imager available.&lt;br&gt;Would you like to visit the website to download it?</source>
-        <translation>Eine neuere Version von Imager ist verfügbar.&lt;br&gt;Möchten Sie die Webseite besuchen, um das Update herunterzuladen?</translation>
+        <translation>Une version plus récente d&apos;Imager est disponible.&lt;br&gt;Voulez-vous accéder au site web pour la télécharger&#xa0;?</translation>
     </message>
     <message>
         <source>Error downloading OS list from Internet</source>
-        <translation type="vanished">Fehler beim Herunterladen der Betriebssystemsliste aus dem Internet</translation>
+        <translation type="vanished">Erreur lors du téléchargement de la liste des systèmes d&apos;exploitation à partir d&apos;Internet</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1530"/>
         <source>Downloading... %1%</source>
-        <translation>Herunterladen... %1%</translation>
+        <translation>Téléchargement... %1%</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1541"/>
         <source>Sending... %1%</source>
-        <translation>Senden... %1%</translation>
+        <translation>Envoi en cours... %1%</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1564"/>
         <source>Verifying... %1%</source>
-        <translation>Verifizieren... %1%</translation>
+        <translation>Vérification... %1%</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1571"/>
         <source>Preparing to write... (%1)</source>
-        <translation>Schreiben wird vorbereitet... (%1)</translation>
+        <translation>Préparation de l&apos;écriture... (%1)</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1582"/>
         <source>Waiting for authentication to access USB device...</source>
-        <translation>Warte auf Authentifizierung für den Zugriff auf USB-Gerät...</translation>
+        <translation>En attente d&apos;authentification pour accéder au périphérique USB...</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1605"/>
         <source>Error</source>
-        <translation>Fehler</translation>
+        <translation>Erreur</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1612"/>
         <source>Write Successful</source>
-        <translation>Schreiben erfolgreich</translation>
+        <translation>Écriture réussie</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1613"/>
         <location filename="../imagewriter.cpp" line="719"/>
         <source>Erase</source>
-        <translation>Löschen</translation>
+        <translation>Effacer</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1614"/>
         <source>&lt;b&gt;%1&lt;/b&gt; has been erased&lt;br&gt;&lt;br&gt;You can now remove the SD card from the reader</source>
-        <translation>&lt;b&gt;%1&lt;/b&gt; wurde geleert&lt;br&gt;&lt;br&gt;Sie können die SD-Karte nun aus dem Lesegerät entfernen</translation>
+        <translation>&lt;b&gt;%1&lt;/b&gt; a bien été effacé&lt;br&gt;&lt;br&gt;Vous pouvez retirer la carte SD du lecteur</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1629"/>
         <source>&lt;b&gt;%1&lt;/b&gt; has been written to &lt;b&gt;%2&lt;/b&gt;&lt;br&gt;&lt;br&gt;The process is complete. You can connect to the board via the serial port.</source>
-        <translation>&lt;b&gt;%1&lt;/b&gt; wurde auf &lt;b&gt;%2&lt;/b&gt; geschrieben.&lt;br&gt;&lt;br&gt;Der Vorgang ist abgeschlossen. Sie können über den seriellen Port eine Verbindung zur Karte herstellen.</translation>
+        <translation>&lt;b&gt;%1&lt;/b&gt; a été écrit sur &lt;b&gt;%2&lt;/b&gt;.&lt;br&gt;&lt;br&gt;Le processus est terminé. Vous pouvez vous connecter à la carte via le port série.</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1633"/>
         <source>&lt;b&gt;%1&lt;/b&gt; has been written to &lt;b&gt;%2&lt;/b&gt;&lt;br&gt;&lt;br&gt;You can now remove the SD card from the reader</source>
-        <translation>&lt;b&gt;%1&lt;/b&gt; wurde auf &lt;b&gt;%2&lt;/b&gt; geschrieben&lt;br&gt;&lt;br&gt;Sie können die SD-Karte nun aus dem Lesegerät entfernen</translation>
+        <translation>&lt;b&gt;%1&lt;/b&gt; a bien été écrit sur &lt;b&gt;%2&lt;/b&gt;&lt;br&gt;&lt;br&gt;Vous pouvez retirer la carte SD du lecteur</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1798"/>
         <source>Error parsing os_list.json</source>
-        <translation>Fehler beim Parsen von os_list.json</translation>
+        <translation>Erreur de lecture du fichier os_list.json</translation>
     </message>
     <message>
         <location filename="../imagewriter.cpp" line="720"/>
         <source>Format card as FAT32</source>
-        <translation>Karte als FAT32 formatieren</translation>
+        <translation>Formater la carte SD en FAT32</translation>
     </message>
     <message>
         <location filename="../imagewriter.cpp" line="726"/>
         <source>Use custom</source>
-        <translation>Eigenes Image</translation>
+        <translation>Utiliser image personnalisée</translation>
     </message>
     <message>
         <location filename="../imagewriter.cpp" line="727"/>
         <source>Select a custom .img from your computer</source>
-        <translation>Wählen Sie eine eigene .img-Datei von Ihrem Computer</translation>
+        <translation>Sélectionner une image disque personnalisée (.img) sur votre ordinateur</translation>
     </message>
     <message>
         <location filename="../main.qml" line="2051"/>
         <source>Connect an USB stick containing images first.&lt;br&gt;The images must be located in the root folder of the USB stick.</source>
-        <translation>Verbinden Sie zuerst einen USB-Stick mit Images.&lt;br&gt;Die Images müssen sich im Wurzelverzeichnes des USB-Sticks befinden.</translation>
+        <translation>Connecter d&apos;abord une clé USB contenant les images.&lt;br&gt;Les images doivent se trouver dans le dossier racine de la clé USB.</translation>
     </message>
     <message>
         <location filename="../main.qml" line="2129"/>
         <source>Onboard emmc</source>
-        <translation>Internes eMMC</translation>
+        <translation>eMMC intégrée</translation>
     </message>
     <message>
         <location filename="../main.qml" line="2165"/>
         <source>SD card is write protected.&lt;br&gt;Push the lock switch on the left side of the card upwards, and try again.</source>
-        <translation>Die Speicherkarte ist schreibgeschützt.&lt;br&gt;Schieben Sie den Schutzschalter auf der linken Seite nach oben, und versuchen Sie es erneut.</translation>
+        <translation>La carte SD est protégée en écriture.&lt;br&gt;Poussez vers le haut le commutateur de verrouillage sur le côté gauche de la carte et essayez à nouveau.</translation>
     </message>
     <message>
         <source>Select this button to change the destination SD card</source>
-        <translation type="vanished">Klicke auf diesen Knopf, um die Ziel-SD-Karte zu ändern</translation>
+        <translation type="vanished">Sélectionnez ce bouton pour changer la carte SD de destination</translation>
     </message>
     <message>
         <source>&lt;b&gt;%1&lt;/b&gt; has been written to &lt;b&gt;%2&lt;/b&gt;</source>
-        <translation type="vanished">&lt;b&gt;%1&lt;/b&gt; wurde auf &lt;b&gt;%2&lt;/b&gt; geschrieben</translation>
+        <translation type="vanished">&lt;b&gt;%1&lt;/b&gt; a bien été écrit sur &lt;b&gt;%2&lt;/b&gt;</translation>
     </message>
 </context>
 </TS>

@@ -1,9 +1,0 @@
-[Desktop Entry]
-Type=Application
-Version=1.0
-Name=Gemstone Imager
-Comment=Gemstone Imager
-Icon=gem-imager
-Exec=gem-imager %F
-Categories=Utility
-StartupNotify=false

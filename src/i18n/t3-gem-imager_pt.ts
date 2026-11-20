@@ -181,8 +181,8 @@
     </message>
     <message>
         <location filename="../downloadthread.cpp" line="218"/>
-        <source>Please verify if &apos;Gemstone Imager&apos; is allowed access to &apos;removable volumes&apos; in privacy settings (under &apos;files and folders&apos; or alternatively give it &apos;full disk access&apos;).</source>
-        <translation>Verifique se &apos;Gemstone Imager&apos; tem permissão para acessar &apos;volumes removíveis&apos; nas configurações de privacidade (em &apos;arquivos e pastas&apos; ou conceda-lhe &apos;acesso total ao disco&apos;).</translation>
+        <source>Please verify if &apos;T3 Gemstone Imager&apos; is allowed access to &apos;removable volumes&apos; in privacy settings (under &apos;files and folders&apos; or alternatively give it &apos;full disk access&apos;).</source>
+        <translation>Verifique se &apos;T3 Gemstone Imager&apos; tem permissão para acessar &apos;volumes removíveis&apos; nas configurações de privacidade (em &apos;arquivos e pastas&apos; ou conceda-lhe &apos;acesso total ao disco&apos;).</translation>
     </message>
     <message>
         <location filename="../downloadthread.cpp" line="240"/>
@@ -226,8 +226,8 @@
     </message>
     <message>
         <location filename="../downloadthread.cpp" line="674"/>
-        <source>Controlled Folder Access seems to be enabled. Please add both gem-imager.exe and fat32format.exe to the list of allowed apps and try again.</source>
-        <translation>O Acesso Controlado a Pastas parece estar ativado. Adicione o gem-imager.exe e o fat32format.exe à lista de aplicações permitidas e tente novamente.</translation>
+        <source>Controlled Folder Access seems to be enabled. Please add both t3-gem-imager.exe and fat32format.exe to the list of allowed apps and try again.</source>
+        <translation>O Acesso Controlado a Pastas parece estar ativado. Adicione o t3-gem-imager.exe e o fat32format.exe à lista de aplicações permitidas e tente novamente.</translation>
     </message>
     <message>
         <location filename="../downloadthread.cpp" line="681"/>
@@ -724,8 +724,8 @@
     </message>
     <message>
         <location filename="../main.qml" line="24"/>
-        <source>Gemstone Image Writer %1</source>
-        <translation>Gemstone Image Writer %1</translation>
+        <source>T3 Gemstone Image Writer %1</source>
+        <translation>T3 Gemstone Image Writer %1</translation>
     </message>
     <message>
         <location filename="../main.qml" line="122"/>
@@ -907,8 +907,8 @@
     </message>
     <message>
         <location filename="../main.qml" line="1412"/>
-        <source>Gemstone Imager is still busy.&lt;br&gt;Are you sure you want to quit?</source>
-        <translation>O Gemstone Imager ainda está ocupado.&lt;br&gt;Tem certeza de que deseja sair?</translation>
+        <source>T3 Gemstone Imager is still busy.&lt;br&gt;Are you sure you want to quit?</source>
+        <translation>O T3 Gemstone Imager ainda está ocupado.&lt;br&gt;Tem certeza de que deseja sair?</translation>
     </message>
     <message>
         <source>Raspberry Pi Imager is still busy.&lt;br&gt;Are you sure you want to quit?</source>

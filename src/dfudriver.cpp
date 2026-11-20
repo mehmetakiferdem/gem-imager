@@ -118,7 +118,7 @@ QString DfuDriver::missingDriverHint(quint16 vendorId, quint16 productId)
         "Windows cannot reach the board because no suitable USB driver is bound "
         "to its DFU interface.<br><br>"
         "The installer normally puts this driver in place. If it was skipped, "
-        "re-run the Gemstone Imager installer and leave <b>DFU driver "
+        "re-run the T3 Gemstone Imager installer and leave <b>DFU driver "
         "(USB flashing)</b> selected, then retry - the board does not need to "
         "be power cycled.<br><br>"
         "The driver wanted is WinUSB, for <b>USB\\VID_%1&amp;PID_%2</b>; it can "

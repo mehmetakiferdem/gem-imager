@@ -1,122 +1,122 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="he">
+<TS version="2.1" language="ca_ES">
 <context>
     <name>DfuThread</name>
     <message>
         <location filename="../dfuthread.cpp" line="49"/>
         <source>Failed to create temporary file for DFU image</source>
-        <translation>נכשל ביצירת קובץ זמני עבור תמונת DFU</translation>
+        <translation>No s&apos;ha pogut crear el fitxer temporal per a la imatge DFU</translation>
     </message>
     <message>
         <location filename="../dfuthread.cpp" line="59"/>
         <source>Failed to open temporary file for DFU image</source>
-        <translation>נכשל בפתיחת קובץ זמני עבור תמונת DFU</translation>
+        <translation>No s&apos;ha pogut obrir el fitxer temporal per a la imatge DFU</translation>
     </message>
     <message>
         <location filename="../dfuthread.cpp" line="68"/>
         <source>Initializing DFU...</source>
-        <translation>מאתחל DFU...</translation>
+        <translation>S&apos;està inicialitzant DFU...</translation>
     </message>
     <message>
         <location filename="../dfuthread.cpp" line="71"/>
         <source>DFU mode requires an image URL</source>
-        <translation>מצב DFU דורש כתובת URL של תמונה</translation>
+        <translation>El mode DFU requereix un URL d&apos;imatge</translation>
     </message>
     <message>
         <location filename="../dfuthread.cpp" line="75"/>
         <source>Downloading image...</source>
-        <translation>מוריד תמונה...</translation>
+        <translation>S&apos;està baixant la imatge...</translation>
     </message>
     <message>
         <location filename="../dfuthread.cpp" line="81"/>
         <source>Customizing image...</source>
-        <translation>מתאים אישית תמונה...</translation>
+        <translation>S&apos;està personalitzant la imatge...</translation>
     </message>
     <message>
         <location filename="../dfuthread.cpp" line="85"/>
         <source>Failed to reopen image for customization: %1</source>
-        <translation>נכשל בפתיחה מחדש של התמונה לצורך התאמה אישית: %1</translation>
+        <translation>No s&apos;ha pogut reobrir la imatge per personalitzar-la: %1</translation>
     </message>
     <message>
         <location filename="../dfuthread.cpp" line="92"/>
         <source>Extracting bootloader files from image...</source>
-        <translation>מחלץ קבצי מאתחל מהתמונה...</translation>
+        <translation>S&apos;estan extreint fitxers del carregador d&apos;arrencada de la imatge...</translation>
     </message>
     <message>
         <location filename="../dfuthread.cpp" line="95"/>
         <source>Sending bootloader files...</source>
-        <translation>שולח קבצי מאתחל...</translation>
+        <translation>S&apos;estan enviant fitxers del carregador d&apos;arrencada...</translation>
     </message>
     <message>
         <location filename="../dfuthread.cpp" line="98"/>
         <source>Waiting for device to enter DFU mode...</source>
-        <translation>ממתין שהמכשיר יכנס למצב DFU...</translation>
+        <translation>S&apos;està esperant que el dispositiu entri en mode DFU...</translation>
     </message>
     <message>
         <location filename="../dfuthread.cpp" line="101"/>
         <source>Sending image to device (this may take several minutes)...</source>
-        <translation>שולח תמונה למכשיר (זה עשוי לקחת מספר דקות)...</translation>
+        <translation>S&apos;està enviant la imatge al dispositiu (això pot trigar uns quants minuts)...</translation>
     </message>
     <message>
         <location filename="../dfuthread.cpp" line="104"/>
         <source>Writing boot binaries to eMMC (do not power off)...</source>
-        <translation>כותב קבצי אתחול ל-eMMC (אל תכבה את המתח)...</translation>
+        <translation>Escrivint binaris d&apos;arrencada a eMMC (no apagueu)...</translation>
     </message>
     <message>
         <location filename="../dfuthread.cpp" line="107"/>
         <source>System image sent successfully!</source>
-        <translation>תמונת המערכת נשלחה בהצלחה!</translation>
+        <translation>La imatge del sistema s&apos;ha enviat correctament!</translation>
     </message>
     <message>
         <location filename="../dfuthread.cpp" line="123"/>
         <source>DFU failed (alt: %1): %2</source>
-        <translation>DFU נכשל (alt: %1): %2</translation>
+        <translation>DFU ha fallat (alt: %1): %2</translation>
     </message>
     <message>
         <location filename="../dfuthread.cpp" line="139"/>
         <source>Sending %1...</source>
-        <translation>שולח %1...</translation>
+        <translation>S&apos;està enviant %1...</translation>
     </message>
     <message>
         <location filename="../dfuthread.cpp" line="142"/>
         <source>%1 sent</source>
-        <translation>%1 נשלח</translation>
+        <translation>%1 enviat</translation>
     </message>
     <message>
         <location filename="../dfuthread.cpp" line="145"/>
         <source>Waiting for device to reconnect...</source>
-        <translation>ממתין שהמכשיר יתחבר מחדש...</translation>
+        <translation>S&apos;està esperant que el dispositiu es torni a connectar...</translation>
     </message>
     <message>
         <location filename="../dfuthread.cpp" line="162"/>
         <source>Failed to reopen image file: %1</source>
-        <translation>נכשל בפתיחה מחדש של קובץ התמונה: %1</translation>
+        <translation>No s&apos;ha pogut tornar a obrir el fitxer d&apos;imatge: %1</translation>
     </message>
     <message>
         <location filename="../dfuthread.cpp" line="174"/>
         <source>Bootloader file not found in image: %1</source>
-        <translation>קובץ המאתחל לא נמצא בתמונה: %1</translation>
+        <translation>No s&apos;ha trobat el fitxer del carregador d&apos;arrencada a la imatge: %1</translation>
     </message>
     <message>
         <location filename="../dfuthread.cpp" line="185"/>
         <source>Failed to create temp file for %1</source>
-        <translation>נכשל ביצירת קובץ זמני עבור %1</translation>
+        <translation>No s&apos;ha pogut crear el fitxer temporal per a %1</translation>
     </message>
     <message>
         <location filename="../dfuthread.cpp" line="190"/>
         <source>Failed to write temp file for %1</source>
-        <translation>נכשל בכתיבת קובץ זמני עבור %1</translation>
+        <translation>No s&apos;ha pogut escriure el fitxer temporal per a %1</translation>
     </message>
     <message>
         <location filename="../dfuthread.cpp" line="199"/>
         <source>Error reading bootloader files from image: %1</source>
-        <translation>שגיאה בקריאת קבצי מאתחל מהתמונה: %1</translation>
+        <translation>Error en llegir els fitxers del carregador d&apos;arrencada de la imatge: %1</translation>
     </message>
     <message>
         <location filename="../dfuthread.cpp" line="209"/>
         <source>Image not found: %1</source>
-        <translation>תמונה לא נמצאה: %1</translation>
+        <translation>Imatge no trobada: %1</translation>
     </message>
 </context>
 <context>
@@ -125,22 +125,22 @@
         <location filename="../downloadextractthread.cpp" line="206"/>
         <location filename="../downloadextractthread.cpp" line="400"/>
         <source>Error extracting archive: %1</source>
-        <translation>שגיאה בחילוץ ארכיון: %1</translation>
+        <translation>S&apos;ha produït un error en extreure l&apos;arxiu: %1</translation>
     </message>
     <message>
         <location filename="../downloadextractthread.cpp" line="271"/>
         <source>Error mounting FAT32 partition</source>
-        <translation>שגיאה בעיגון מחיצת FAT32</translation>
+        <translation>S&apos;ha produït un error en muntar la partició FAT32</translation>
     </message>
     <message>
         <location filename="../downloadextractthread.cpp" line="291"/>
         <source>Operating system did not mount FAT32 partition</source>
-        <translation>מערכת ההפעלה לא עיגנה מחיצת FAT32</translation>
+        <translation>El sistema operatiu no ha muntat la partició FAT32</translation>
     </message>
     <message>
         <location filename="../downloadextractthread.cpp" line="314"/>
         <source>Error changing to directory &apos;%1&apos;</source>
-        <translation>שגיאה במעבר לתיקייה ‚%1’</translation>
+        <translation>S&apos;ha produït un error en canviar al directori «%1»</translation>
     </message>
 </context>
 <context>
@@ -148,128 +148,128 @@
     <message>
         <location filename="../downloadthread.cpp" line="119"/>
         <source>unmounting drive</source>
-        <translation>עיגון הכונן מנותק</translation>
+        <translation>S&apos;està desmuntant el dispositiu</translation>
     </message>
     <message>
         <location filename="../downloadthread.cpp" line="139"/>
         <source>opening drive</source>
-        <translation>הכונן נפתח</translation>
+        <translation>S&apos;està obrint la unitat</translation>
     </message>
     <message>
         <location filename="../downloadthread.cpp" line="167"/>
         <source>Error running diskpart: %1</source>
-        <translation>שגיאה בהרצת diskpart‏: %1</translation>
+        <translation>S&apos;ha produït un error en executar «diskpart»: %1</translation>
     </message>
     <message>
         <location filename="../downloadthread.cpp" line="188"/>
         <source>Error removing existing partitions</source>
-        <translation>שגיאה בהסרת מחיצות קיימות</translation>
+        <translation>S&apos;ha produït un error en eliminar les particions existents.</translation>
     </message>
     <message>
         <location filename="../downloadthread.cpp" line="214"/>
         <source>Authentication cancelled</source>
-        <translation>האימות בוטל</translation>
+        <translation>S&apos;ha cancel·lat l&apos;autenticació</translation>
     </message>
     <message>
         <location filename="../downloadthread.cpp" line="217"/>
         <source>Error running authopen to gain access to disk device &apos;%1&apos;</source>
-        <translation>שגיאה בהרצת authopen לקבלת גישה להתקן הכונן ‚%1’</translation>
+        <translation>S&apos;ha produït un error en executar «authopen» per a obtenir l&apos;accés al dispositiu de disc «%1»</translation>
     </message>
     <message>
         <source>Please verify if &apos;Raspberry Pi Imager&apos; is allowed access to &apos;removable volumes&apos; in privacy settings (under &apos;files and folders&apos; or alternatively give it &apos;full disk access&apos;).</source>
-        <translation type="vanished">נא לוודא ש־‚Raspberry Pi Imager (צורב קובצי דמות)’ מורשה לגשת ל‚כרכים נתיקים&apos; בהגדרות הפרטיות (תחת ‚קבצים ותיקיות’ או לחלופין להעניק לו ‚גישה מלאה לכוננים’).</translation>
+        <translation type="vanished">Verifiqueu si el «Raspberry Pi Imager» té accés als «volums extraïbles» des de la configuració de privacitat (sota «fitxers i carpetes» o doneu-li «accés complet al disc»)</translation>
     </message>
     <message>
         <location filename="../downloadthread.cpp" line="218"/>
-        <source>Please verify if &apos;Gemstone Imager&apos; is allowed access to &apos;removable volumes&apos; in privacy settings (under &apos;files and folders&apos; or alternatively give it &apos;full disk access&apos;).</source>
-        <translation>אנא בדוק אם ל-&apos;Gemstone Imager&apos; מותר לגשת ל-&apos;אמצעי אחסון נשלפים&apos; בהגדרות הפרטיות (תחת &apos;קבצים ותיקייות&apos; או הענק לו &apos;גישה מלאה לדיסק&apos;).</translation>
+        <source>Please verify if &apos;T3 Gemstone Imager&apos; is allowed access to &apos;removable volumes&apos; in privacy settings (under &apos;files and folders&apos; or alternatively give it &apos;full disk access&apos;).</source>
+        <translation>Verifiqueu si &apos;T3 Gemstone Imager&apos; té permís per accedir als &apos;volums extraïbles&apos; a la configuració de privacitat (a &apos;fitxers i carpetes&apos; o doneu-li &apos;accés complet al disc&apos;).</translation>
     </message>
     <message>
         <location filename="../downloadthread.cpp" line="240"/>
         <source>Cannot open storage device &apos;%1&apos;.</source>
-        <translation>לא ניתן לפתוח את התקן האחסון ‚%1’.</translation>
+        <translation>No s&apos;ha pogut obrir el dispositiu d&apos;emmagatzematge «%1»</translation>
     </message>
     <message>
         <location filename="../downloadthread.cpp" line="282"/>
         <source>discarding existing data on drive</source>
-        <translation>הדחת הנתונים הקיימים שבכונן</translation>
+        <translation>S&apos;estan descartant les dades existents a la unitat</translation>
     </message>
     <message>
         <location filename="../downloadthread.cpp" line="304"/>
         <source>zeroing out first and last MB of drive</source>
-        <translation>מילוי המגה בתים הראשון והאחרון בכונן באפסים</translation>
+        <translation>S&apos;està esborrant amb zeros el primer i l&apos;últim MB de la unitat</translation>
     </message>
     <message>
         <location filename="../downloadthread.cpp" line="310"/>
         <source>Write error while zero&apos;ing out MBR</source>
-        <translation>שגיאת כתיבה במהלך כתיבת אפסים ל־MBR (רשומת טעינה עיקרית)</translation>
+        <translation>S&apos;ha produït un error en esborrar amb zeros l&apos;«MBR».</translation>
     </message>
     <message>
         <location filename="../downloadthread.cpp" line="322"/>
         <source>Write error while trying to zero out last part of card.&lt;br&gt;Card could be advertising wrong capacity (possible counterfeit).</source>
-        <translation>שגיאת צריבה במהלך הניסיון למלא את החלק הסופי של הכרטיס באפסים.&lt;br&gt;יכול להיות שהכרטיס מפרסם על עצמו נפח שגוי (כנראה זיוף).</translation>
+        <translation>S&apos;ha produït un error d&apos;escriptura en esborrar amb zeros l&apos;última part de la targeta.&lt;br&gt;La targeta podria estar indicant una capacitat errònia (possible falsificació)</translation>
     </message>
     <message>
         <location filename="../downloadthread.cpp" line="412"/>
         <source>starting download</source>
-        <translation>ההורדה מתחילה</translation>
+        <translation>S&apos;està iniciant la baixada</translation>
     </message>
     <message>
         <location filename="../downloadthread.cpp" line="472"/>
         <source>Error downloading: %1</source>
-        <translation>שגיאת הורדה: %1</translation>
+        <translation>S&apos;ha produït un error en la baixada: %1</translation>
     </message>
     <message>
         <location filename="../downloadthread.cpp" line="669"/>
         <source>Access denied error while writing file to disk.</source>
-        <translation>הגישה נדחתה תוך כדי הצריבה לכונן.</translation>
+        <translation>S&apos;ha produït un error d&apos;accés denegat en escriure el fitxer al disc.</translation>
     </message>
     <message>
         <location filename="../downloadthread.cpp" line="674"/>
-        <source>Controlled Folder Access seems to be enabled. Please add both gem-imager.exe and fat32format.exe to the list of allowed apps and try again.</source>
-        <translation>נראה שגישה מבוקרת לתיקיות פפעילה. נא להוסיף את gem-imager.exe ואת fat32format.exe לרשימת היישומים המורשים ולנסות שוב.</translation>
+        <source>Controlled Folder Access seems to be enabled. Please add both t3-gem-imager.exe and fat32format.exe to the list of allowed apps and try again.</source>
+        <translation>L&apos;opció «Controla l&apos;accés de la carpeta» de la Seguretat del Windows sembla que està activada. Afegiu els executables «t3-gem-imager.exe» i «fat32format.exe» a la llista d&apos;aplicacions permeses i torneu-ho a provar.</translation>
     </message>
     <message>
         <location filename="../downloadthread.cpp" line="681"/>
         <source>Error writing file to disk</source>
-        <translation>שגיאה בצריבת קובץ לכונן</translation>
+        <translation>S&apos;ha produït un error en escriure el fitxer al disc</translation>
     </message>
     <message>
         <location filename="../downloadthread.cpp" line="703"/>
         <source>Download corrupt. Hash does not match</source>
-        <translation>ההורדה נפגמה. הגיבוב לא תואם</translation>
+        <translation>La baixada està corrompuda. El «hash» no coincideix</translation>
     </message>
     <message>
         <location filename="../downloadthread.cpp" line="715"/>
         <location filename="../downloadthread.cpp" line="767"/>
         <source>Error writing to storage (while flushing)</source>
-        <translation>שגיאת צריבה לאחסון (במהלך מחיקה מוחלטת)</translation>
+        <translation>S&apos;ha produït un error en escriure a l&apos;emmagatzematge (procés: Flushing)</translation>
     </message>
     <message>
         <location filename="../downloadthread.cpp" line="722"/>
         <location filename="../downloadthread.cpp" line="774"/>
         <source>Error writing to storage (while fsync)</source>
-        <translation>שגיאת צריבה לאחסון (במהלך fsync)</translation>
+        <translation>S&apos;ha produït un error en escriure a l&apos;emmagatzematge (procés: fsync)</translation>
     </message>
     <message>
         <location filename="../downloadthread.cpp" line="757"/>
         <source>Error writing first block (partition table)</source>
-        <translation>שגיאה בכתיבה לבלוק הראשון (טבלת מחיצות)</translation>
+        <translation>S&apos;ha produït un error en escriure el primer bloc (taula de particions)</translation>
     </message>
     <message>
         <location filename="../downloadthread.cpp" line="834"/>
         <source>Error reading from storage.&lt;br&gt;SD card may be broken.</source>
-        <translation>שגיאת קריאה מאחסון.&lt;br&gt;כנראה שכרטיס ה־SD פגום.</translation>
+        <translation>S&apos;ha produït un error en llegir l&apos;emmagatzematge.&lt;br&gt;És possible que la targeta SD estigui malmesa.</translation>
     </message>
     <message>
         <location filename="../downloadthread.cpp" line="853"/>
         <source>Verifying write failed. Contents of SD card is different from what was written to it.</source>
-        <translation>וידוא הצריבה נכשל. תוכן כרטיס ה־SD שונה ממה שלכאורה נצרב אליו.</translation>
+        <translation>Ha fallat la verificació de l&apos;escriptura. El contingut de la targeta SD és diferent del que s&apos;hi ha escrit.</translation>
     </message>
     <message>
         <location filename="../downloadthread.cpp" line="908"/>
         <source>Customizing image</source>
-        <translation>הדמות מותאמת אישית</translation>
+        <translation>S&apos;està personalitzant la imatge</translation>
     </message>
 </context>
 <context>
@@ -279,57 +279,57 @@
         <location filename="../driveformatthread.cpp" line="124"/>
         <location filename="../driveformatthread.cpp" line="185"/>
         <source>Error partitioning: %1</source>
-        <translation>שגיאה בחלוקה למחיצות: %1</translation>
+        <translation>S&apos;ha produït un error durant la partició: %1</translation>
     </message>
     <message>
         <location filename="../driveformatthread.cpp" line="84"/>
         <source>Error starting fat32format</source>
-        <translation>שגיאה בהפעלת fat32format</translation>
+        <translation>S&apos;ha produït un error en iniciar «fat32format»</translation>
     </message>
     <message>
         <location filename="../driveformatthread.cpp" line="94"/>
         <source>Error running fat32format: %1</source>
-        <translation>שגיאה בהפעלת fat32format‏: %1</translation>
+        <translation>S&apos;ha produït un error en executar «fat32format»: %1</translation>
     </message>
     <message>
         <location filename="../driveformatthread.cpp" line="104"/>
         <source>Error determining new drive letter</source>
-        <translation>שגיאה בקביעת אות חדשה לכונן</translation>
+        <translation>S&apos;ha produït un error en determinar la lletra de la nova unitat</translation>
     </message>
     <message>
         <location filename="../driveformatthread.cpp" line="109"/>
         <source>Invalid device: %1</source>
-        <translation>התקן שגוי: %1</translation>
+        <translation>El dispositiu no és vàlid: %1</translation>
     </message>
     <message>
         <location filename="../driveformatthread.cpp" line="146"/>
         <source>Error formatting (through udisks2)</source>
-        <translation>שגיאה בפרמוט (דרך udisks2)</translation>
+        <translation>S&apos;ha produït un error en formatar (a través d&apos;«udisks2»)</translation>
     </message>
     <message>
         <location filename="../driveformatthread.cpp" line="174"/>
         <source>Error starting sfdisk</source>
-        <translation>שגיאה בהפעלת sfdisk</translation>
+        <translation>S&apos;ha produït un error en iniciar «sfdisk»</translation>
     </message>
     <message>
         <location filename="../driveformatthread.cpp" line="199"/>
         <source>Partitioning did not create expected FAT partition %1</source>
-        <translation>החלוקה למחיצות לא יצרה את מחיצת ה־FAT הצפויה %1</translation>
+        <translation>No s&apos;ha pogut crear la partició FAT %1 esperada</translation>
     </message>
     <message>
         <location filename="../driveformatthread.cpp" line="208"/>
         <source>Error starting mkfs.fat</source>
-        <translation>שגיאה בהפעלת mkfs.fat</translation>
+        <translation>S&apos;ha produït un error en iniciar «mkfs.fat»</translation>
     </message>
     <message>
         <location filename="../driveformatthread.cpp" line="218"/>
         <source>Error running mkfs.fat: %1</source>
-        <translation>שגיאה בהפעלת mkfs.fat‏: %1</translation>
+        <translation>S&apos;ha produït un error en executar «mkfs.fat»: %1</translation>
     </message>
     <message>
         <location filename="../driveformatthread.cpp" line="225"/>
         <source>Formatting not implemented for this platform</source>
-        <translation>פרמוט לא מומש לפלטפורמה הזאת</translation>
+        <translation>Aquesta plataforma no té implementada la formatació</translation>
     </message>
 </context>
 <context>
@@ -337,47 +337,47 @@
     <message>
         <location filename="../imagewriter.cpp" line="313"/>
         <source>Storage capacity is not large enough.&lt;br&gt;Needs to be at least %1 GB.</source>
-        <translation>נפל האחסון לא גדול מספיק.&lt;br&gt;חייב להיות %1 ג״ב לפחות.</translation>
+        <translation>La capacitat de l&apos;emmagatzematge no és suficient.&lt;br&gt;Ha de ser de %1 GB com a mínim.</translation>
     </message>
     <message>
         <location filename="../imagewriter.cpp" line="319"/>
         <source>Input file is not a valid disk image.&lt;br&gt;File size %1 bytes is not a multiple of 512 bytes.</source>
-        <translation>קובץ הקלט אינו דמות כונן תקנית.&lt;br&gt;גודל הקובץ על סך %1 בתים הוא לא מכפלה של 512 בתים.</translation>
+        <translation>El fitxer d&apos;entrada no és una imatge de disc vàlida.&lt;br&gt;La mida del fitxer és de %1 bytes, que no és múltiple de 512 bytes.</translation>
     </message>
     <message>
         <location filename="../imagewriter.cpp" line="777"/>
         <source>Downloading and writing image</source>
-        <translation>הורדה וצריבה של דמות</translation>
+        <translation>S&apos;està baixant i escrivint la imatge</translation>
     </message>
     <message>
         <location filename="../imagewriter.cpp" line="939"/>
         <source>DFU mode not selected</source>
-        <translation>מצב DFU לא נבחר</translation>
+        <translation>Mode DFU no seleccionat</translation>
     </message>
     <message>
         <location filename="../imagewriter.cpp" line="967"/>
         <source>Authentication failed or was cancelled.&lt;br&gt;DFU operation requires elevated privileges to access the USB device.</source>
-        <translation>האימות נכשל או בוטל.&lt;br&gt;פעולת DFU דורשת הרשאות מוגברות לפגישה להתקן ה-USB.</translation>
+        <translation>L&apos;autenticació ha fallat o s&apos;ha cancel·lat.&lt;br&gt;L&apos;operació DFU requereix privilegis elevats per accedir al dispositiu USB.</translation>
     </message>
     <message>
         <location filename="../imagewriter.cpp" line="1047"/>
         <source>Select image</source>
-        <translation>נא לבחור דמות</translation>
+        <translation>Selecciona una imatge</translation>
     </message>
     <message>
         <location filename="../imagewriter.cpp" line="1222"/>
         <source>Error synchronizing time. Trying again in 3 seconds</source>
-        <translation>שגיאה בסנכרון השעון. יתבצע ניסיון חוזר עוד 3 שניות</translation>
+        <translation>S&apos;ha produït un error en sincronitzar l&apos;hora. Torneu-ho a provar en 3 segons.</translation>
     </message>
     <message>
         <location filename="../imagewriter.cpp" line="1234"/>
         <source>STP is enabled on your Ethernet switch. Getting IP will take long time.</source>
-        <translation>STP (פרוטוקול העץ הפורש) פעיל בציוד התקשורת שלך. קבלת כתובת IP תארוך זמן רב.</translation>
+        <translation>El commutador d&apos;Ethernet té l&apos;STP activat. L&apos;obtenció de la IP pot trigar molt.</translation>
     </message>
     <message>
         <location filename="../imagewriter.cpp" line="1486"/>
         <source>Would you like to prefill the wifi password from the system keychain?</source>
-        <translation>למלא את סיסמת הרשת האלחוטית מראש מצרור המפתחות של המערכת?</translation>
+        <translation>Voleu emplenar la contrasenya del wifi des del clauer del sistema?</translation>
     </message>
 </context>
 <context>
@@ -385,12 +385,12 @@
     <message>
         <location filename="../localfileextractthread.cpp" line="34"/>
         <source>opening image file</source>
-        <translation>פתיחת קובץ דמות</translation>
+        <translation>S&apos;està obrint el fitxer de la imatge</translation>
     </message>
     <message>
         <location filename="../localfileextractthread.cpp" line="39"/>
         <source>Error opening image file</source>
-        <translation>שגיאה בפתיחת קובץ דמות</translation>
+        <translation>S&apos;ha produït un error en obrir el fitxer de la imatge</translation>
     </message>
 </context>
 <context>
@@ -398,22 +398,22 @@
     <message>
         <location filename="../MsgPopup.qml" line="121"/>
         <source>NO</source>
-        <translation>לא</translation>
+        <translation>NO</translation>
     </message>
     <message>
         <location filename="../MsgPopup.qml" line="130"/>
         <source>YES</source>
-        <translation>כן</translation>
+        <translation>SÍ</translation>
     </message>
     <message>
         <location filename="../MsgPopup.qml" line="139"/>
         <source>CONTINUE</source>
-        <translation>להמשיך</translation>
+        <translation>CONTINUA</translation>
     </message>
     <message>
         <location filename="../MsgPopup.qml" line="147"/>
         <source>QUIT</source>
-        <translation>יציאה</translation>
+        <translation>SURT</translation>
     </message>
 </context>
 <context>
@@ -421,192 +421,188 @@
     <message>
         <location filename="../OptionsPopup.qml" line="27"/>
         <source>OS Customization</source>
-        <translation>התאמת מערכת הפעלה</translation>
-    </message>
-    <message>
-        <source>OS customization options</source>
-        <translation type="vanished">אפשרויות התאמת מערכת הפעלה</translation>
+        <translation>Personalització del SO</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="61"/>
         <source>General</source>
-        <translation>כללי</translation>
+        <translation>General</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="70"/>
         <source>Services</source>
-        <translation>שירותים</translation>
+        <translation>Serveis</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="76"/>
         <source>Options</source>
-        <translation>אפשרויות</translation>
+        <translation>Opcions</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="110"/>
         <source>Set hostname:</source>
-        <translation>הגדרת שם מארח:</translation>
+        <translation>Defineix un nom de la màquina (hostname):</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="139"/>
         <source>Set username and password</source>
-        <translation>הגדרת שם משתמש וסיסמה</translation>
+        <translation>Defineix el nom d&apos;usuari i contrasenya</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="153"/>
         <source>Username:</source>
-        <translation>שם משתמש:</translation>
+        <translation>Nom d&apos;usuari:</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="179"/>
         <source>Password is required!</source>
-        <translation>נדרשת סיסמא!</translation>
+        <translation>Cal contrasenya!</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="187"/>
         <location filename="../OptionsPopup.qml" line="264"/>
         <source>Password:</source>
-        <translation>סיסמה:</translation>
+        <translation>Contrasenya:</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="228"/>
         <source>Configure wireless LAN</source>
-        <translation>הגדרת רשת אלחוטית</translation>
+        <translation>Configura la wifi</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="242"/>
         <source>SSID:</source>
-        <translation>שם רשת (SSID):</translation>
+        <translation>SSID:</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="293"/>
         <source>Show password</source>
-        <translation>הצגת סיסמה</translation>
+        <translation>Mostra la contrasenya</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="304"/>
         <source>Hidden SSID</source>
-        <translation>רשת מוסתרת (BSSID)</translation>
+        <translation>SSID oculta</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="315"/>
         <source>Wireless LAN country:</source>
-        <translation>מדינת רשת אלחוטית:</translation>
+        <translation>País del wifi:</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="333"/>
         <source>Set locale settings</source>
-        <translation>הגדרת תצורה מקומית</translation>
+        <translation>Estableix la configuració regional</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="337"/>
         <source>Time zone:</source>
-        <translation>אזור זמן:</translation>
+        <translation>Fus horari:</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="356"/>
         <source>Keyboard layout:</source>
-        <translation>פריסת מקלדת:</translation>
+        <translation>Disposició del teclat:</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="375"/>
         <source>Set Disk Encryption (Cryptsetup)</source>
-        <translation>הגדר הצפנת דיסק (Cryptsetup)</translation>
+        <translation>Configura el xifratge de disc (Cryptsetup)</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="385"/>
         <source>Disk Password:</source>
-        <translation>סיסמת דיסק:</translation>
+        <translation>Contrasenya del disc:</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="426"/>
         <source>Write sdcard&apos;s image to eMMC on first boot</source>
-        <translation>כתוב את תמונת כרטיס ה-SD ל-eMMC בהפעלה הראשונה</translation>
+        <translation>Escriu la imatge de la targeta SD a l&apos;eMMC en el primer arrencada</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="451"/>
         <source>Enable SSH</source>
-        <translation>הפעלת SSH</translation>
+        <translation>Activa el protocol SSH</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="467"/>
         <source>Use password authentication</source>
-        <translation>להשתמש באימות עם סיסמה</translation>
+        <translation>Utilitza l&apos;autenticació de contrasenya</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="478"/>
         <source>Allow public-key authentication only</source>
-        <translation>לאפשר אימות עם מפתח ציבורי בלבד</translation>
+        <translation>Permet només l&apos;autenticació de claus públiques</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="489"/>
         <source>Set authorized_keys for &apos;%1&apos;:</source>
-        <translation>להגדיר authorized_keys (מפתחות מורשים) עבור ‚%1’:</translation>
+        <translation>Establiu «authorized_keys» per a l&apos;usuari «%1»:</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="533"/>
         <source>Delete Key</source>
-        <translation>מחק מפתח</translation>
+        <translation>Elimina la clau</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="552"/>
         <source>RUN SSH-KEYGEN</source>
-        <translation>להריץ את SSH-KEYGEN</translation>
+        <translation>EXECUTA SSH-KEYGEN</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="562"/>
         <source>Add SSH Key</source>
-        <translation>הוסף מפתח SSH</translation>
+        <translation>Afegeix una clau SSH</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="578"/>
         <source>Enable VNC</source>
-        <translation>אפשר VNC</translation>
+        <translation>Habilita VNC</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="583"/>
         <source>VNC Password is required!</source>
-        <translation>נדרשת סיסמת VNC!</translation>
+        <translation>Cal contrasenya VNC!</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="591"/>
         <source>VNC Password:</source>
-        <translation>סיסמת VNC:</translation>
+        <translation>Contrasenya VNC:</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="610"/>
         <source>Gadgets</source>
-        <translation>גאדג'טים</translation>
+        <translation>Gadgets</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="616"/>
         <source>Enable Storage Gadget</source>
-        <translation>אפשר גאדג'ט אחסון</translation>
+        <translation>Habilita el gadget d&apos;emmagatzematge</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="622"/>
         <source>Enable Ethernet Gadget</source>
-        <translation>אפשר גאדג'ט Ethernet</translation>
+        <translation>Habilita el gadget Ethernet</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="628"/>
         <source>Enable Serial Gadgets</source>
-        <translation>אפשר גאדג'טים טוריים</translation>
+        <translation>Habilita els gadgets sèrie</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="653"/>
         <source>Play sound when finished</source>
-        <translation>להשמיע צליל עם הסיום</translation>
+        <translation>Fes un so quan acabi</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="657"/>
         <source>Eject media when finished</source>
-        <translation>להוציא את אמצעי האחסון עם סיום הפעולה</translation>
+        <translation>Expulsa el mitjà quan acabi</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="676"/>
         <source>Serial Port </source>
-        <translation>יציאה טורית </translation>
+        <translation>Port sèrie </translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="708"/>
@@ -615,12 +611,12 @@
     </message>
     <message>
         <source>Enable telemetry</source>
-        <translation type="vanished">הפעלת מדדים</translation>
+        <translation type="vanished">Activa la telemetria</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="752"/>
         <source>SAVE</source>
-        <translation>שמירה</translation>
+        <translation>DESA</translation>
     </message>
 </context>
 <context>
@@ -628,7 +624,7 @@
     <message>
         <location filename="../linux/linuxdrivelist.cpp" line="126"/>
         <source>Internal SD card reader</source>
-        <translation>קורא כרטיסי SD פנימי</translation>
+        <translation>Lector de targetes SD intern</translation>
     </message>
 </context>
 <context>
@@ -636,238 +632,238 @@
     <message>
         <location filename="../UseSavedSettingsPopup.qml" line="46"/>
         <source>Use OS customization?</source>
-        <translation>להשתמש בהתאמת מערכת הפעלה?</translation>
+        <translation>Voleu personalitzar el SO?</translation>
     </message>
     <message>
         <location filename="../UseSavedSettingsPopup.qml" line="98"/>
         <source>Would you like to apply OS customization settings?</source>
-        <translation>להחיל הגדרות התאמת מערכת הפעלה?</translation>
+        <translation>Voleu aplicar la configuració personalitzada del SO?</translation>
     </message>
     <message>
         <location filename="../UseSavedSettingsPopup.qml" line="139"/>
         <source>NO</source>
-        <translation>לא</translation>
+        <translation>NO</translation>
     </message>
     <message>
         <location filename="../UseSavedSettingsPopup.qml" line="120"/>
         <source>NO, CLEAR SETTINGS</source>
-        <translation>לא, לאפס את ההגדרות</translation>
+        <translation>NO, ESBORRA LA CONFIGURACIÓ</translation>
     </message>
     <message>
         <location filename="../UseSavedSettingsPopup.qml" line="130"/>
         <source>YES</source>
-        <translation>כן</translation>
+        <translation>SÍ</translation>
     </message>
     <message>
         <location filename="../UseSavedSettingsPopup.qml" line="107"/>
         <source>EDIT SETTINGS</source>
-        <translation>עריכת ההגדרות</translation>
+        <translation>EDITA LA CONFIGURACIÓ</translation>
     </message>
 </context>
 <context>
     <name>main</name>
     <message>
         <source>Raspberry Pi Imager v%1</source>
-        <translation type="vanished">צורב דמויות ל־Raspberry Pi גרסה %1</translation>
+        <translation type="vanished">Raspberry Pi Imager v%1</translation>
     </message>
     <message>
         <source>Raspberry Pi Device</source>
-        <translation type="vanished">מכשיר Raspberry Pi</translation>
+        <translation type="vanished">Placa Raspberry Pi</translation>
     </message>
     <message>
         <location filename="../main.qml" line="134"/>
         <source>CHOOSE DEVICE</source>
-        <translation>נא לבחור מכשיר</translation>
+        <translation>TRIA LA PLACA</translation>
     </message>
     <message>
         <source>Select this button to choose your target Raspberry Pi</source>
-        <translation type="vanished">נא לבחור בכפתור הזה כדי לבחור את מכשיר ה־Raspberry Pi המיועד</translation>
+        <translation type="vanished">Seleccioneu aquest botó per a escollir la placa Raspberry Pi objectiu</translation>
     </message>
     <message>
         <location filename="../main.qml" line="160"/>
         <location filename="../main.qml" line="555"/>
         <source>Operating System</source>
-        <translation>מערכת הפעלה</translation>
+        <translation>Sistema operatiu</translation>
     </message>
     <message>
         <location filename="../main.qml" line="171"/>
         <location filename="../main.qml" line="1977"/>
         <source>CHOOSE OS</source>
-        <translation>נא לבחור מערכת הפעלה</translation>
+        <translation>TRIA EL SO</translation>
     </message>
     <message>
         <location filename="../main.qml" line="183"/>
         <source>Select this button to change the operating system</source>
-        <translation>יש לבחור בכפתור הזה כדי להחליף את מערכת ההפעלה</translation>
+        <translation>Seleccioneu aquest botó si voleu canviar el sistema operatiu</translation>
     </message>
     <message>
         <location filename="../main.qml" line="197"/>
         <location filename="../main.qml" line="957"/>
         <source>Storage</source>
-        <translation>אחסון</translation>
+        <translation>Emmagatzematge</translation>
     </message>
     <message>
         <location filename="../main.qml" line="330"/>
         <source>Network not ready yet</source>
-        <translation>הרשת לא מוכנה עדיין</translation>
+        <translation>La xarxa encara no és a punt</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1022"/>
         <source>No storage devices found</source>
-        <translation>לאנמצאו התקני אחסון</translation>
+        <translation>No s&apos;ha trobat cap dispositiu d&apos;emmagatzematge</translation>
     </message>
     <message>
         <location filename="../main.qml" line="208"/>
         <location filename="../main.qml" line="1643"/>
         <source>CHOOSE STORAGE</source>
-        <translation>נא לבחור אמצעי אחסון</translation>
+        <translation>TRIA L&apos;EMMAGATZEMATGE</translation>
     </message>
     <message>
         <location filename="../main.qml" line="24"/>
-        <source>Gemstone Image Writer %1</source>
-        <translation>Gemstone Image Writer %1</translation>
+        <source>T3 Gemstone Image Writer %1</source>
+        <translation>T3 Gemstone Image Writer %1</translation>
     </message>
     <message>
         <location filename="../main.qml" line="122"/>
         <location filename="../main.qml" line="453"/>
         <source>Gemstone Board</source>
-        <translation>לוח Gemstone</translation>
+        <translation>Placa Gemstone</translation>
     </message>
     <message>
         <location filename="../main.qml" line="146"/>
         <source>Select this button to choose your target Gemstone Board</source>
-        <translation>בחר כפתור זה לבחירת לוח Gemstone היעד שלך</translation>
+        <translation>Seleccioneu aquest botó per triar la vostra Gemstone Board de destinació</translation>
     </message>
     <message>
         <location filename="../main.qml" line="222"/>
         <source>Select this button to change the destination storage device</source>
-        <translation>יש לבחור בכפתור הזה כדי לשנות את התקן אחסון היעד</translation>
+        <translation>Seleccioneu aquest botó per a canviar la destinació del dispositiu d&apos;emmagatzematge</translation>
     </message>
     <message>
         <location filename="../main.qml" line="267"/>
         <source>CANCEL WRITE</source>
-        <translation>ביטול צריבה</translation>
+        <translation>CANCEL·LA L&apos;ESCRIPTURA</translation>
     </message>
     <message>
         <location filename="../main.qml" line="270"/>
         <location filename="../main.qml" line="1527"/>
         <location filename="../main.qml" line="1538"/>
         <source>Cancelling...</source>
-        <translation>הצריבה מבוטלת…</translation>
+        <translation>S&apos;està cancel·lant...</translation>
     </message>
     <message>
         <location filename="../main.qml" line="282"/>
         <source>CANCEL VERIFY</source>
-        <translation>ביטול אימות</translation>
+        <translation>CANCEL·LA LA VERIFICACIÓ</translation>
     </message>
     <message>
         <location filename="../main.qml" line="285"/>
         <location filename="../main.qml" line="1561"/>
         <location filename="../main.qml" line="1670"/>
         <source>Finalizing...</source>
-        <translation>הצריבה מסתיימת…</translation>
+        <translation>S&apos;està finalitzant...</translation>
     </message>
     <message>
         <location filename="../main.qml" line="294"/>
         <source>Next</source>
-        <translation>הבא</translation>
+        <translation>Següent</translation>
     </message>
     <message>
         <location filename="../main.qml" line="300"/>
         <source>Select this button to start writing the image</source>
-        <translation>יש לבחור בכפתור הזה כדי להתחיל את צריבת הדמות</translation>
+        <translation>Seleccioneu aquest botó per a començar l&apos;escriptura de la imatge</translation>
     </message>
     <message>
         <location filename="../main.qml" line="320"/>
         <source>Using custom repository: %1</source>
-        <translation>שימוש במאגר מותאם אישית: %1</translation>
+        <translation>S&apos;està usant el repositori personalitzat: %1</translation>
     </message>
     <message>
         <location filename="../main.qml" line="339"/>
         <source>Keyboard navigation: &lt;tab&gt; navigate to next button &lt;space&gt; press button/select item &lt;arrow up/down&gt; go up/down in lists</source>
-        <translation>ניווט מקלדת: &lt;tab&gt; ניווט לכפתור הבא &lt;רווח&gt; לחיצה על כפתור/בחירת פריט &lt;חץ למעלה/למטה&gt; לעלות/לרדת ברשימות</translation>
+        <translation>Navegació per teclat: &lt;tab&gt; navega al botó següent &lt;espai&gt; prem el botó o selecciona l&apos;element &lt;fletxa amunt o avall&gt; desplaçament per les llistes</translation>
     </message>
     <message>
         <location filename="../main.qml" line="360"/>
         <source>Language: </source>
-        <translation>שפה: </translation>
+        <translation>Idioma: </translation>
     </message>
     <message>
         <location filename="../main.qml" line="383"/>
         <source>Keyboard: </source>
-        <translation>מקלדת: </translation>
+        <translation>Teclat: </translation>
     </message>
     <message>
         <location filename="../main.qml" line="497"/>
         <source>[ All ]</source>
-        <translation>[ הכול ]</translation>
+        <translation>[ TOT ]</translation>
     </message>
     <message>
         <location filename="../main.qml" line="653"/>
         <source>Back</source>
-        <translation>חזרה</translation>
+        <translation>Enrere</translation>
     </message>
     <message>
         <location filename="../main.qml" line="654"/>
         <source>Go back to main menu</source>
-        <translation>חזרה לתפריט הראשי</translation>
+        <translation>Torna al menú principal</translation>
     </message>
     <message>
         <location filename="../main.qml" line="900"/>
         <source>Released: %1</source>
-        <translation>מועד יציאה לאור: %1</translation>
+        <translation>Llançat el: %1</translation>
     </message>
     <message>
         <location filename="../main.qml" line="910"/>
         <source>Cached on your computer</source>
-        <translation>שמור במטמון במחשב שלך</translation>
+        <translation>A la memòria cau de l&apos;ordinador</translation>
     </message>
     <message>
         <location filename="../main.qml" line="912"/>
         <source>Local file</source>
-        <translation>קובץ מקומי</translation>
+        <translation>Fitxer local</translation>
     </message>
     <message>
         <location filename="../main.qml" line="913"/>
         <source>Online - %1 GB download</source>
-        <translation>מקוון - הורדה של %1 ג״ב</translation>
+        <translation>Disponible en línia (%1 GB)</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1057"/>
         <source>Exclude System Drives</source>
-        <translation>הוצא כוננים מערכתיים</translation>
+        <translation>Exclou les unitats del sistema</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1115"/>
         <source>Internal eMMC - 32 GB</source>
-        <translation>eMMC פנימי - 32 GB</translation>
+        <translation>eMMC intern - 32 GB</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1125"/>
         <source>Writes the image to the card&apos;s internal eMMC memory via Uniflash</source>
-        <translation>כותב את התמונה לזיכרון eMMC הפנימי של הכרטיס דרך Uniflash</translation>
+        <translation>Escriu la imatge a la memòria eMMC interna de la targeta via Uniflash</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1213"/>
         <location filename="../main.qml" line="2140"/>
         <source>DFU Mode</source>
-        <translation>מצב DFU</translation>
+        <translation>Mode DFU</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1223"/>
         <source>Program the device via USB DFU (Device Firmware Update)</source>
-        <translation>תכנת את המכשיר דרך USB DFU (עדכון קושחת המכשיר)</translation>
+        <translation>Programa el dispositiu via USB DFU (actualització de firmware)</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1268"/>
         <source>gigabytes</source>
-        <translation>גיגהבייט</translation>
+        <translation>gigabytes</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1270"/>
         <location filename="../main.qml" line="1332"/>
         <source>Mounted as %1</source>
-        <translation>מעוגן בתור %1</translation>
+        <translation>Muntat com a %1</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1318"/>
@@ -877,174 +873,169 @@
     <message>
         <location filename="../main.qml" line="1334"/>
         <source>[WRITE PROTECTED]</source>
-        <translation>[מוגן מפני צריבה]</translation>
+        <translation>[PROTEGIT CONTRA ESCRIPTURA]</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1336"/>
         <source>SYSTEM</source>
-        <translation>מערכת</translation>
+        <translation>SISTEMA</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1394"/>
         <location filename="../main.qml" line="1401"/>
         <source>Boot Mode Switch</source>
-        <translation>מתג מצב אתחול</translation>
+        <translation>Interruptor de mode d&apos;arrencada</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1395"/>
         <source>Configure the boot mode switches for DFU Boot as shown in the image.</source>
-        <translation>הגדר את מתגי מצב האתחול לאתחול DFU כפי שמוצג בתמונה.</translation>
+        <translation>Configureu els interruptors de mode d&apos;arrencada per a DFU Boot tal com es mostra a la imatge.</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1402"/>
-        <source>After powering off the card, set the boot mode switches to eMMC Boot as shown in the image. Upon restoring power, the system will boot automatically.</source>
-        <translation>לאחר כיבוי הכרטיס, הגדר את מתגי מצב האתחול ל-eMMC Boot כפי שמוצג בתמונה. לאחר שחזור החשמל, המערכת תאתחל אוטומטית.</translation>
+        <source>DFU programming completed successfully!&lt;br&gt;&lt;br&gt;After powering off the card, set the boot mode switches to eMMC Boot as shown in the image. Upon restoring power, the system will boot automatically.</source>
+        <translation>La programació DFU s&apos;ha completat correctament!&lt;br&gt;&lt;br&gt;Després d&apos;apagar la targeta, establiu els interruptors de mode d&apos;arrencada a eMMC Boot tal com es mostra a la imatge. En restaurar l&apos;alimentació, el sistema arrencarà automàticament.</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1411"/>
         <source>Are you sure you want to quit?</source>
-        <translation>לצאת?</translation>
+        <translation>Esteu segur que en voleu sortir?</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1412"/>
-        <source>Gemstone Imager is still busy.&lt;br&gt;Are you sure you want to quit?</source>
-        <translation>Gemstone Imager עדיין עסוק.&lt;br&gt;האם אתה בטוח שברצונך לצאת?</translation>
+        <source>T3 Gemstone Imager is still busy.&lt;br&gt;Are you sure you want to quit?</source>
+        <translation>T3 Gemstone Imager encara està ocupat.&lt;br&gt;Esteu segur que voleu sortir?</translation>
     </message>
     <message>
         <source>Raspberry Pi Imager is still busy.&lt;br&gt;Are you sure you want to quit?</source>
-        <translation type="vanished">Raspberry Pi Imager (צורב הדמויות) עדיין עסוק.&lt;br&gt;לצאת בכל זאת?</translation>
+        <translation type="vanished">El Raspberry Pi Imager està ocupat.&lt;br&gt;Esteu segur que en voleu sortir?</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1423"/>
         <source>Warning</source>
-        <translation>אזהרה</translation>
+        <translation>Avís</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1442"/>
         <location filename="../main.qml" line="2152"/>
         <source>Starting DFU operation...</source>
-        <translation>מתחיל פעולת DFU...</translation>
+        <translation>Iniciant operació DFU...</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1448"/>
         <source>Preparing to write...</source>
-        <translation>בהכנות לצריבה…</translation>
+        <translation>S&apos;està preparant per a escriure...</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1457"/>
         <source>Image will be sent to device via DFU.&lt;br&gt;Are you sure you want to continue?</source>
-        <translation>התמונה תישלח למכשיר דרך DFU.&lt;br&gt;האם אתה בטוח שברצונך להמשיך?</translation>
+        <translation>La imatge s&apos;enviarà al dispositiu via DFU.&lt;br&gt;Esteu segur que voleu continuar?</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1459"/>
         <source>All existing data on &apos;%1&apos; will be erased.&lt;br&gt;Are you sure you want to continue?</source>
-        <translation>כל הנתונים שיש כרגע על ‚%1’ יימחקו.&lt;br&gt;להמשיך?</translation>
+        <translation>Totes les dades existents a «%1» s&apos;esborraran.&lt;br&gt;Esteu segur que voleu continuar?</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1475"/>
         <source>Update available</source>
-        <translation>יש עדכון</translation>
+        <translation>Hi ha una actualització disponible</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1476"/>
         <source>There is a newer version of Imager available.&lt;br&gt;Would you like to visit the website to download it?</source>
-        <translation>יש גרסה חדשה יותר של צורב הדמויות (Imager) זמינה.&lt;br&gt;לבקר באתר כדי להוריד אותה?</translation>
+        <translation>Hi ha una nova versió de l&apos;Imager disponible.&lt;br&gt;Voleu visitar el lloc web per baixar-la?</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1530"/>
         <source>Downloading... %1%</source>
-        <translation>מתבצעת הורדה… %1%</translation>
+        <translation>S&apos;està baixant... %1%</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1541"/>
         <source>Sending... %1%</source>
-        <translation>שולח... %1%</translation>
+        <translation>Enviant... %1%</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1564"/>
         <source>Verifying... %1%</source>
-        <translation>מתבצע אימות… %1%</translation>
+        <translation>S&apos;està verificant... %1%</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1571"/>
         <source>Preparing to write... (%1)</source>
-        <translation>בהכנות לצריבה… (%1)</translation>
+        <translation>S&apos;està preparant per escriure... (%1)</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1582"/>
         <source>Waiting for authentication to access USB device...</source>
-        <translation>ממתין לאימות לגישה להתקן ה-USB...</translation>
+        <translation>Esperant autenticació per accedir al dispositiu USB...</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1605"/>
         <source>Error</source>
-        <translation>שגיאה</translation>
+        <translation>S&apos;ha produït un error</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1612"/>
         <source>Write Successful</source>
-        <translation>הצריבה הצליחה</translation>
+        <translation>S&apos;ha escrit amb èxit</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1613"/>
         <location filename="../imagewriter.cpp" line="719"/>
         <source>Erase</source>
-        <translation>מחיקה</translation>
+        <translation>Esborra</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1614"/>
         <source>&lt;b&gt;%1&lt;/b&gt; has been erased&lt;br&gt;&lt;br&gt;You can now remove the SD card from the reader</source>
-        <translation>&lt;b&gt;%1&lt;/b&gt; נמחק&lt;br&gt;&lt;br&gt;אפשר להסיר את כרטיס ה־SD מהקורא</translation>
-    </message>
-    <message>
-        <location filename="../main.qml" line="1624"/>
-        <source>DFU programming completed successfully!&lt;br&gt;&lt;br&gt;The device has been programmed and should now boot automatically.</source>
-        <translation>תכנות DFU הושלמה בהצלחה!&lt;br&gt;&lt;br&gt;המכשיר תוכנת ואמור לאתחל אוטומטית.</translation>
+        <translation>S&apos;ha esborrat &lt;b&gt;%1&lt;/b&gt;&lt;br&gt;&lt;br&gt;Ja podeu retirar la targeta SD del lector</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1629"/>
         <source>&lt;b&gt;%1&lt;/b&gt; has been written to &lt;b&gt;%2&lt;/b&gt;&lt;br&gt;&lt;br&gt;The process is complete. You can connect to the board via the serial port.</source>
-        <translation>&lt;b&gt;%1&lt;/b&gt; נכתב ל-&lt;b&gt;%2&lt;/b&gt;.&lt;br&gt;&lt;br&gt;התהליך הושלם. ניתן להתחבר ללוח דרך יציאת הסריאל.</translation>
+        <translation>&lt;b&gt;%1&lt;/b&gt; s&apos;ha escrit a &lt;b&gt;%2&lt;/b&gt;.&lt;br&gt;&lt;br&gt;El procés ha finalitzat. Podeu connectar-vos a la placa a través del port sèrie.</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1633"/>
         <source>&lt;b&gt;%1&lt;/b&gt; has been written to &lt;b&gt;%2&lt;/b&gt;&lt;br&gt;&lt;br&gt;You can now remove the SD card from the reader</source>
-        <translation>&lt;b&gt;%1&lt;/b&gt; נכתב אל &lt;b&gt;%2&lt;/b&gt;&lt;br&gt;&lt;br&gt;אפשר להסיר את כרטיס ה־SD מהקורא</translation>
+        <translation>S&apos;ha escrit el «&lt;b&gt;%1&lt;/b&gt;» a &lt;b&gt;%2&lt;/b&gt;&lt;br&gt;&lt;br&gt;Ja podeu retirar la targeta SD del lector</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1798"/>
         <source>Error parsing os_list.json</source>
-        <translation>שגיאה בפענוח os_list.json</translation>
+        <translation>S&apos;ha produït un error en analitzar os_lists.json</translation>
     </message>
     <message>
         <location filename="../imagewriter.cpp" line="720"/>
         <source>Format card as FAT32</source>
-        <translation>פרמוט הכרטיס כ־FAT32</translation>
+        <translation>Formata la targeta com a FAT32</translation>
     </message>
     <message>
         <location filename="../imagewriter.cpp" line="726"/>
         <source>Use custom</source>
-        <translation>להשתמש בהתאמה אישית</translation>
+        <translation>Utilitza una personalitzada</translation>
     </message>
     <message>
         <location filename="../imagewriter.cpp" line="727"/>
         <source>Select a custom .img from your computer</source>
-        <translation>בחירת קובץ ‎.img מותאם מהמחשב שלך</translation>
+        <translation>Selecciona una imatge .img personalitzada de l&apos;ordinador</translation>
     </message>
     <message>
         <location filename="../main.qml" line="2051"/>
         <source>Connect an USB stick containing images first.&lt;br&gt;The images must be located in the root folder of the USB stick.</source>
-        <translation>נא לחבר קודם כונן USB שמכיל קובצי דמות.&lt;br&gt;קובצי הדמות חייבים להימצא בתיקייה הראשית של כונן ה־USB.</translation>
+        <translation>Connecteu una memòria USB que contingui primer imatges.&lt;br&gt;Les imatges s&apos;han de trobar a la carpeta arrel de la memòria.</translation>
     </message>
     <message>
         <location filename="../main.qml" line="2129"/>
         <source>Onboard emmc</source>
-        <translation>eMMC מובנה</translation>
+        <translation>eMMC integrada</translation>
     </message>
     <message>
         <location filename="../main.qml" line="2165"/>
         <source>SD card is write protected.&lt;br&gt;Push the lock switch on the left side of the card upwards, and try again.</source>
-        <translation>כרטיס ה־SD מוגן מפני כתיבה.&lt;br&gt;נא ללחוץ על מתג הנעילה בצד השמאלי של הכרטיס כלפי מעלה ולנסות שוב.</translation>
+        <translation>La targeta SD està protegida contra escriptura.&lt;br&gt;Accioneu l&apos;interruptor del costat esquerre de la targeta SD per tal que quedi posicionat a la part superior i torneu-ho a provar.</translation>
     </message>
 </context>
 </TS>

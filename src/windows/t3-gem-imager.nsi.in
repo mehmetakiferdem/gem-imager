@@ -4,20 +4,20 @@
 #              by Vlasis K. Barkas aka Red Wine red_wine@freemail.gr Sep 2006               
 ############################################################################################
 
-!define APP_NAME "Gemstone Imager"
+!define APP_NAME "T3 Gemstone Imager"
 !define COMP_NAME "T3 Foundation"
 !define VERSION "@IMAGER_VERSION_STR@"
-!define INSTALLER_NAME "gem-imager-${VERSION}.exe"
+!define INSTALLER_NAME "t3-gem-imager-${VERSION}.exe"
 !define COPYRIGHT "Raspberry Ltd"
-!define DESCRIPTION "Gemstone Imager"
-!define MAIN_APP_EXE "gem-imager.exe"
+!define DESCRIPTION "T3 Gemstone Imager"
+!define MAIN_APP_EXE "t3-gem-imager.exe"
 !define INSTALL_TYPE "SetShellVarContext current"
 !define REG_ROOT "HKCU"
 !define REG_APP_PATH "Software\Microsoft\Windows\CurrentVersion\App Paths\${MAIN_APP_EXE}"
 !define UNINSTALL_PATH "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP_NAME}"
 
 # Window to close if running
-!define EXE_TO_TERMINATE "gem-imager.exe"
+!define EXE_TO_TERMINATE "t3-gem-imager.exe"
 
 ######################################################################
 
@@ -38,7 +38,7 @@ OutFile "${INSTALLER_NAME}"
 BrandingText "${APP_NAME}"
 XPStyle on
 InstallDirRegKey "${REG_ROOT}" "${REG_APP_PATH}" ""
-InstallDir "$PROGRAMFILES\Gemstone Imager"
+InstallDir "$PROGRAMFILES\T3 Gemstone Imager"
 
 ######################################################################
 
@@ -87,7 +87,7 @@ InstallDir "$PROGRAMFILES\Gemstone Imager"
 
 !ifdef REG_START_MENU
 !define MUI_STARTMENUPAGE_NODISABLE
-!define MUI_STARTMENUPAGE_DEFAULTFOLDER "Gemstone"
+!define MUI_STARTMENUPAGE_DEFAULTFOLDER "T3 Gemstone"
 !define MUI_STARTMENUPAGE_REGISTRY_ROOT "${REG_ROOT}"
 !define MUI_STARTMENUPAGE_REGISTRY_KEY "${UNINSTALL_PATH}"
 !define MUI_STARTMENUPAGE_REGISTRY_VALUENAME "${REG_START_MENU}"
@@ -113,14 +113,14 @@ InstallDir "$PROGRAMFILES\Gemstone Imager"
 !insertmacro MUI_LANGUAGE "Dutch"
 !insertmacro MUI_LANGUAGE "Italian"
 
-LangString termMsg ${LANG_ENGLISH} "Gemstone Imager seems to be running and busy.$\nDo you want to terminate process?"
-LangString stopMsg ${LANG_ENGLISH} "Stopping Gemstone Imager"
+LangString termMsg ${LANG_ENGLISH} "T3 Gemstone Imager seems to be running and busy.$\nDo you want to terminate process?"
+LangString stopMsg ${LANG_ENGLISH} "Stopping T3 Gemstone Imager"
 LangString win7Msg ${LANG_ENGLISH} "Windows 7 or above required"
-LangString termMsg ${LANG_DUTCH} "Gemstone Imager is momenteel actief.$\nWilt u het programma afsluiten?"
-LangString stopMsg ${LANG_DUTCH} "Bezig met afsluiten Gemstone Imager"
+LangString termMsg ${LANG_DUTCH} "T3 Gemstone Imager is momenteel actief.$\nWilt u het programma afsluiten?"
+LangString stopMsg ${LANG_DUTCH} "Bezig met afsluiten T3 Gemstone Imager"
 LangString win7Msg ${LANG_DUTCH} "Minimaal Windows 7 is vereist"
-LangString termMsg ${LANG_ITALIAN} "Gemstone Imager sembra essere in esecuzione e occupato.$\nVuoi terminare il processo Gemstone Imager?"
-LangString stopMsg ${LANG_ITALIAN} "Chiusura processo Gemstone Imager"
+LangString termMsg ${LANG_ITALIAN} "T3 Gemstone Imager sembra essere in esecuzione e occupato.$\nVuoi terminare il processo T3 Gemstone Imager?"
+LangString stopMsg ${LANG_ITALIAN} "Chiusura processo T3 Gemstone Imager"
 LangString win7Msg ${LANG_ITALIAN} "Per l'esecuzione del programma è richiesto Windows 7 o versioni successive"
 
 ######################################################################
@@ -255,8 +255,8 @@ File "deploy\libgcc_s_seh-1.dll"
 File "deploy\libstdc++-6.dll"
 File "deploy\libwinpthread-1.dll"
 File "deploy\license.txt"
-File "deploy\gem-imager-cli.cmd"
-File "deploy\gem-imager.exe"
+File "deploy\t3-gem-imager-cli.cmd"
+File "deploy\t3-gem-imager.exe"
 SetOutPath "$INSTDIR\generic"
 File "deploy\generic\qtuiotouchplugin.dll"
 SetOutPath "$INSTDIR\iconengines"
@@ -781,11 +781,11 @@ CreateShortCut "$SMPROGRAMS\$SM_Folder\${APP_NAME} Website.lnk" "$INSTDIR\${APP_
 !endif
 
 !ifndef REG_START_MENU
-CreateDirectory "$SMPROGRAMS\Gemstone"
-CreateShortCut "$SMPROGRAMS\Gemstone\${APP_NAME}.lnk" "$INSTDIR\${MAIN_APP_EXE}"
+CreateDirectory "$SMPROGRAMS\T3 Gemstone"
+CreateShortCut "$SMPROGRAMS\T3 Gemstone\${APP_NAME}.lnk" "$INSTDIR\${MAIN_APP_EXE}"
 !ifdef WEB_SITE
 WriteIniStr "$INSTDIR\${APP_NAME} website.url" "InternetShortcut" "URL" "${WEB_SITE}"
-CreateShortCut "$SMPROGRAMS\Gemstone\${APP_NAME} Website.lnk" "$INSTDIR\${APP_NAME} website.url"
+CreateShortCut "$SMPROGRAMS\T3 Gemstone\${APP_NAME} Website.lnk" "$INSTDIR\${APP_NAME} website.url"
 !endif
 !endif
 
@@ -807,8 +807,8 @@ WriteRegStr SHCTX "Software\Classes\.gz\OpenWithProgIds" "GEM_IMAGINGUTILITY" ""
 WriteRegStr SHCTX "Software\Classes\.xz\OpenWithProgIds" "GEM_IMAGINGUTILITY" ""
 WriteRegStr SHCTX "Software\Classes\.img\OpenWithProgIds" "GEM_IMAGINGUTILITY" ""
 WriteRegStr SHCTX "Software\Classes\.zstd\OpenWithProgIds" "GEM_IMAGINGUTILITY" ""
-WriteRegStr SHCTX "Software\Classes\GEM_IMAGINGUTILITY\shell\open" "FriendlyAppName" "Gemstone Imager"
-WriteRegStr SHCTX "Software\Classes\GEM_IMAGINGUTILITY\shell\open\command" "" '"$INSTDIR\gem-imager.exe" "%1"'
+WriteRegStr SHCTX "Software\Classes\GEM_IMAGINGUTILITY\shell\open" "FriendlyAppName" "T3 Gemstone Imager"
+WriteRegStr SHCTX "Software\Classes\GEM_IMAGINGUTILITY\shell\open\command" "" '"$INSTDIR\t3-gem-imager.exe" "%1"'
 
 SectionEnd
 
@@ -842,8 +842,8 @@ Delete "$INSTDIR\Qt5Widgets.dll"
 Delete "$INSTDIR\Qt5WinExtras.dll"
 # Old name
 Delete "$INSTDIR\imagingutility.exe"
-Delete "$INSTDIR\gem-imager.exe"
-Delete "$INSTDIR\gem-imager-cli.cmd"
+Delete "$INSTDIR\t3-gem-imager.exe"
+Delete "$INSTDIR\t3-gem-imager-cli.cmd"
 Delete "$INSTDIR\styles\qwindowsvistastyle.dll"
 Delete "$INSTDIR\QtQuick.2\plugins.qmltypes"
 Delete "$INSTDIR\QtQuick.2\qmldir"
@@ -1233,8 +1233,8 @@ Delete "$INSTDIR\Qt6Svg.dll"
 Delete "$INSTDIR\Qt6VirtualKeyboard.dll"
 Delete "$INSTDIR\Qt6Widgets.dll"
 Delete "$INSTDIR\libgcc_s_seh-1.dll"
-Delete "$INSTDIR\gem-imager-cli.cmd"
-Delete "$INSTDIR\gem-imager.exe"
+Delete "$INSTDIR\t3-gem-imager-cli.cmd"
+Delete "$INSTDIR\t3-gem-imager.exe"
 Delete "$INSTDIR\generic\qtuiotouchplugin.dll"
 Delete "$INSTDIR\iconengines\qsvgicon.dll"
 Delete "$INSTDIR\imageformats\qgif.dll"
@@ -1737,11 +1737,11 @@ RmDir "$SMPROGRAMS\$SM_Folder"
 !endif
 
 !ifndef REG_START_MENU
-Delete "$SMPROGRAMS\Gemstone\${APP_NAME}.lnk"
+Delete "$SMPROGRAMS\T3 Gemstone\${APP_NAME}.lnk"
 !ifdef WEB_SITE
-Delete "$SMPROGRAMS\Gemstone\${APP_NAME} Website.lnk"
+Delete "$SMPROGRAMS\T3 Gemstone\${APP_NAME} Website.lnk"
 !endif
-RmDir "$SMPROGRAMS\Gemstone"
+RmDir "$SMPROGRAMS\T3 Gemstone"
 !endif
 
 DeleteRegKey ${REG_ROOT} "${REG_APP_PATH}"
@@ -1780,6 +1780,14 @@ Function .onInit
   ${IfNot} ${AtLeastWin7}
     MessageBox MB_OK "$(win7Msg)"
     Quit
+  ${EndIf}
+
+  ; Versions up to 1.1 were installed as "Gemstone Imager": remove that copy,
+  ; so the renamed one does not end up installed next to it
+  ${If} ${FileExists} "$PROGRAMFILES\Gemstone Imager\uninstall.exe"
+    ExecWait '"$PROGRAMFILES\Gemstone Imager\uninstall.exe" /S _?=$PROGRAMFILES\Gemstone Imager'
+    Delete "$PROGRAMFILES\Gemstone Imager\uninstall.exe"
+    RMDir "$PROGRAMFILES\Gemstone Imager"
   ${EndIf}
 !endif
 FunctionEnd

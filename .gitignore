@@ -3,7 +3,7 @@ src/build/*
 src/build/**
 .vscode
 obj-**
-debian/gem-imager/**
+debian/t3-gem-imager/**
 debian/.debhelper**
 debian/*.debhelper**
 debian/files
