@@ -31,7 +31,7 @@ Cli::Cli(int &argc, char *argv[]) : QObject(nullptr)
     _app = new QCoreApplication(argc, argv);
     _app->setOrganizationName("Gemstone");
     _app->setOrganizationDomain("t3gemstone.org");
-    _app->setApplicationName("Gemstone Imager");
+    _app->setApplicationName("T3 Gemstone Imager");
     _imageWriter = new ImageWriter;
     connect(_imageWriter, &ImageWriter::success, this, &Cli::onSuccess);
     connect(_imageWriter, &ImageWriter::error, this, &Cli::onError);

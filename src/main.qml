@@ -21,7 +21,7 @@ ApplicationWindow {
     minimumWidth: imageWriter.isEmbeddedMode() ? -1 : 800
     minimumHeight: imageWriter.isEmbeddedMode() ? -1 : 600
 
-    title: qsTr("Gemstone Image Writer %1").arg(imageWriter.constantVersion())
+    title: qsTr("T3 Gemstone Image Writer %1").arg(imageWriter.constantVersion())
 
     FontLoader {id: notosans;      source: "fonts/NotoSans-Regular.ttf"}
     FontLoader {id: notosansLight; source: "fonts/NotoSans-Light.ttf"}
@@ -119,7 +119,7 @@ ApplicationWindow {
                     Text {
                         id: text0
                         color: "#ffffff"
-                        text: qsTr("Gemstone Board")
+                        text: qsTr("Board")
                         Layout.fillWidth: true
                         Layout.preferredHeight: 17
                         Layout.preferredWidth: 100
@@ -143,7 +143,7 @@ ApplicationWindow {
                             hwlist.forceActiveFocus()
                         }
                         Accessible.ignored: ospopup.visible || dstpopup.visible || hwpopup.visible
-                        Accessible.description: qsTr("Select this button to choose your target Gemstone Board")
+                        Accessible.description: qsTr("Select this button to choose your target board")
                     }
                 }
 
@@ -450,7 +450,7 @@ ApplicationWindow {
             width: parent.width
 
             Text {
-                text: qsTr("Gemstone Board")
+                text: qsTr("Board")
                 horizontalAlignment: Text.AlignHCenter
                 anchors.fill: parent
                 anchors.topMargin: 10
@@ -1412,7 +1412,7 @@ ApplicationWindow {
         yesButton: true
         noButton: true
         title: qsTr("Are you sure you want to quit?")
-        text: qsTr("Gemstone Imager is still busy.<br>Are you sure you want to quit?")
+        text: qsTr("T3 Gemstone Imager is still busy.<br>Are you sure you want to quit?")
         onYes: {
             Qt.quit()
         }
