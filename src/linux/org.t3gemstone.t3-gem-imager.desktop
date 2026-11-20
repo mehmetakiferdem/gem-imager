@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=T3 Gemstone Imager
+Comment=T3 Gemstone Imager
+Icon=t3-gem-imager
+Exec=t3-gem-imager %F
+Categories=Utility
+StartupNotify=false

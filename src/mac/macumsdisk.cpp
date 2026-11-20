@@ -84,14 +84,14 @@ DADissenterRef MacUmsDisk::approveMount(DADiskRef disk, void *)
     if (!isUmsDisk(disk))
         return nullptr;
     qDebug() << "Disk Arbitration: not mounting" << DADiskGetBSDName(disk);
-    return DADissenterCreate(kCFAllocatorDefault, kDAReturnNotPermitted, CFSTR("Gemstone Imager is writing to this disk"));
+    return DADissenterCreate(kCFAllocatorDefault, kDAReturnNotPermitted, CFSTR("T3 Gemstone Imager is writing to this disk"));
 }
 
 /* Someone else - the pre-write unmount, Finder - asked for the disk. Keep it
    until the board has left; the claims go with this object. */
 DADissenterRef MacUmsDisk::release(DADiskRef, void *)
 {
-    return DADissenterCreate(kCFAllocatorDefault, kDAReturnBusy, CFSTR("Gemstone Imager is writing to this disk"));
+    return DADissenterCreate(kCFAllocatorDefault, kDAReturnBusy, CFSTR("T3 Gemstone Imager is writing to this disk"));
 }
 
 void MacUmsDisk::claimed(DADiskRef disk, DADissenterRef dissenter, void *context)
