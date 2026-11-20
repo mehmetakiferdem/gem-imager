@@ -150,18 +150,16 @@ bool DownloadThread::_openAndPrepareDevice()
     {
         _nr = QByteArray::fromStdString(m[1]);
 
-        if (!_nr.isEmpty()) {
+        if (!_nr.isEmpty() && _keepPartitionTable) {
+            qDebug() << "Leaving the partition table of Windows drive #" << _nr << "as it is";
+        } else if (!_nr.isEmpty()) {
             qDebug() << "Removing partition table from Windows drive #" << _nr << "(" << _filename << ")";
 
             QProcess proc;
             proc.start("diskpart", QStringList());
             proc.waitForStarted();
-            /* "clean" leaves the disk with no MBR at all, which Windows mounts
-               as one RAW volume and offers to format. "convert mbr" gives it
-               an empty partition table instead, so nothing is mounted. */
             proc.write("select disk "+_nr+"\r\n"
                             "clean\r\n"
-                            "convert mbr\r\n"
                             "rescan\r\n");
             proc.closeWriteChannel();
             proc.waitForFinished();

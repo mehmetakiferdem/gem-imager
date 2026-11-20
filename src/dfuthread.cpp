@@ -333,8 +333,12 @@ size_t DfuThread::_writeFile(const char *buf, size_t len)
 
 bool DfuThread::_openAndPrepareDevice()
 {
-    if (_ums)
+    if (_ums) {
+        /* U-Boot has already left the eMMC with an empty partition table, so
+           there is nothing for diskpart to remove. */
+        _keepPartitionTable = true;
         return DownloadThread::_openAndPrepareDevice();
+    }
     if (_streaming)
         return openStreamToRawemmc();
 

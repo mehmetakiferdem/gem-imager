@@ -187,6 +187,10 @@ protected:
     QElapsedTimer _timer;
     int _inputBufferSize;
     bool _isNormalFile{false};
+    /* Windows: do not run "diskpart clean" on the drive. "clean" wipes
+       sector 0, and Windows mounts a disk with no MBR as one RAW volume and
+       asks to format it. */
+    bool _keepPartitionTable{false};
 
 #ifdef Q_OS_WIN
     WinFile _file, _volumeFile;
