@@ -6,11 +6,11 @@
     </picture>
 </p>
 
-# Gemstone Image Writer
+# T3 Gemstone Image Writer
 
  [![T3 Foundation](./.meta/t3-foundation.svg)](https://www.t3vakfi.org/en) [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-## How to use Gemstone Imager
+## How to use T3 Gemstone Imager
 
 Please see our [official documentation](https://docs.t3gemstone.org).
 
@@ -49,7 +49,7 @@ Modify appimagecraft.yml:
 Now, use AppImageCraft to build your AppImage:
 
 ```sh
-cd gem-imager
+cd t3-gem-imager
 
 export Qt6_ROOT="$HOME/Qt/6.7.2/gcc_64"
 export QMAKE="$Qt6_ROOT/bin/qmake"
@@ -61,8 +61,8 @@ export LD_LIBRARY_PATH="$Qt6_ROOT/lib"
 Now mark the AppImage as executable, and run it:
 
 ```sh
-chmod +x ./GemstoneImager-*.AppImage
-./GemstoneImager-*.AppImage
+chmod +x ./T3GemstoneImager-*.AppImage
+./T3GemstoneImager-*.AppImage
 ```
 
 ### Windows
@@ -78,14 +78,14 @@ During installation, choose Qt 6.7 with Mingw64 64-bit toolchain, CMake and Qt C
 
 #### Building
 
-Building Gemstone Imager on Windows is best done with the Qt Creator GUI.
+Building T3 Gemstone Imager on Windows is best done with the Qt Creator GUI.
 
 - Download source .zip from github and extract it to a folder on disk
 - Open src/CMakeLists.txt in Qt Creator.
 - Use Qt Creator to set the MINGW64_ROOT CMake variable to your MingGW64 installation path, eg `C:\Qt\Tools\mingw64`
 - For builds you distribute to others, make sure you choose "Release" in the toolchain settings and not the Debug configuration.
 - Menu "Build" -> "Build all"
-- Result will be in build_gem-imager_someversion
+- Result will be in build_t3-gem-imager_someversion
 - Go to the BUILD folder, right click on the .nsi script "Compile NSIS script", to create installer.
 
 ### macOS
@@ -102,7 +102,7 @@ During installation, choose Qt 6.7, CMake and Qt Creator.
 - Start Qt Creator and open src/CMakeLists.txt
 - Use Qt Creator to set the Qt6_ROOT CMake variable to your Qt6 installation path, eg `/opt/Qt6/6.7.2/gcc_64`
 - Menu "Build" -> "Build all"
-- Result will be in build_gem-imager_someversion
+- Result will be in build_t3-gem-imager_someversion
 - For distribution to others:
   - Use the IMAGER_SIGNED_APP flag to enable Application signing
   - Use the IMAGER_SIGNING_IDENTITY string to specify the Developer ID certificate Common Name

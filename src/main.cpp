@@ -144,22 +144,24 @@ int main(int argc, char *argv[])
         if (strcmp(argv[i], "--install-dfu-udev-rules") == 0)
         {
             // Must sort before 73-seat-late.rules or TAG+="uaccess" is never processed
-            const char *rulesPath = "/etc/udev/rules.d/60-gem-imager-dfu.rules";
+            const char *rulesPath = "/etc/udev/rules.d/60-t3-gem-imager-dfu.rules";
             std::FILE *f = std::fopen(rulesPath, "w");
             if (!f)
             {
-                std::perror("gem-imager: cannot write udev rules");
+                std::perror("t3-gem-imager: cannot write udev rules");
                 return 1;
             }
             std::fputs(
-                "# Gemstone Imager: TI AM62x DFU device (VID:0451 PID:6165)\n"
+                "# T3 Gemstone Imager: TI AM62x DFU device (VID:0451 PID:6165)\n"
                 "# MODE 0666 is the fallback for systems without logind or a plugdev group\n"
                 "SUBSYSTEM==\"usb\", ATTR{idVendor}==\"0451\", ATTR{idProduct}==\"6165\","
                 " TAG+=\"uaccess\", MODE=\"0666\"\n",
                 f);
             std::fclose(f);
-            // Rule from older versions; its 99- prefix broke uaccess and it relied on plugdev
+            // Rules from older versions: the 99- prefix broke uaccess and relied on
+            // plugdev, and versions up to 1.1 were named gem-imager
             std::remove("/etc/udev/rules.d/99-gem-imager-dfu.rules");
+            std::remove("/etc/udev/rules.d/60-gem-imager-dfu.rules");
             std::system("udevadm control --reload-rules");
             std::system("udevadm trigger --subsystem-match=usb");
             return 0;
@@ -169,7 +171,7 @@ int main(int argc, char *argv[])
 
     QCoreApplication::setOrganizationName("Gemstone");
     QCoreApplication::setOrganizationDomain("t3gemstone.org");
-    QCoreApplication::setApplicationName("Gemstone Imager");
+    QCoreApplication::setApplicationName("T3 Gemstone Imager");
     CrashLog::install(argc, argv);
 
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
@@ -217,11 +219,11 @@ int main(int argc, char *argv[])
 #else
     QApplication app(argc, argv);
 #endif
-    app.setWindowIcon(QIcon(":/icons/gem-imager.ico"));
+    app.setWindowIcon(QIcon(":/icons/t3-gem-imager.ico"));
     /* On Wayland the window icon is not used: the compositor looks the icon up
        in the .desktop file named after the app id, which otherwise is the
        executable name and matches none, so a generic icon was shown. */
-    app.setDesktopFileName("org.t3gemstone.gem-imager");
+    app.setDesktopFileName("org.t3gemstone.t3-gem-imager");
     ImageWriter imageWriter;
     NetworkAccessManagerFactory namf;
     QQmlApplicationEngine engine;
@@ -309,14 +311,14 @@ int main(int argc, char *argv[])
         }
         else if (args[i] == "--help")
         {
-            cerr << "gem-imager [--debug] [--version] [--repo <repository URL>] [--qm <custom qm translation file>] [--disable-telemetry] [<image file to write>]" << endl;
-            cerr << "-OR- gem-imager --cli [--disable-verify] [--sha256 <expected hash>] [--debug] [--quiet] <image file to write> <destination drive device>" << endl;
+            cerr << "t3-gem-imager [--debug] [--version] [--repo <repository URL>] [--qm <custom qm translation file>] [--disable-telemetry] [<image file to write>]" << endl;
+            cerr << "-OR- t3-gem-imager --cli [--disable-verify] [--sha256 <expected hash>] [--debug] [--quiet] <image file to write> <destination drive device>" << endl;
             cerr << "Log files are written to " << QDir::toNativeSeparators(CrashLog::logDirectory()) << endl;
             return 0;
         }
         else if (args[i] == "--version")
         {
-            cerr << "gem-imager version " << imageWriter.constantVersion() << endl;
+            cerr << "t3-gem-imager version " << imageWriter.constantVersion() << endl;
             cerr << "Repository: " << imageWriter.constantOsListUrl().toString() << endl;
             return 0;
         }
@@ -358,7 +360,7 @@ int main(int argc, char *argv[])
         QLocale::setDefault(QLocale(langcode));
 #endif
 
-        if (translator->load(QLocale(), "gem-imager", "_", QLatin1String(":/i18n")))
+        if (translator->load(QLocale(), "t3-gem-imager", "_", QLatin1String(":/i18n")))
             imageWriter.replaceTranslator(translator);
         else
             delete translator;

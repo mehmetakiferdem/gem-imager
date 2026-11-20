@@ -8,4 +8,4 @@ export DH_VERBOSE = 1
 
 .PHONY: override_dh_strip 
 override_dh_strip: 
-	dh_strip --exclude=AppImage --exclude=gem-imager
+	dh_strip --exclude=AppImage --exclude=t3-gem-imager

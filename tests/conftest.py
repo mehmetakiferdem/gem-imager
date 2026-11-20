@@ -57,7 +57,7 @@ def parse_os_list(url):
             url, 
             data=None, 
             headers={
-                'User-Agent': 'gem-imager automated tests'
+                'User-Agent': 't3-gem-imager automated tests'
             }
         )
         response = urllib.request.urlopen(req)
