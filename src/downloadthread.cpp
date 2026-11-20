@@ -150,7 +150,9 @@ bool DownloadThread::_openAndPrepareDevice()
     {
         _nr = QByteArray::fromStdString(m[1]);
 
-        if (!_nr.isEmpty()) {
+        if (!_nr.isEmpty() && _keepPartitionTable) {
+            qDebug() << "Leaving the partition table of Windows drive #" << _nr << "as it is";
+        } else if (!_nr.isEmpty()) {
             qDebug() << "Removing partition table from Windows drive #" << _nr << "(" << _filename << ")";
 
             QProcess proc;
@@ -559,6 +561,7 @@ size_t DownloadThread::_writeFile(const char *buf, size_t len)
         qDebug() << "Write error:" << _file.errorString() << "while writing len:" << len;
     }
 
+
     wh.waitForFinished();
     return (written < 0) ? 0 : written;
 }
@@ -784,6 +787,7 @@ void DownloadThread::_writeComplete()
     }
 #endif
 
+    _beforeCloseDevice();
     _closeFiles();
 
 #ifdef Q_OS_DARWIN
@@ -793,7 +797,8 @@ void DownloadThread::_writeComplete()
 
     if (_ejectEnabled)
     {
-        eject_disk(_filename.constData());
+        const MOUNTUTILS_RESULT ejected = eject_disk(_filename.constData());
+        qDebug() << "Ejecting" << _filename << "returned" << ejected;
 #ifdef Q_OS_LINUX
 #ifndef QT_NO_DBUS
         /* mountutils only implemented unmount and not eject on Linux. Do so through udisks2 */

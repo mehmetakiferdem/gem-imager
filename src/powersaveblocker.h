@@ -10,6 +10,9 @@
 #ifdef Q_OS_WIN
 #include <windows.h>
 #endif
+#ifdef Q_OS_DARWIN
+#include <IOKit/pwr_mgt/IOPMLib.h>
+#endif
 
 class PowerSaveBlocker : public QObject
 {
@@ -27,6 +30,12 @@ protected:
 
 #ifdef Q_OS_WIN
     HANDLE _powerRequest;
+#endif
+#ifdef Q_OS_DARWIN
+    IOPMAssertionID _assertion;
+#endif
+#ifdef Q_OS_LINUX
+    int _inhibitFd;
 #endif
 };
 

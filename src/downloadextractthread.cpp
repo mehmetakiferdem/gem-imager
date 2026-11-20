@@ -195,7 +195,11 @@ void DownloadExtractThread::extractImageRun()
 
         if (_writeThreadStarted)
             _writeFuture.waitForFinished();
-        _writeComplete();
+        /* A cancelled download ends the archive early, which reads like the
+           end of the image: finishing it would verify and customize a device
+           that the cancel has already closed */
+        if (!_cancelled)
+            _writeComplete();
     }
     catch (exception &e)
     {
