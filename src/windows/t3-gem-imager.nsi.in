@@ -726,6 +726,7 @@ File "deploy\tls\qschannelbackend.dll"
 ; application when it finds the driver missing at flash time
 SetOutPath "$INSTDIR"
 File "deploy\wdi-simple.exe"
+File "deploy\remove-dfu-driver.ps1"
 
 SectionEnd
 
@@ -741,6 +742,12 @@ SectionEnd
 ; Only DFU needs this - writing an SD card goes through raw disk access - so
 ; the section is optional, and unselecting it leaves the machine untouched.
 Section "DFU driver (USB flashing)" SEC_DFU_DRIVER
+
+; Every wdi-simple run adds another copy to the driver store: remove the
+; ones earlier installs left first
+DetailPrint "Removing the WinUSB driver earlier installs left..."
+nsExec::ExecToLog 'powershell -NoProfile -ExecutionPolicy Bypass -File "$INSTDIR\remove-dfu-driver.ps1"'
+Pop $0
 
 DetailPrint "Installing the WinUSB driver for the T3 Gemstone DFU interface..."
 ; -v/-p: the board's DFU VID/PID, shared by its ROM, SPL and U-Boot stages
@@ -816,6 +823,12 @@ SectionEnd
 
 Section Uninstall
 ${INSTALL_TYPE}
+; The driver package and certificate wdi-simple installed outlive its files
+${If} ${FileExists} "$INSTDIR\remove-dfu-driver.ps1"
+  nsExec::ExecToLog 'powershell -NoProfile -ExecutionPolicy Bypass -File "$INSTDIR\remove-dfu-driver.ps1"'
+  Pop $0
+${EndIf}
+Delete "$INSTDIR\remove-dfu-driver.ps1"
 Delete "$INSTDIR\D3Dcompiler_47.dll"
 Delete "$INSTDIR\opengl32sw.dll"
 Delete "$INSTDIR\libssl-1_1.dll"

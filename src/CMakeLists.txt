@@ -410,6 +410,7 @@ if (WIN32)
         COMMAND ${CMAKE_COMMAND} -E copy
             "${CMAKE_BINARY_DIR}/${PROJECT_NAME}.exe" "${CMAKE_BINARY_DIR}/dependencies/fat32format/fat32format.exe"
             "${CMAKE_SOURCE_DIR}/../license.txt" "${CMAKE_SOURCE_DIR}/windows/t3-gem-imager-cli.cmd"
+            "${CMAKE_SOURCE_DIR}/windows/remove-dfu-driver.ps1"
             "${CMAKE_BINARY_DIR}/deploy")
     
     configure_file(
