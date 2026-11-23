@@ -780,13 +780,13 @@
     <message>
         <location filename="../main.qml" line="122"/>
         <location filename="../main.qml" line="453"/>
-        <source>Gemstone Board</source>
-        <translation>Plošča Gemstone</translation>
+        <source>Board</source>
+        <translation>Plošča</translation>
     </message>
     <message>
         <location filename="../main.qml" line="146"/>
-        <source>Select this button to choose your target Gemstone Board</source>
-        <translation>Izberite ta gumb za izbiro ciljne plošče Gemstone</translation>
+        <source>Select this button to choose your target board</source>
+        <translation>Izberite ta gumb za izbiro ciljne plošče</translation>
     </message>
     <message>
         <location filename="../main.qml" line="222"/>

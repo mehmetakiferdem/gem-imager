@@ -119,7 +119,7 @@ ApplicationWindow {
                     Text {
                         id: text0
                         color: "#ffffff"
-                        text: qsTr("Gemstone Board")
+                        text: qsTr("Board")
                         Layout.fillWidth: true
                         Layout.preferredHeight: 17
                         Layout.preferredWidth: 100
@@ -143,7 +143,7 @@ ApplicationWindow {
                             hwlist.forceActiveFocus()
                         }
                         Accessible.ignored: ospopup.visible || dstpopup.visible || hwpopup.visible
-                        Accessible.description: qsTr("Select this button to choose your target Gemstone Board")
+                        Accessible.description: qsTr("Select this button to choose your target board")
                     }
                 }
 
@@ -450,7 +450,7 @@ ApplicationWindow {
             width: parent.width
 
             Text {
-                text: qsTr("Gemstone Board")
+                text: qsTr("Board")
                 horizontalAlignment: Text.AlignHCenter
                 anchors.fill: parent
                 anchors.topMargin: 10

@@ -861,13 +861,13 @@
     <message>
         <location filename="../main.qml" line="122"/>
         <location filename="../main.qml" line="453"/>
-        <source>Gemstone Board</source>
-        <translation>Gemstone 보드</translation>
+        <source>Board</source>
+        <translation>보드</translation>
     </message>
     <message>
         <location filename="../main.qml" line="146"/>
-        <source>Select this button to choose your target Gemstone Board</source>
-        <translation>이 버튼을 선택하여 대상 Gemstone 보드를 선택하세요</translation>
+        <source>Select this button to choose your target board</source>
+        <translation>이 버튼을 선택하여 대상 보드를 선택하세요</translation>
     </message>
     <message>
         <location filename="../main.qml" line="497"/>

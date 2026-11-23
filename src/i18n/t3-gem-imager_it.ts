@@ -810,13 +810,13 @@ Aggiungi sia &apos;t3-gem-imager.exe&apos; che &apos;fat32format.exe&apos; all&a
     <message>
         <location filename="../main.qml" line="122"/>
         <location filename="../main.qml" line="453"/>
-        <source>Gemstone Board</source>
-        <translation>Scheda Gemstone</translation>
+        <source>Board</source>
+        <translation>Scheda</translation>
     </message>
     <message>
         <location filename="../main.qml" line="146"/>
-        <source>Select this button to choose your target Gemstone Board</source>
-        <translation>Seleziona questo pulsante per scegliere la tua scheda Gemstone di destinazione</translation>
+        <source>Select this button to choose your target board</source>
+        <translation>Seleziona questo pulsante per scegliere la tua scheda di destinazione</translation>
     </message>
     <message>
         <location filename="../main.qml" line="497"/>

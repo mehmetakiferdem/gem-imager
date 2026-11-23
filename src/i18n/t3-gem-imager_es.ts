@@ -726,13 +726,13 @@
     <message>
         <location filename="../main.qml" line="122"/>
         <location filename="../main.qml" line="453"/>
-        <source>Gemstone Board</source>
-        <translation>Placa Gemstone</translation>
+        <source>Board</source>
+        <translation>Placa</translation>
     </message>
     <message>
         <location filename="../main.qml" line="146"/>
-        <source>Select this button to choose your target Gemstone Board</source>
-        <translation>Seleccione este botón para elegir su Gemstone Board de destino</translation>
+        <source>Select this button to choose your target board</source>
+        <translation>Seleccione este botón para elegir la placa de destino</translation>
     </message>
     <message>
         <location filename="../main.qml" line="222"/>

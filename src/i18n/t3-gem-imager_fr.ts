@@ -853,13 +853,13 @@
     <message>
         <location filename="../main.qml" line="122"/>
         <location filename="../main.qml" line="453"/>
-        <source>Gemstone Board</source>
-        <translation>Carte Gemstone</translation>
+        <source>Board</source>
+        <translation>Carte</translation>
     </message>
     <message>
         <location filename="../main.qml" line="146"/>
-        <source>Select this button to choose your target Gemstone Board</source>
-        <translation>Sélectionnez ce bouton pour choisir votre carte Gemstone cible</translation>
+        <source>Select this button to choose your target board</source>
+        <translation>Sélectionnez ce bouton pour choisir votre carte cible</translation>
     </message>
     <message>
         <location filename="../main.qml" line="497"/>

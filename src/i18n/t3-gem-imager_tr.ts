@@ -793,13 +793,13 @@
     <message>
         <location filename="../main.qml" line="122"/>
         <location filename="../main.qml" line="453"/>
-        <source>Gemstone Board</source>
-        <translation>Gemstone Kart</translation>
+        <source>Board</source>
+        <translation>Kart</translation>
     </message>
     <message>
         <location filename="../main.qml" line="146"/>
-        <source>Select this button to choose your target Gemstone Board</source>
-        <translation>Hedef Gemstone Kartı seçmek için bu butonu seçin</translation>
+        <source>Select this button to choose your target board</source>
+        <translation>Hedef kartı seçmek için bu butonu seçin</translation>
     </message>
     <message>
         <location filename="../main.qml" line="222"/>

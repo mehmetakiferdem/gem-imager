@@ -869,13 +869,13 @@
     <message>
         <location filename="../main.qml" line="122"/>
         <location filename="../main.qml" line="453"/>
-        <source>Gemstone Board</source>
-        <translation>Gemstone Board</translation>
+        <source>Board</source>
+        <translation>Board</translation>
     </message>
     <message>
         <location filename="../main.qml" line="146"/>
-        <source>Select this button to choose your target Gemstone Board</source>
-        <translation>Selecteer deze knop om uw doel-Gemstone Board te kiezen</translation>
+        <source>Select this button to choose your target board</source>
+        <translation>Selecteer deze knop om uw doelboard te kiezen</translation>
     </message>
     <message>
         <location filename="../main.qml" line="497"/>

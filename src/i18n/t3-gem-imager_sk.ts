@@ -831,13 +831,13 @@
     <message>
         <location filename="../main.qml" line="122"/>
         <location filename="../main.qml" line="453"/>
-        <source>Gemstone Board</source>
-        <translation>Doska Gemstone</translation>
+        <source>Board</source>
+        <translation>Doska</translation>
     </message>
     <message>
         <location filename="../main.qml" line="146"/>
-        <source>Select this button to choose your target Gemstone Board</source>
-        <translation>Vyberte toto tlačidlo na výber cieľovej dosky Gemstone</translation>
+        <source>Select this button to choose your target board</source>
+        <translation>Vyberte toto tlačidlo na výber cieľovej dosky</translation>
     </message>
     <message>
         <location filename="../main.qml" line="320"/>

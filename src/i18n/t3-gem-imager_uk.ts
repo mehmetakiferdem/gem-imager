@@ -817,13 +817,13 @@
     <message>
         <location filename="../main.qml" line="122"/>
         <location filename="../main.qml" line="453"/>
-        <source>Gemstone Board</source>
-        <translation>Плата Gemstone</translation>
+        <source>Board</source>
+        <translation>Плата</translation>
     </message>
     <message>
         <location filename="../main.qml" line="146"/>
-        <source>Select this button to choose your target Gemstone Board</source>
-        <translation>Виберіть цю кнопку, щоб вибрати цільову плату Gemstone</translation>
+        <source>Select this button to choose your target board</source>
+        <translation>Виберіть цю кнопку, щоб вибрати цільову плату</translation>
     </message>
     <message>
         <location filename="../main.qml" line="497"/>

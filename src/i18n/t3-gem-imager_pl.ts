@@ -866,13 +866,13 @@
     <message>
         <location filename="../main.qml" line="122"/>
         <location filename="../main.qml" line="453"/>
-        <source>Gemstone Board</source>
-        <translation>Płytka Gemstone</translation>
+        <source>Board</source>
+        <translation>Płytka</translation>
     </message>
     <message>
         <location filename="../main.qml" line="146"/>
-        <source>Select this button to choose your target Gemstone Board</source>
-        <translation>Wybierz ten przycisk, aby wybrać docelowy Gemstone Board</translation>
+        <source>Select this button to choose your target board</source>
+        <translation>Wybierz ten przycisk, aby wybrać docelową płytkę</translation>
     </message>
     <message>
         <location filename="../main.qml" line="497"/>

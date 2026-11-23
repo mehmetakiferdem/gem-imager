@@ -730,13 +730,13 @@
     <message>
         <location filename="../main.qml" line="122"/>
         <location filename="../main.qml" line="453"/>
-        <source>Gemstone Board</source>
-        <translation>לוח Gemstone</translation>
+        <source>Board</source>
+        <translation>לוח</translation>
     </message>
     <message>
         <location filename="../main.qml" line="146"/>
-        <source>Select this button to choose your target Gemstone Board</source>
-        <translation>בחר כפתור זה לבחירת לוח Gemstone היעד שלך</translation>
+        <source>Select this button to choose your target board</source>
+        <translation>בחר כפתור זה לבחירת לוח היעד שלך</translation>
     </message>
     <message>
         <location filename="../main.qml" line="222"/>
