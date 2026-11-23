@@ -1441,9 +1441,12 @@ ApplicationWindow {
             if (isDfuMode) {
                 cancelwritebutton.enabled = true
                 cancelwritebutton.visible = true
-                cancelverifybutton.enabled = false
+                cancelverifybutton.enabled = true
                 dfuOwnsProgress = false
         progressText.text = qsTr("Starting DFU operation...");
+                // Read the image back over mass storage, as for an SD card;
+                // otherwise it depended on whether one was written before
+                imageWriter.setVerifyEnabled(true)
                 imageWriter.startDfu()
             } else {
                 if (!imageWriter.readyToWrite()) {
@@ -1602,8 +1605,10 @@ ApplicationWindow {
         progressText.text = statusMsg + "  (" + percentage + "%)"
         // From 95% on the image is fully sent and the device is flushing it
         // to eMMC on its own; cancelling can no longer have any effect
-        if (percentage >= 95)
+        if (percentage >= 95) {
             cancelwritebutton.enabled = false
+            cancelverifybutton.enabled = false
+        }
     }
 
     function onDfuAuthRequired() {
