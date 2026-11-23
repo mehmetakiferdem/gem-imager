@@ -7,11 +7,18 @@
 
 $deviceId = "VID_0451&PID_6165"
 
+# The installer is 32-bit and so is the PowerShell it starts, which does not
+# see pnputil in System32: reach the 64-bit one through Sysnative
+$pnputil = "$env:windir\Sysnative\pnputil.exe"
+if (-not (Test-Path $pnputil)) {
+    $pnputil = "$env:windir\System32\pnputil.exe"
+}
+
 Get-ChildItem "$env:windir\INF\oem*.inf" -ErrorAction SilentlyContinue | ForEach-Object {
     $inf = Get-Content $_.FullName -Raw -ErrorAction SilentlyContinue
     if ($inf -match 'Provider\s*=\s*"libwdi"' -and $inf.Contains($deviceId)) {
         Write-Output "Removing driver package $($_.Name)"
-        pnputil /delete-driver $_.Name /uninstall /force | Out-Null
+        & $pnputil /delete-driver $_.Name /uninstall /force | Out-Null
     }
 }
 
