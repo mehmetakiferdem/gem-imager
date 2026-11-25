@@ -224,7 +224,7 @@ bool DownloadThread::_openAndPrepareDevice()
            Disk Access; "Removable Volumes" covers files on a mounted volume and
            is not enough. The pane this used to open was therefore the wrong one,
            and granting what it asked for changed nothing. */
-        msg += "<br>"+tr("Give 'Gemstone Imager' <b>Full Disk Access</b> in Privacy & Security, then quit and reopen the application - macOS only reads the permission at startup.");
+        msg += "<br>"+tr("Give 'T3 Gemstone Imager' <b>Full Disk Access</b> in Privacy & Security, then quit and reopen the application - macOS only reads the permission at startup.");
         QStringList args("x-apple.systempreferences:com.apple.preference.security?Privacy_AllFiles");
         QProcess::execute("open", args);
         emit error(msg);
@@ -681,7 +681,7 @@ void DownloadThread::_onWriteError()
                            QSettings::Registry64Format);
         if (registry.value("EnableControlledFolderAccess").toInt() == 1)
         {
-            msg += "<br>"+tr("Controlled Folder Access seems to be enabled. Please add both gem-imager.exe and fat32format.exe to the list of allowed apps and try again.");
+            msg += "<br>"+tr("Controlled Folder Access seems to be enabled. Please add both t3-gem-imager.exe and fat32format.exe to the list of allowed apps and try again.");
         }
         _onDownloadError(msg);
     }
