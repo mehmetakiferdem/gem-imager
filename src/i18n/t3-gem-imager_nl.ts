@@ -1,122 +1,122 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="ko_KR">
+<TS version="2.1" language="nl_NL">
 <context>
     <name>DfuThread</name>
     <message>
         <location filename="../dfuthread.cpp" line="49"/>
         <source>Failed to create temporary file for DFU image</source>
-        <translation>DFU 이미지에 대한 임시 파일을 생성하지 못했습니다.</translation>
+        <translation>Kan tijdelijk bestand voor DFU-image niet maken</translation>
     </message>
     <message>
         <location filename="../dfuthread.cpp" line="59"/>
         <source>Failed to open temporary file for DFU image</source>
-        <translation>DFU 이미지의 임시 파일을 열지 못했습니다.</translation>
+        <translation>Kan tijdelijk bestand voor DFU-image niet openen</translation>
     </message>
     <message>
         <location filename="../dfuthread.cpp" line="68"/>
         <source>Initializing DFU...</source>
-        <translation>DFU 초기화 중...</translation>
+        <translation>DFU initialiseren...</translation>
     </message>
     <message>
         <location filename="../dfuthread.cpp" line="71"/>
         <source>DFU mode requires an image URL</source>
-        <translation>DFU 모드에는 이미지 URL이 필요합니다</translation>
+        <translation>Voor de DFU-modus is een afbeeldings-URL vereist</translation>
     </message>
     <message>
         <location filename="../dfuthread.cpp" line="75"/>
         <source>Downloading image...</source>
-        <translation>이미지 다운로드 중...</translation>
+        <translation>Afbeelding downloaden...</translation>
     </message>
     <message>
         <location filename="../dfuthread.cpp" line="81"/>
         <source>Customizing image...</source>
-        <translation>이미지 맞춤설정 중...</translation>
+        <translation>Afbeelding aanpassen...</translation>
     </message>
     <message>
         <location filename="../dfuthread.cpp" line="85"/>
         <source>Failed to reopen image for customization: %1</source>
-        <translation>맞춤설정을 위해 이미지를 다시 열지 못했습니다: %1</translation>
+        <translation>Kan afbeelding niet opnieuw openen voor aanpassing: %1</translation>
     </message>
     <message>
         <location filename="../dfuthread.cpp" line="92"/>
         <source>Extracting bootloader files from image...</source>
-        <translation>이미지에서 부트로더 파일을 추출하는 중...</translation>
+        <translation>Bootloader-bestanden uit de afbeelding extraheren...</translation>
     </message>
     <message>
         <location filename="../dfuthread.cpp" line="95"/>
         <source>Sending bootloader files...</source>
-        <translation>부트로더 파일을 보내는 중...</translation>
+        <translation>Bootloader-bestanden verzenden...</translation>
     </message>
     <message>
         <location filename="../dfuthread.cpp" line="98"/>
         <source>Waiting for device to enter DFU mode...</source>
-        <translation>기기가 DFU 모드로 전환되기를 기다리는 중...</translation>
+        <translation>Wachten tot het apparaat naar de DFU-modus gaat...</translation>
     </message>
     <message>
         <location filename="../dfuthread.cpp" line="101"/>
         <source>Sending image to device (this may take several minutes)...</source>
-        <translation>이미지를 기기로 보내는 중(몇 분 정도 걸릴 수 있음)...</translation>
+        <translation>Beeld naar apparaat verzenden (dit kan enkele minuten duren)...</translation>
     </message>
     <message>
         <location filename="../dfuthread.cpp" line="104"/>
         <source>Writing boot binaries to eMMC (do not power off)...</source>
-        <translation>eMMC에 부팅 바이너리를 쓰는 중(전원을 끄지 않음)...</translation>
+        <translation>Opstartbinaire bestanden naar eMMC schrijven (niet uitschakelen)...</translation>
     </message>
     <message>
         <location filename="../dfuthread.cpp" line="107"/>
         <source>System image sent successfully!</source>
-        <translation>시스템 이미지가 성공적으로 전송되었습니다!</translation>
+        <translation>Systeemimage succesvol verzonden!</translation>
     </message>
     <message>
         <location filename="../dfuthread.cpp" line="123"/>
         <source>DFU failed (alt: %1): %2</source>
-        <translation>DFU 실패(대체: %1): %2</translation>
+        <translation>DFU mislukt (alt: %1): %2</translation>
     </message>
     <message>
         <location filename="../dfuthread.cpp" line="139"/>
         <source>Sending %1...</source>
-        <translation>%1 보내는 중...</translation>
+        <translation>%1 wordt verzonden...</translation>
     </message>
     <message>
         <location filename="../dfuthread.cpp" line="142"/>
         <source>%1 sent</source>
-        <translation>%1 보냄</translation>
+        <translation>%1 verzonden</translation>
     </message>
     <message>
         <location filename="../dfuthread.cpp" line="145"/>
         <source>Waiting for device to reconnect...</source>
-        <translation>기기가 다시 연결되기를 기다리는 중...</translation>
+        <translation>Wachten tot het apparaat opnieuw verbinding maakt...</translation>
     </message>
     <message>
         <location filename="../dfuthread.cpp" line="162"/>
         <source>Failed to reopen image file: %1</source>
-        <translation>이미지 파일을 다시 열지 못했습니다: %1</translation>
+        <translation>Kan afbeeldingsbestand niet opnieuw openen: %1</translation>
     </message>
     <message>
         <location filename="../dfuthread.cpp" line="174"/>
         <source>Bootloader file not found in image: %1</source>
-        <translation>이미지에서 부트로더 파일을 찾을 수 없습니다: %1</translation>
+        <translation>Bootloaderbestand niet gevonden in afbeelding: %1</translation>
     </message>
     <message>
         <location filename="../dfuthread.cpp" line="185"/>
         <source>Failed to create temp file for %1</source>
-        <translation>%1에 대한 임시 파일을 생성하지 못했습니다.</translation>
+        <translation>Kan tijdelijk bestand voor %1 niet maken</translation>
     </message>
     <message>
         <location filename="../dfuthread.cpp" line="190"/>
         <source>Failed to write temp file for %1</source>
-        <translation>%1에 대한 임시 파일을 쓰지 못했습니다.</translation>
+        <translation>Kan tijdelijk bestand voor %1 niet schrijven</translation>
     </message>
     <message>
         <location filename="../dfuthread.cpp" line="199"/>
         <source>Error reading bootloader files from image: %1</source>
-        <translation>이미지에서 부트로더 파일을 읽는 중 오류 발생: %1</translation>
+        <translation>Fout bij het lezen van bootloaderbestanden van afbeelding: %1</translation>
     </message>
     <message>
         <location filename="../dfuthread.cpp" line="209"/>
         <source>Image not found: %1</source>
-        <translation>이미지를 찾을 수 없습니다: %1</translation>
+        <translation>Afbeelding niet gevonden: %1</translation>
     </message>
 </context>
 <context>
@@ -125,26 +125,26 @@
         <location filename="../downloadextractthread.cpp" line="206"/>
         <location filename="../downloadextractthread.cpp" line="400"/>
         <source>Error extracting archive: %1</source>
-        <translation>보관 파일 추출 오류: %1</translation>
+        <translation>Fout bij uitpakken archiefbestand: %1</translation>
     </message>
     <message>
         <location filename="../downloadextractthread.cpp" line="271"/>
         <source>Error mounting FAT32 partition</source>
-        <translation>FAT32 파티션 마운트 오류</translation>
+        <translation>Fout bij mounten FAT32 partitie</translation>
     </message>
     <message>
         <location filename="../downloadextractthread.cpp" line="291"/>
         <source>Operating system did not mount FAT32 partition</source>
-        <translation>운영 체제에서 FAT32 파티션을 마운트하지 않음</translation>
+        <translation>Besturingssysteem heeft FAT32 partitie niet gemount</translation>
     </message>
     <message>
         <location filename="../downloadextractthread.cpp" line="314"/>
         <source>Error changing to directory &apos;%1&apos;</source>
-        <translation>디렉토리 변경 오류 &apos;%1&apos;</translation>
+        <translation>Fout bij openen map &apos;%1&apos;</translation>
     </message>
     <message>
         <source>Error writing to storage</source>
-        <translation type="vanished">저장소에 쓰는 중 오류 발생</translation>
+        <translation type="vanished">Fout bij schrijven naar opslag</translation>
     </message>
 </context>
 <context>
@@ -152,164 +152,164 @@
     <message>
         <location filename="../downloadthread.cpp" line="119"/>
         <source>unmounting drive</source>
-        <translation>드라이브 마운트 해제</translation>
+        <translation>unmounten van schijf</translation>
     </message>
     <message>
         <location filename="../downloadthread.cpp" line="139"/>
         <source>opening drive</source>
-        <translation>드라이브 열기</translation>
+        <translation>openen van opslag</translation>
     </message>
     <message>
         <location filename="../downloadthread.cpp" line="167"/>
         <source>Error running diskpart: %1</source>
-        <translation>디스크 파트를 실행하는 동안 오류 발생 : %1</translation>
+        <translation>Fout bij uitvoeren diskpart: %1</translation>
     </message>
     <message>
         <location filename="../downloadthread.cpp" line="188"/>
         <source>Error removing existing partitions</source>
-        <translation>기존 파티션 제거 오류</translation>
+        <translation>Fout bij verwijderen bestaande partities</translation>
     </message>
     <message>
         <location filename="../downloadthread.cpp" line="214"/>
         <source>Authentication cancelled</source>
-        <translation>인증 취소됨</translation>
+        <translation>Authenticatie geannuleerd</translation>
     </message>
     <message>
         <location filename="../downloadthread.cpp" line="217"/>
         <source>Error running authopen to gain access to disk device &apos;%1&apos;</source>
-        <translation>디스크 디바이스에 대한 액세스 권한을 얻기 위해 authopen을 실행하는 중 오류 발생 &apos;%1&apos;</translation>
+        <translation>Fout bij uitvoeren authopen: &apos;%1&apos;</translation>
     </message>
     <message>
         <source>Please verify if &apos;Raspberry Pi Imager&apos; is allowed access to &apos;removable volumes&apos; in privacy settings (under &apos;files and folders&apos; or alternatively give it &apos;full disk access&apos;).</source>
-        <translation type="vanished">&apos;Raspberry Pi Imager&apos;가 개인 정보 설정(&apos;파일 및 폴더&apos;에서 또는 &apos;전체 디스크 액세스&apos;를 부여)에서 &apos;제거 가능한 볼륨&apos;에 액세스할 수 있는지 확인하세요.</translation>
+        <translation type="vanished">Gelieve te controlleren of &apos;Raspberry Pi Imager&apos; toegang heeft tot &apos;verwijderbare volumes&apos; in de privacy instellingen (onder &apos;bestanden en mappen&apos; of anders via &apos;volledige schijftoegang&apos;).</translation>
     </message>
     <message>
         <location filename="../downloadthread.cpp" line="218"/>
-        <source>Please verify if &apos;Gemstone Imager&apos; is allowed access to &apos;removable volumes&apos; in privacy settings (under &apos;files and folders&apos; or alternatively give it &apos;full disk access&apos;).</source>
-        <translation>&apos;Gemstone Imager&apos;가 개인 정보 설정(&apos;파일 및 폴더&apos; 또는 &apos;전체 디스크 액세스&apos; 부여)에서 &apos;이동식 볼륨&apos;에 액세스할 수 있는지 확인하세요.</translation>
+        <source>Please verify if &apos;T3 Gemstone Imager&apos; is allowed access to &apos;removable volumes&apos; in privacy settings (under &apos;files and folders&apos; or alternatively give it &apos;full disk access&apos;).</source>
+        <translation>Controleer of &apos;T3 Gemstone Imager&apos; toegang heeft tot &apos;verwisselbare volumes&apos; in de privacyinstellingen (onder &apos;bestanden en mappen&apos; of geef het &apos;volledige schijftoegang&apos;).</translation>
     </message>
     <message>
         <location filename="../downloadthread.cpp" line="240"/>
         <source>Cannot open storage device &apos;%1&apos;.</source>
-        <translation>저장 장치를 열 수 없습니다 &apos;%1&apos;.</translation>
+        <translation>Fout bij openen opslagapparaat &apos;%1&apos;.</translation>
     </message>
     <message>
         <location filename="../downloadthread.cpp" line="282"/>
         <source>discarding existing data on drive</source>
-        <translation>드라이브의 기존 데이터 삭제</translation>
+        <translation>wissen bestaande gegevens</translation>
     </message>
     <message>
         <location filename="../downloadthread.cpp" line="304"/>
         <source>zeroing out first and last MB of drive</source>
-        <translation>드라이브의 처음과 마지막 MB를 비웁니다.</translation>
+        <translation>wissen eerste en laatste MB van opslag</translation>
     </message>
     <message>
         <location filename="../downloadthread.cpp" line="310"/>
         <source>Write error while zero&apos;ing out MBR</source>
-        <translation>MBR을 zero&apos;ing out 하는 동안 쓰기 오류 발생 </translation>
+        <translation>Fout bij wissen MBR</translation>
     </message>
     <message>
         <location filename="../downloadthread.cpp" line="322"/>
         <source>Write error while trying to zero out last part of card.&lt;br&gt;Card could be advertising wrong capacity (possible counterfeit).</source>
-        <translation>SD card의 마지막 부분을 비워내는 동안 오류가 발생했습니다.&lt;br&gt;카드가 잘못된 용량을 표기하고 있을 수 있습니다(위조 품목).</translation>
+        <translation>Fout bij wissen laatste deel van de SD kaart.&lt;br&gt;Kaart geeft mogelijk onjuiste capaciteit aan (mogelijk counterfeit).</translation>
     </message>
     <message>
         <location filename="../downloadthread.cpp" line="412"/>
         <source>starting download</source>
-        <translation>다운로드 시작</translation>
+        <translation>beginnen met downloaden</translation>
     </message>
     <message>
         <location filename="../downloadthread.cpp" line="472"/>
         <source>Error downloading: %1</source>
-        <translation>다운로드 중 오류: %1</translation>
+        <translation>Fout bij downloaden: %1</translation>
     </message>
     <message>
         <location filename="../downloadthread.cpp" line="669"/>
         <source>Access denied error while writing file to disk.</source>
-        <translation>디스크에 파일을 쓰는 동안 액세스 거부 오류가 발생했습니다.</translation>
+        <translation>Toegang geweigerd bij het schrijven naar opslag.</translation>
     </message>
     <message>
         <location filename="../downloadthread.cpp" line="674"/>
-        <source>Controlled Folder Access seems to be enabled. Please add both gem-imager.exe and fat32format.exe to the list of allowed apps and try again.</source>
-        <translation>제어된 폴더 액세스가 설정된 것 같습니다. gem-imager.exe 및 fat32format.exe를 허용된 앱 리스트에서 추가하고 다시 시도하십시오.</translation>
+        <source>Controlled Folder Access seems to be enabled. Please add both t3-gem-imager.exe and fat32format.exe to the list of allowed apps and try again.</source>
+        <translation>Controller Folder Access lijkt aan te staan. Gelieve zowel t3-gem-imager.exe als fat32format.exe toe te voegen aan de lijst met uitsluitingen en het nogmaals te proberen.</translation>
     </message>
     <message>
         <location filename="../downloadthread.cpp" line="681"/>
         <source>Error writing file to disk</source>
-        <translation>디스크에 파일 쓰기 오류</translation>
+        <translation>Fout bij schrijven naar opslag</translation>
     </message>
     <message>
         <location filename="../downloadthread.cpp" line="703"/>
         <source>Download corrupt. Hash does not match</source>
-        <translation>다운로드가 손상되었습니다. 해시가 일치하지 않습니다.</translation>
+        <translation>Download corrupt. Hash komt niet overeen</translation>
     </message>
     <message>
         <location filename="../downloadthread.cpp" line="715"/>
         <location filename="../downloadthread.cpp" line="767"/>
         <source>Error writing to storage (while flushing)</source>
-        <translation>저장소에 쓰는 중 오류 발생(flushing..)</translation>
+        <translation>Fout bij schrijven naar opslag (tijdens flushen)</translation>
     </message>
     <message>
         <location filename="../downloadthread.cpp" line="722"/>
         <location filename="../downloadthread.cpp" line="774"/>
         <source>Error writing to storage (while fsync)</source>
-        <translation>스토리지에 쓰는 중 오류 발생(fsync..)</translation>
+        <translation>Fout bij schrijven naar opslag (tijdens fsync)</translation>
     </message>
     <message>
         <location filename="../downloadthread.cpp" line="757"/>
         <source>Error writing first block (partition table)</source>
-        <translation>첫 번째 블록을 쓰는 중 오류 발생 (파티션 테이블)</translation>
+        <translation>Fout bij schrijven naar eerste deel van kaart (partitie tabel)</translation>
     </message>
     <message>
         <location filename="../downloadthread.cpp" line="834"/>
         <source>Error reading from storage.&lt;br&gt;SD card may be broken.</source>
-        <translation>저장소에서 읽는 동안 오류가 발생했습니다.&lt;br&gt;SD 카드가 고장 났을 수 있습니다.</translation>
+        <translation>Fout bij lezen van SD kaart.&lt;br&gt;Kaart is mogelijk defect.</translation>
     </message>
     <message>
         <location filename="../downloadthread.cpp" line="853"/>
         <source>Verifying write failed. Contents of SD card is different from what was written to it.</source>
-        <translation>쓰기를 확인하지 못했습니다. SD카드 내용과 쓰인 내용이 다릅니다.</translation>
+        <translation>Verificatie mislukt. De gegevens die op de SD kaart staan wijken af van wat er naar geschreven is.</translation>
     </message>
     <message>
         <location filename="../downloadthread.cpp" line="908"/>
         <source>Customizing image</source>
-        <translation>이미지 사용자 정의</translation>
+        <translation>Bezig met aanpassen besturingssysteem</translation>
     </message>
     <message>
         <source>Waiting for FAT partition to be mounted</source>
-        <translation type="vanished">FAT 파티션이 마운트되기를 기다리는 중</translation>
+        <translation type="vanished">Wachten op mounten FAT partitie</translation>
     </message>
     <message>
         <source>Error mounting FAT32 partition</source>
-        <translation type="vanished">FAT32 파티션 마운트 오류</translation>
+        <translation type="vanished">Fout bij mounten FAT32 partitie</translation>
     </message>
     <message>
         <source>Operating system did not mount FAT32 partition</source>
-        <translation type="vanished">운영 체제 FAT32 파티션이 마운트되지 않았습니다.</translation>
+        <translation type="vanished">Besturingssysteem heeft FAT32 partitie niet gemount</translation>
     </message>
     <message>
         <source>Unable to customize. File &apos;%1&apos; does not exist.</source>
-        <translation type="vanished">지정할 수 없습니다. 파일이 &apos;%1&apos; 존재하지 않습니다.</translation>
+        <translation type="vanished">Fout bij aanpassen besturingssysteem. Bestand &apos;%1&apos; bestaat niet.</translation>
     </message>
     <message>
         <source>Error creating firstrun.sh on FAT partition</source>
-        <translation type="vanished">FAT 파티션에 firstrun.sh을 만드는 동안 오류 발생</translation>
+        <translation type="vanished">Fout bij het aanmaken van firstrun.sh op FAT partitie</translation>
     </message>
     <message>
         <source>Error writing to config.txt on FAT partition</source>
-        <translation type="vanished">FAT 파티션에 config.txt 쓰던 중 오류 발생</translation>
+        <translation type="vanished">Fout bij schrijven naar config.txt op FAT partitie</translation>
     </message>
     <message>
         <source>Error creating user-data cloudinit file on FAT partition</source>
-        <translation type="vanished">FAT 파티션에 사용자 데이터 cloudinit 파일을 만드는 중 오류 발생</translation>
+        <translation type="vanished">Fout bij aanmaken user-data cloudinit bestand op FAT partitie</translation>
     </message>
     <message>
         <source>Error creating network-config cloudinit file on FAT partition</source>
-        <translation type="vanished">FAT 파티션에 네트워크 구성 cloudinit 파일을 생성하는 중 오류 발생</translation>
+        <translation type="vanished">Fout bij aanmaken network-config cloudinit bestand op FAT paritie</translation>
     </message>
     <message>
         <source>Error writing to cmdline.txt on FAT partition</source>
-        <translation type="vanished">FAT 파티션에 cmdline.txt 쓰던 중 오류 발생</translation>
+        <translation type="vanished">Fout bij schrijven cmdline.txt op FAT partitie</translation>
     </message>
 </context>
 <context>
@@ -319,57 +319,57 @@
         <location filename="../driveformatthread.cpp" line="124"/>
         <location filename="../driveformatthread.cpp" line="185"/>
         <source>Error partitioning: %1</source>
-        <translation>분할 오류: %1</translation>
+        <translation>Fout bij partitioneren: %1</translation>
     </message>
     <message>
         <location filename="../driveformatthread.cpp" line="84"/>
         <source>Error starting fat32format</source>
-        <translation>시작 오류 fat32format</translation>
+        <translation>Fout bij starten fat32format</translation>
     </message>
     <message>
         <location filename="../driveformatthread.cpp" line="94"/>
         <source>Error running fat32format: %1</source>
-        <translation>실행 중 오류 fat32format: %1</translation>
+        <translation>Fout bij uitvoeren fat32format: %1</translation>
     </message>
     <message>
         <location filename="../driveformatthread.cpp" line="104"/>
         <source>Error determining new drive letter</source>
-        <translation>새 드라이브 문자 확인 오류</translation>
+        <translation>Fout bij vaststellen nieuwe letter van schijfstation</translation>
     </message>
     <message>
         <location filename="../driveformatthread.cpp" line="109"/>
         <source>Invalid device: %1</source>
-        <translation>유효하지 않는 디바이스: %1</translation>
+        <translation>Ongeldig device: %1</translation>
     </message>
     <message>
         <location filename="../driveformatthread.cpp" line="146"/>
         <source>Error formatting (through udisks2)</source>
-        <translation>포맷 오류 (udisks2 통해)</translation>
+        <translation>Fout bij formatteren (via udisks2)</translation>
     </message>
     <message>
         <location filename="../driveformatthread.cpp" line="174"/>
         <source>Error starting sfdisk</source>
-        <translation>시작 오류 sfdisk</translation>
+        <translation>Fout bij starten sfdisk</translation>
     </message>
     <message>
         <location filename="../driveformatthread.cpp" line="199"/>
         <source>Partitioning did not create expected FAT partition %1</source>
-        <translation>FAT partition %1을 분할하여 생성하지 못했습니다.</translation>
+        <translation>Partitionering heeft geen FAT partitie %1 aangemaakt</translation>
     </message>
     <message>
         <location filename="../driveformatthread.cpp" line="208"/>
         <source>Error starting mkfs.fat</source>
-        <translation>시작 오류 mkfs.fat</translation>
+        <translation>Fout bij starten mkfs.fat</translation>
     </message>
     <message>
         <location filename="../driveformatthread.cpp" line="218"/>
         <source>Error running mkfs.fat: %1</source>
-        <translation>실행 오류 mkfs.fat: %1</translation>
+        <translation>Fout bij uitvoeren mkfs.fat: %1</translation>
     </message>
     <message>
         <location filename="../driveformatthread.cpp" line="225"/>
         <source>Formatting not implemented for this platform</source>
-        <translation>이 플랫폼에 대해 포맷이 구현되지 않았습니다.</translation>
+        <translation>Formatteren is niet geimplementeerd op dit besturingssysteem</translation>
     </message>
 </context>
 <context>
@@ -377,47 +377,47 @@
     <message>
         <location filename="../imagewriter.cpp" line="313"/>
         <source>Storage capacity is not large enough.&lt;br&gt;Needs to be at least %1 GB.</source>
-        <translation>저장소 공간이 충분하지 않습니다.&lt;br&gt;최소 %1 GB 이상이어야 합니다.</translation>
+        <translation>Opslagcapaciteit niet groot genoeg.&lt;br&gt;Deze dient minimaal %1 GB te zijn.</translation>
     </message>
     <message>
         <location filename="../imagewriter.cpp" line="319"/>
         <source>Input file is not a valid disk image.&lt;br&gt;File size %1 bytes is not a multiple of 512 bytes.</source>
-        <translation>입력 파일이 올바른 디스크 이미지가 아닙니다.&lt;br&gt;파일사이즈 %1 바이트가 512바이트의 배수가 아닙니다.</translation>
+        <translation>Invoerbestand is geen disk image.&lt;br&gt;Bestandsgrootte %1 bytes is geen veelvoud van 512 bytes.</translation>
     </message>
     <message>
         <location filename="../imagewriter.cpp" line="777"/>
         <source>Downloading and writing image</source>
-        <translation>이미지 다운로드 및 쓰기</translation>
+        <translation>Downloaden en schrijven van image</translation>
     </message>
     <message>
         <location filename="../imagewriter.cpp" line="939"/>
         <source>DFU mode not selected</source>
-        <translation>DFU 모드가 선택되지 않았습니다</translation>
+        <translation>DFU-modus niet geselecteerd</translation>
     </message>
     <message>
         <location filename="../imagewriter.cpp" line="967"/>
         <source>Authentication failed or was cancelled.&lt;br&gt;DFU operation requires elevated privileges to access the USB device.</source>
-        <translation>인증에 실패했거나 취소되었습니다.&lt;br&gt;DFU 작업을 위해 USB 장치에 접근하려면 관리자 권한이 필요합니다.</translation>
+        <translation>Authenticatie mislukt of geannuleerd.&lt;br&gt;DFU-bewerking vereist verhoogde rechten voor toegang tot het USB-apparaat.</translation>
     </message>
     <message>
         <location filename="../imagewriter.cpp" line="1047"/>
         <source>Select image</source>
-        <translation>이미지 선택하기</translation>
+        <translation>Selecteer image</translation>
     </message>
     <message>
         <location filename="../imagewriter.cpp" line="1222"/>
         <source>Error synchronizing time. Trying again in 3 seconds</source>
-        <translation>시간 동기화 오류, 3초 후 다시 시도합니다.</translation>
+        <translation>Fout bij synchroniseren van tijd. Opnieuw proberen over 3 seconden</translation>
     </message>
     <message>
         <location filename="../imagewriter.cpp" line="1234"/>
         <source>STP is enabled on your Ethernet switch. Getting IP will take long time.</source>
-        <translation>STP가 이더넷 스위치에서 활성화되었습니다. IP를 얻는 데 시간이 오래 걸릴 수 있습니다.</translation>
+        <translation>STP is ingeschakeld op uw Ethernet-switch. Het ophalen van een IP-adres duurt lang.</translation>
     </message>
     <message>
         <location filename="../imagewriter.cpp" line="1486"/>
         <source>Would you like to prefill the wifi password from the system keychain?</source>
-        <translation>wifi password를 미리 입력하시겠습니까?</translation>
+        <translation>Wilt u het wifi wachtwoord van het systeem overnemen?</translation>
     </message>
 </context>
 <context>
@@ -425,12 +425,12 @@
     <message>
         <location filename="../localfileextractthread.cpp" line="34"/>
         <source>opening image file</source>
-        <translation>이미지 파일 열기</translation>
+        <translation>openen image</translation>
     </message>
     <message>
         <location filename="../localfileextractthread.cpp" line="39"/>
         <source>Error opening image file</source>
-        <translation>이미지 파일 열기 오류</translation>
+        <translation>Fout bij openen image bestand</translation>
     </message>
 </context>
 <context>
@@ -438,22 +438,22 @@
     <message>
         <location filename="../MsgPopup.qml" line="121"/>
         <source>NO</source>
-        <translation>아니요</translation>
+        <translation>Nee</translation>
     </message>
     <message>
         <location filename="../MsgPopup.qml" line="130"/>
         <source>YES</source>
-        <translation>예</translation>
+        <translation>Ja</translation>
     </message>
     <message>
         <location filename="../MsgPopup.qml" line="139"/>
         <source>CONTINUE</source>
-        <translation>계속</translation>
+        <translation>VERDER GAAN</translation>
     </message>
     <message>
         <location filename="../MsgPopup.qml" line="147"/>
         <source>QUIT</source>
-        <translation>나가기</translation>
+        <translation>AFSLUITEN</translation>
     </message>
 </context>
 <context>
@@ -461,65 +461,65 @@
     <message>
         <location filename="../OptionsPopup.qml" line="27"/>
         <source>OS Customization</source>
-        <translation>OS 커스터마이징</translation>
+        <translation>OS aanpassen</translation>
     </message>
     <message>
         <source>OS customization options</source>
-        <translation type="vanished">OS 커스터마이징 옵션</translation>
+        <translation type="vanished">OS aanpassingen</translation>
     </message>
     <message>
         <source>for this session only</source>
-        <translation type="vanished">이 세션에 한하여</translation>
+        <translation type="vanished">alleen voor deze sessie</translation>
     </message>
     <message>
         <source>to always use</source>
-        <translation type="vanished">항상 사용</translation>
+        <translation type="vanished">om altijd te gebruiken</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="61"/>
         <source>General</source>
-        <translation>일반</translation>
+        <translation>Algemeen</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="70"/>
         <source>Services</source>
-        <translation>서비스</translation>
+        <translation>Services</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="76"/>
         <source>Options</source>
-        <translation>옵션</translation>
+        <translation>Opties</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="110"/>
         <source>Set hostname:</source>
-        <translation>hostname 설정:</translation>
+        <translation>Hostnaam:</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="139"/>
         <source>Set username and password</source>
-        <translation>사용자 이름 및 비밀번호 설정</translation>
+        <translation>Gebruikersnaam en wachtwoord instellen</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="153"/>
         <source>Username:</source>
-        <translation>사용자 이름:</translation>
+        <translation>Gebruikersnaam:</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="179"/>
         <source>Password is required!</source>
-        <translation>비밀번호가 필요합니다!</translation>
+        <translation>Wachtwoord vereist!</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="187"/>
         <location filename="../OptionsPopup.qml" line="264"/>
         <source>Password:</source>
-        <translation>비밀번호:</translation>
+        <translation>Wachtwoord:</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="228"/>
         <source>Configure wireless LAN</source>
-        <translation>무선 LAN 설정</translation>
+        <translation>Wifi instellen</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="242"/>
@@ -529,158 +529,166 @@
     <message>
         <location filename="../OptionsPopup.qml" line="293"/>
         <source>Show password</source>
-        <translation>비밀번호 표시</translation>
+        <translation>Wachtwoord laten zien</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="304"/>
         <source>Hidden SSID</source>
-        <translation>숨겨진 SSID</translation>
+        <translation>Verborgen SSID</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="315"/>
         <source>Wireless LAN country:</source>
-        <translation>무선 LAN 국가:</translation>
+        <translation>Wifi land:</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="333"/>
         <source>Set locale settings</source>
-        <translation>로케일 설정 지정</translation>
+        <translation>Regio instellingen</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="337"/>
         <source>Time zone:</source>
-        <translation>시간대:</translation>
+        <translation>Tijdzone:</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="356"/>
         <source>Keyboard layout:</source>
-        <translation>키보드 레이아웃:</translation>
+        <translation>Toetsenbord indeling:</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="375"/>
         <source>Set Disk Encryption (Cryptsetup)</source>
-        <translation>디스크 암호화 설정 (Cryptsetup)</translation>
+        <translation>Schijfversleuteling instellen (Cryptsetup)</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="385"/>
         <source>Disk Password:</source>
-        <translation>디스크 비밀번호:</translation>
+        <translation>Schijfwachtwoord:</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="426"/>
         <source>Write sdcard&apos;s image to eMMC on first boot</source>
-        <translation>첫 부팅 시 SD카드 이미지를 eMMC에 쓰기</translation>
+        <translation>SD-kaartimage schrijven naar eMMC bij eerste start</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="451"/>
         <source>Enable SSH</source>
-        <translation>SSH 사용</translation>
+        <translation>SSH inschakelen</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="467"/>
         <source>Use password authentication</source>
-        <translation>비밀번호 인증 사용</translation>
+        <translation>Gebruik wachtwoord authenticatie</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="478"/>
         <source>Allow public-key authentication only</source>
-        <translation>공개 키만 인증 허용</translation>
+        <translation>Gebruik uitsluitend public-key authenticatie</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="489"/>
         <source>Set authorized_keys for &apos;%1&apos;:</source>
-        <translation>&apos;%1&apos; 인증키 설정:</translation>
+        <translation>authorized_keys voor &apos;%1&apos;:</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="533"/>
         <source>Delete Key</source>
-        <translation>키 삭제</translation>
+        <translation>Sleutel verwijderen</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="552"/>
         <source>RUN SSH-KEYGEN</source>
-        <translation>SSH-KEYGEN 실행</translation>
+        <translation>START SSH-KEYGEN</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="562"/>
         <source>Add SSH Key</source>
-        <translation>SSH 키 추가</translation>
+        <translation>SSH-sleutel toevoegen</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="578"/>
         <source>Enable VNC</source>
-        <translation>VNC 활성화</translation>
+        <translation>VNC inschakelen</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="583"/>
         <source>VNC Password is required!</source>
-        <translation>VNC 비밀번호가 필요합니다!</translation>
+        <translation>VNC-wachtwoord vereist!</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="591"/>
         <source>VNC Password:</source>
-        <translation>VNC 비밀번호:</translation>
+        <translation>VNC-wachtwoord:</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="610"/>
         <source>Gadgets</source>
-        <translation>가젯</translation>
+        <translation>Gadgets</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="616"/>
         <source>Enable Storage Gadget</source>
-        <translation>스토리지 가젯 활성화</translation>
+        <translation>Opslag-gadget inschakelen</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="622"/>
         <source>Enable Ethernet Gadget</source>
-        <translation>이더넷 가젯 활성화</translation>
+        <translation>Ethernet-gadget inschakelen</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="628"/>
         <source>Enable Serial Gadgets</source>
-        <translation>시리얼 가젯 활성화</translation>
+        <translation>Seriële gadgets inschakelen</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="653"/>
         <source>Play sound when finished</source>
-        <translation>완료되면 효과음으로 알림</translation>
+        <translation>Geluid afspelen zodra voltooid</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="657"/>
         <source>Eject media when finished</source>
-        <translation>완료되면 미디어 꺼내기</translation>
+        <translation>Media uitwerpen zodra voltooid</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="676"/>
         <source>Serial Port </source>
-        <translation>시리얼 포트 </translation>
+        <translation>Seriële poort </translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="708"/>
         <source>Ethernet </source>
-        <translation>이더넷 </translation>
+        <translation>Ethernet </translation>
     </message>
     <message>
         <source>Enable telemetry</source>
-        <translation type="vanished">이미지 다운로드 통계 관하여 정보 수집 허용</translation>
+        <translation type="vanished">Telemetry inschakelen</translation>
     </message>
     <message>
         <location filename="../OptionsPopup.qml" line="752"/>
         <source>SAVE</source>
-        <translation>저장</translation>
+        <translation>OPSLAAN</translation>
     </message>
     <message>
         <source>Disable overscan</source>
-        <translation type="vanished">overscan 사용 안 함</translation>
+        <translation type="vanished">Overscan uitschakelen</translation>
+    </message>
+    <message>
+        <source>Set username:</source>
+        <translation type="vanished">Gebruikersnaam:</translation>
+    </message>
+    <message>
+        <source>Set password for &apos;%1&apos; user:</source>
+        <translation type="vanished">Wachtwoord voor &apos;%1&apos; gebruiker:</translation>
     </message>
     <message>
         <source>Skip first-run wizard</source>
-        <translation type="vanished">초기 실행 마법사 건너뛰기</translation>
+        <translation type="vanished">Eerste gebruik wizard overslaan</translation>
     </message>
     <message>
         <source>Persistent settings</source>
-        <translation type="vanished">영구적으로 설정</translation>
+        <translation type="vanished">Permanente instellingen</translation>
     </message>
 </context>
 <context>
@@ -688,7 +696,7 @@
     <message>
         <location filename="../linux/linuxdrivelist.cpp" line="126"/>
         <source>Internal SD card reader</source>
-        <translation>내장 SD 카드 리더기</translation>
+        <translation>Interne SD kaart lezer</translation>
     </message>
 </context>
 <context>
@@ -696,32 +704,32 @@
     <message>
         <location filename="../UseSavedSettingsPopup.qml" line="46"/>
         <source>Use OS customization?</source>
-        <translation>OS 커스터마이징을 사용하십니까?</translation>
+        <translation>OS aanpassen?</translation>
     </message>
     <message>
         <location filename="../UseSavedSettingsPopup.qml" line="98"/>
         <source>Would you like to apply OS customization settings?</source>
-        <translation>OS 커스터마이징 설정을 적용하시겠습니까?</translation>
+        <translation>Wilt u uw eigen instellingen op het OS toepassen?</translation>
     </message>
     <message>
         <location filename="../UseSavedSettingsPopup.qml" line="139"/>
         <source>NO</source>
-        <translation>아니요</translation>
+        <translation>Nee</translation>
     </message>
     <message>
         <location filename="../UseSavedSettingsPopup.qml" line="120"/>
         <source>NO, CLEAR SETTINGS</source>
-        <translation>아니요, 설정 지우기</translation>
+        <translation>Nee, wis instellingen</translation>
     </message>
     <message>
         <location filename="../UseSavedSettingsPopup.qml" line="130"/>
         <source>YES</source>
-        <translation>예</translation>
+        <translation>Ja</translation>
     </message>
     <message>
         <location filename="../UseSavedSettingsPopup.qml" line="107"/>
         <source>EDIT SETTINGS</source>
-        <translation>설정을 편집하기</translation>
+        <translation>Aanpassen</translation>
     </message>
 </context>
 <context>
@@ -732,214 +740,214 @@
     </message>
     <message>
         <source>Raspberry Pi Device</source>
-        <translation type="vanished">라즈베리파이(Raspberry Pi) 디바이스</translation>
+        <translation type="vanished">Raspberry Pi Model</translation>
     </message>
     <message>
         <location filename="../main.qml" line="134"/>
         <source>CHOOSE DEVICE</source>
-        <translation>장치 선택</translation>
+        <translation>KIES MODEL</translation>
     </message>
     <message>
         <source>Select this button to choose your target Raspberry Pi</source>
-        <translation type="vanished">이 버튼을 선택하면 타켓 Raspberry Pi 를 선택할 수 있습니다</translation>
+        <translation type="vanished">Kies deze knop om het Raspberry Pi model te selecteren</translation>
     </message>
     <message>
         <location filename="../main.qml" line="160"/>
         <location filename="../main.qml" line="555"/>
         <source>Operating System</source>
-        <translation>운영체제</translation>
+        <translation>Besturingssysteem</translation>
     </message>
     <message>
         <location filename="../main.qml" line="171"/>
         <location filename="../main.qml" line="1977"/>
         <source>CHOOSE OS</source>
-        <translation>운영체제 선택</translation>
+        <translation>KIES OS</translation>
     </message>
     <message>
         <location filename="../main.qml" line="183"/>
         <source>Select this button to change the operating system</source>
-        <translation>운영 체제를 변경하려면 이 버튼을 선택합니다.</translation>
+        <translation>Kies deze knop om een besturingssysteem te kiezen</translation>
     </message>
     <message>
         <location filename="../main.qml" line="197"/>
         <location filename="../main.qml" line="957"/>
         <source>Storage</source>
-        <translation>저장소</translation>
+        <translation>Opslagapparaat</translation>
     </message>
     <message>
         <location filename="../main.qml" line="330"/>
         <source>Network not ready yet</source>
-        <translation>네트워크가 준비되지 않았습니다.</translation>
+        <translation>Netwerk nog niet gereed</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1022"/>
         <source>No storage devices found</source>
-        <translation>저장소 기기가 발견되지 않았습니다.</translation>
+        <translation>Geen opslagapparaten gevonden</translation>
     </message>
     <message>
         <location filename="../main.qml" line="208"/>
         <location filename="../main.qml" line="1643"/>
         <source>CHOOSE STORAGE</source>
-        <translation>저장소 선택</translation>
+        <translation>KIES OPSLAG</translation>
     </message>
     <message>
         <source>WRITE</source>
-        <translation type="vanished">쓰기</translation>
+        <translation type="vanished">SCHRIJF</translation>
     </message>
     <message>
         <location filename="../main.qml" line="222"/>
         <source>Select this button to change the destination storage device</source>
-        <translation>저장 디바이스를 변경하려면 버튼을 선택합니다.</translation>
+        <translation>Klik op deze knop om het opslagapparaat te wijzigen</translation>
     </message>
     <message>
         <location filename="../main.qml" line="267"/>
         <source>CANCEL WRITE</source>
-        <translation>쓰기 취소</translation>
+        <translation>Annuleer schrijven</translation>
     </message>
     <message>
         <location filename="../main.qml" line="270"/>
         <location filename="../main.qml" line="1527"/>
         <location filename="../main.qml" line="1538"/>
         <source>Cancelling...</source>
-        <translation>취소 하는 중...</translation>
+        <translation>Annuleren...</translation>
     </message>
     <message>
         <location filename="../main.qml" line="282"/>
         <source>CANCEL VERIFY</source>
-        <translation>확인 취소</translation>
+        <translation>ANNULEER VERIFICATIE</translation>
     </message>
     <message>
         <location filename="../main.qml" line="285"/>
         <location filename="../main.qml" line="1561"/>
         <location filename="../main.qml" line="1670"/>
         <source>Finalizing...</source>
-        <translation>마무리 중...</translation>
+        <translation>Afronden...</translation>
     </message>
     <message>
         <location filename="../main.qml" line="294"/>
         <source>Next</source>
-        <translation>다음</translation>
+        <translation>Volgende</translation>
     </message>
     <message>
         <location filename="../main.qml" line="300"/>
         <source>Select this button to start writing the image</source>
-        <translation>이미지 쓰기를 시작하려면 버튼을 선택합니다.</translation>
+        <translation>Kies deze knop om te beginnen met het schrijven van de image</translation>
     </message>
     <message>
         <source>Select this button to access advanced settings</source>
-        <translation type="vanished">고급 설정에 액세스하려면 버튼을 선택합니다.</translation>
+        <translation type="vanished">Klik op deze knop om de geadvanceerde instellingen te openen</translation>
     </message>
     <message>
         <location filename="../main.qml" line="320"/>
         <source>Using custom repository: %1</source>
-        <translation>사용자 지정 리포지토리 사용: %1</translation>
+        <translation>Custom repository in gebruik: %1</translation>
     </message>
     <message>
         <location filename="../main.qml" line="339"/>
         <source>Keyboard navigation: &lt;tab&gt; navigate to next button &lt;space&gt; press button/select item &lt;arrow up/down&gt; go up/down in lists</source>
-        <translation>키보드 탐색: &lt;tab&gt; 다음 버튼으로 이동 &lt;space&gt; 버튼 선택 및 항목 선택 &lt;arrow up/down&gt; 목록에서 위아래로 이동</translation>
+        <translation>Toetsenbord navigatie: &lt;tab&gt; ga naar volgende knop &lt;spatie&gt; druk op knop/selecteer item &lt;pijltje omhoog/omlaag&gt; ga omhoog/omlaag in lijsten</translation>
     </message>
     <message>
         <location filename="../main.qml" line="360"/>
         <source>Language: </source>
-        <translation>언어: </translation>
+        <translation>Taal: </translation>
     </message>
     <message>
         <location filename="../main.qml" line="383"/>
         <source>Keyboard: </source>
-        <translation>키보드: </translation>
+        <translation>Toetsenbord: </translation>
     </message>
     <message>
         <source>Pi model:</source>
-        <translation type="vanished">파이 모델</translation>
+        <translation type="vanished">Pi model:</translation>
     </message>
     <message>
         <location filename="../main.qml" line="24"/>
-        <source>Gemstone Image Writer %1</source>
-        <translation>Gemstone 이미지 기록기 %1</translation>
+        <source>T3 Gemstone Image Writer %1</source>
+        <translation>T3 Gemstone Image Writer %1</translation>
     </message>
     <message>
         <location filename="../main.qml" line="122"/>
         <location filename="../main.qml" line="453"/>
-        <source>Gemstone Board</source>
-        <translation>Gemstone 보드</translation>
+        <source>Board</source>
+        <translation>Board</translation>
     </message>
     <message>
         <location filename="../main.qml" line="146"/>
-        <source>Select this button to choose your target Gemstone Board</source>
-        <translation>이 버튼을 선택하여 대상 Gemstone 보드를 선택하세요</translation>
+        <source>Select this button to choose your target board</source>
+        <translation>Selecteer deze knop om uw doelboard te kiezen</translation>
     </message>
     <message>
         <location filename="../main.qml" line="497"/>
         <source>[ All ]</source>
-        <translation>[ 전체 ]</translation>
+        <translation>[ Alle modellen ]</translation>
     </message>
     <message>
         <location filename="../main.qml" line="653"/>
         <source>Back</source>
-        <translation>뒤로 가기</translation>
+        <translation>Terug</translation>
     </message>
     <message>
         <location filename="../main.qml" line="654"/>
         <source>Go back to main menu</source>
-        <translation>기본 메뉴로 돌아가기</translation>
+        <translation>Terug naar hoofdmenu</translation>
     </message>
     <message>
         <location filename="../main.qml" line="900"/>
         <source>Released: %1</source>
-        <translation>릴리즈: %1</translation>
+        <translation>Release datum: %1</translation>
     </message>
     <message>
         <location filename="../main.qml" line="910"/>
         <source>Cached on your computer</source>
-        <translation>컴퓨터에 캐시됨</translation>
+        <translation>Opgeslagen op computer</translation>
     </message>
     <message>
         <location filename="../main.qml" line="912"/>
         <source>Local file</source>
-        <translation>로컬 파일</translation>
+        <translation>Lokaal bestand</translation>
     </message>
     <message>
         <location filename="../main.qml" line="913"/>
         <source>Online - %1 GB download</source>
-        <translation>온라인 - %1 GB 다운로드</translation>
+        <translation>Online %1 GB download</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1057"/>
         <source>Exclude System Drives</source>
-        <translation>시스템 드라이브 제외</translation>
+        <translation>Systeemstations uitsluiten</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1115"/>
         <source>Internal eMMC - 32 GB</source>
-        <translation>내장 eMMC - 32 GB</translation>
+        <translation>Intern eMMC - 32 GB</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1125"/>
         <source>Writes the image to the card&apos;s internal eMMC memory via Uniflash</source>
-        <translation>Uniflash를 통해 카드의 내장 eMMC 메모리에 이미지를 씁니다</translation>
+        <translation>Schrijft de image via Uniflash naar het interne eMMC-geheugen van de kaart</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1213"/>
         <location filename="../main.qml" line="2140"/>
         <source>DFU Mode</source>
-        <translation>DFU 모드</translation>
+        <translation>DFU-modus</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1223"/>
         <source>Program the device via USB DFU (Device Firmware Update)</source>
-        <translation>USB DFU(장치 펌웨어 업데이트)를 통해 장치를 프로그래밍합니다</translation>
+        <translation>Apparaat programmeren via USB DFU (Device Firmware Update)</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1268"/>
         <source>gigabytes</source>
-        <translation>기가바이트</translation>
+        <translation>gigabytes</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1270"/>
         <location filename="../main.qml" line="1332"/>
         <source>Mounted as %1</source>
-        <translation>%1로 마운트</translation>
+        <translation>Mounted op %1</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1318"/>
@@ -949,177 +957,181 @@
     <message>
         <location filename="../main.qml" line="1334"/>
         <source>[WRITE PROTECTED]</source>
-        <translation>[쓰기 보호됨]</translation>
+        <translation>[ALLEEN LEZEN]</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1336"/>
         <source>SYSTEM</source>
-        <translation>시스템</translation>
+        <translation>SYSTEEM</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1394"/>
         <location filename="../main.qml" line="1401"/>
         <source>Boot Mode Switch</source>
-        <translation>부팅 모드 스위치</translation>
+        <translation>Opstartmodusschakelaar</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1395"/>
         <source>Configure the boot mode switches for DFU Boot as shown in the image.</source>
-        <translation>이미지에 표시된 대로 DFU 부팅을 위한 부팅 모드 스위치를 구성하세요.</translation>
+        <translation>Configureer de opstartmodusschakelaars voor DFU-opstarten zoals weergegeven in de afbeelding.</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1402"/>
         <source>DFU programming completed successfully!&lt;br&gt;&lt;br&gt;After powering off the card, set the boot mode switches to eMMC Boot as shown in the image. Upon restoring power, the system will boot automatically.</source>
-        <translation>DFU 프로그래밍이 성공적으로 완료되었습니다!&lt;br&gt;&lt;br&gt;카드 전원을 끈 후 이미지에 표시된 대로 부팅 모드 스위치를 eMMC 부팅으로 설정하세요. 전원을 다시 공급하면 시스템이 자동으로 부팅됩니다.</translation>
+        <translation>DFU-programmering succesvol voltooid!&lt;br&gt;&lt;br&gt;Zet na het uitschakelen van de kaart de opstartmodusschakelaars op eMMC-opstarten zoals weergegeven in de afbeelding. Bij het herstellen van de stroom zal het systeem automatisch opstarten.</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1411"/>
         <source>Are you sure you want to quit?</source>
-        <translation>정말 그만두시겠습니까?</translation>
+        <translation>Weet u zeker dat u wilt afsluiten?</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1412"/>
-        <source>Gemstone Imager is still busy.&lt;br&gt;Are you sure you want to quit?</source>
-        <translation>Gemstone Imager가 사용 중입니다.&lt;br&gt;정말 그만두시겠습니까?</translation>
+        <source>T3 Gemstone Imager is still busy.&lt;br&gt;Are you sure you want to quit?</source>
+        <translation>T3 Gemstone Imager is nog bezig.&lt;br&gt;Weet u zeker dat u wilt afsluiten?</translation>
     </message>
     <message>
         <source>Raspberry Pi Imager is still busy.&lt;br&gt;Are you sure you want to quit?</source>
-        <translation type="vanished">Raspberry Pi Imager가 사용 중입니다.&lt;br&gt;정말 그만두시겠습니까?</translation>
+        <translation type="vanished">Raspberry Pi Imager is nog niet klaar.&lt;br&gt;Weet u zeker dat u wilt afsluiten?</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1423"/>
         <source>Warning</source>
-        <translation>주의</translation>
+        <translation>Waarschuwing</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1442"/>
         <location filename="../main.qml" line="2152"/>
         <source>Starting DFU operation...</source>
-        <translation>DFU 작업 시작 중...</translation>
+        <translation>DFU-bewerking starten...</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1448"/>
         <source>Preparing to write...</source>
-        <translation>쓰기 준비 중...</translation>
+        <translation>Voorbereiden...</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1457"/>
         <source>Image will be sent to device via DFU.&lt;br&gt;Are you sure you want to continue?</source>
-        <translation>이미지가 DFU를 통해 장치로 전송됩니다.&lt;br&gt;계속하시겠습니까?</translation>
+        <translation>Image wordt via DFU naar het apparaat verzonden.&lt;br&gt;Weet u zeker dat u wilt doorgaan?</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1459"/>
         <source>All existing data on &apos;%1&apos; will be erased.&lt;br&gt;Are you sure you want to continue?</source>
-        <translation>&apos;%1&apos;에 존재하는 모든 데이터가 지워집니다.&lt;br&gt;계속하시겠습니까?</translation>
+        <translation>Alle bestaande gegevens op &apos;%1&apos; zullen verwijderd worden.&lt;br&gt;Weet u zeker dat u door wilt gaan?</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1475"/>
         <source>Update available</source>
-        <translation>업데이트 가능</translation>
+        <translation>Update beschikbaar</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1476"/>
         <source>There is a newer version of Imager available.&lt;br&gt;Would you like to visit the website to download it?</source>
-        <translation>Raspberry Pi Imager의 최신 버전을 사용할 수 있습니다.&lt;br&gt;다운받기 위해 웹사이트를 방문하시겠습니까??</translation>
+        <translation>Er is een nieuwere versie van Imager beschikbaar.&lt;br&gt;Wilt u de website bezoeken om deze te downloaden?</translation>
     </message>
     <message>
         <source>Error downloading OS list from Internet</source>
-        <translation type="vanished">인터넷에서 OS 목록을 다운로드하는 중 오류 발생</translation>
+        <translation type="vanished">Fout bij downloaden van lijst met besturingssystemen</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1530"/>
         <source>Downloading... %1%</source>
-        <translation>다운로드 중... %1%</translation>
+        <translation>Downloaden... %1%</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1541"/>
         <source>Sending... %1%</source>
-        <translation>전송 중... %1%</translation>
+        <translation>Verzenden... %1%</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1564"/>
         <source>Verifying... %1%</source>
-        <translation>확인 중... %1%</translation>
+        <translation>Verifiëren... %1%</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1571"/>
         <source>Preparing to write... (%1)</source>
-        <translation>쓰기 준비 중... (%1)</translation>
+        <translation>Voorbereiden... (%1)</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1582"/>
         <source>Waiting for authentication to access USB device...</source>
-        <translation>USB 장치 접근을 위한 인증 대기 중...</translation>
+        <translation>Wachten op authenticatie voor toegang tot USB-apparaat...</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1605"/>
         <source>Error</source>
-        <translation>오류</translation>
+        <translation>Fout</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1612"/>
         <source>Write Successful</source>
-        <translation>쓰기 완료</translation>
+        <translation>Klaar met schrijven</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1613"/>
         <location filename="../imagewriter.cpp" line="719"/>
         <source>Erase</source>
-        <translation>삭제</translation>
+        <translation>Wissen</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1614"/>
         <source>&lt;b&gt;%1&lt;/b&gt; has been erased&lt;br&gt;&lt;br&gt;You can now remove the SD card from the reader</source>
-        <translation>&lt;b&gt;%1&lt;/b&gt; 가 지워졌습니다.&lt;br&gt;&lt;br&gt;이제 SD card를 제거할 수 있습니다.</translation>
+        <translation>&lt;b&gt;%1&lt;/b&gt; is gewist&lt;br&gt;&lt;br&gt;U kunt nu de SD kaart uit de lezer halen</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1629"/>
         <source>&lt;b&gt;%1&lt;/b&gt; has been written to &lt;b&gt;%2&lt;/b&gt;&lt;br&gt;&lt;br&gt;The process is complete. You can connect to the board via the serial port.</source>
-        <translation>&lt;b&gt;%1&lt;/b&gt;이(가) &lt;b&gt;%2&lt;/b&gt;에 기록되었습니다.&lt;br&gt;&lt;br&gt;프로세스가 완료되었습니다. 시리얼 포트를 통해 보드에 연결할 수 있습니다.</translation>
+        <translation>&lt;b&gt;%1&lt;/b&gt; is geschreven naar &lt;b&gt;%2&lt;/b&gt;.&lt;br&gt;&lt;br&gt;Het proces is voltooid. U kunt verbinding maken met het bord via de seriële poort.</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1633"/>
         <source>&lt;b&gt;%1&lt;/b&gt; has been written to &lt;b&gt;%2&lt;/b&gt;&lt;br&gt;&lt;br&gt;You can now remove the SD card from the reader</source>
-        <translation>&lt;b&gt;%1&lt;/b&gt;가 &lt;b&gt;%2&lt;/b&gt;&lt;br&gt;&lt;br&gt;에 쓰여졌습니다. 이제 SD card를 제거할 수 있습니다.</translation>
+        <translation>&lt;b&gt;%1&lt;/b&gt; is geschreven naar &lt;b&gt;%2&lt;/b&gt;&lt;br&gt;&lt;br&gt;U kunt nu de SD kaart uit de lezer halen</translation>
     </message>
     <message>
         <location filename="../main.qml" line="1798"/>
         <source>Error parsing os_list.json</source>
-        <translation>구문 분석 오류 os_list.json</translation>
+        <translation>Fout bij parsen os_list.json</translation>
     </message>
     <message>
         <location filename="../imagewriter.cpp" line="720"/>
         <source>Format card as FAT32</source>
-        <translation>FAT32로 카드 형식 지정</translation>
+        <translation>Formatteer kaart als FAT32</translation>
     </message>
     <message>
         <location filename="../imagewriter.cpp" line="726"/>
         <source>Use custom</source>
-        <translation>사용자 정의 사용</translation>
+        <translation>Gebruik eigen bestand</translation>
     </message>
     <message>
         <location filename="../imagewriter.cpp" line="727"/>
         <source>Select a custom .img from your computer</source>
-        <translation>컴퓨터에서 사용자 지정 .img를 선택합니다.</translation>
+        <translation>Selecteer een eigen .img bestand</translation>
     </message>
     <message>
         <location filename="../main.qml" line="2051"/>
         <source>Connect an USB stick containing images first.&lt;br&gt;The images must be located in the root folder of the USB stick.</source>
-        <translation>먼저 이미지가 들어 있는 USB를 연결합니다.&lt;br&gt;이미지는 USB 루트 폴더에 있어야 합니다.</translation>
+        <translation>Sluit eerst een USB stick met images aan.&lt;br&gt;De images moeten in de hoofdmap van de USB stick staan.</translation>
     </message>
     <message>
         <location filename="../main.qml" line="2129"/>
         <source>Onboard emmc</source>
-        <translation>온보드 eMMC</translation>
+        <translation>Ingebouwde eMMC</translation>
     </message>
     <message>
         <location filename="../main.qml" line="2165"/>
         <source>SD card is write protected.&lt;br&gt;Push the lock switch on the left side of the card upwards, and try again.</source>
-        <translation>쓰기 금지된 SD card&lt;br&gt;카드 왼쪽에 있는 잠금 스위치를 위쪽으로 누른 후 다시 시도하십시오.</translation>
+        <translation>SD kaart is tegen schrijven beveiligd.&lt;br&gt;Druk het schuifje aan de linkerkant van de SD kaart omhoog, en probeer nogmaals.</translation>
+    </message>
+    <message>
+        <source>Select this button to change the destination SD card</source>
+        <translation type="vanished">Kies deze knop om de SD kaart te kiezen</translation>
     </message>
     <message>
         <source>&lt;b&gt;%1&lt;/b&gt; has been written to &lt;b&gt;%2&lt;/b&gt;</source>
-        <translation type="vanished">&lt;b&gt;%1&lt;/b&gt;가 &lt;b&gt;%2&lt;/b&gt;에 쓰여졌습니다.</translation>
+        <translation type="vanished">&lt;b&gt;%1&lt;/b&gt; is geschreven naar &lt;b&gt;%2&lt;/b&gt;</translation>
     </message>
 </context>
 </TS>

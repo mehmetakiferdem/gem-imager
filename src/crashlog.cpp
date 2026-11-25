@@ -543,12 +543,12 @@ void CrashLog::install(int argc, char *argv[])
         logDir = QDir::tempPath();
     QDir dir(logDir);
 
-    const QFileInfoList previousLogs = dir.entryInfoList({"gem-imager-*.log"}, QDir::Files, QDir::Name | QDir::Reversed);
+    const QFileInfoList previousLogs = dir.entryInfoList({"t3-gem-imager-*.log"}, QDir::Files, QDir::Name | QDir::Reversed);
     const QString uncleanLog = previousUncleanLog(previousLogs);
     removeOldSessions(dir, previousLogs);
 
     const QDateTime now = QDateTime::currentDateTime();
-    const QString baseName = QString("gem-imager-%1-%2").arg(now.toString("yyyyMMdd-HHmmss")).arg(QCoreApplication::applicationPid());
+    const QString baseName = QString("t3-gem-imager-%1-%2").arg(now.toString("yyyyMMdd-HHmmss")).arg(QCoreApplication::applicationPid());
     logPath = dir.absoluteFilePath(baseName + ".log");
     if (!openLogFile(logPath))
     {
@@ -567,7 +567,7 @@ void CrashLog::install(int argc, char *argv[])
 #endif
 
     QByteArray header;
-    header += "=== Gemstone Imager " IMAGER_VERSION_STR " session started " + now.toString(Qt::ISODateWithMs).toUtf8() + "\n";
+    header += "=== T3 Gemstone Imager " IMAGER_VERSION_STR " session started " + now.toString(Qt::ISODateWithMs).toUtf8() + "\n";
     header += "OS: " + QSysInfo::prettyProductName().toUtf8() + " (" + QSysInfo::kernelType().toUtf8() + " "
               + QSysInfo::kernelVersion().toUtf8() + ", " + QSysInfo::currentCpuArchitecture().toUtf8() + ")\n";
     header += QByteArray("Qt: ") + qVersion() + " (built against " QT_VERSION_STR ")\n";

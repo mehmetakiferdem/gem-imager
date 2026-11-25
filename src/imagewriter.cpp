@@ -201,7 +201,7 @@
      {
          const QString cacheDir = QStandardPaths::writableLocation(QStandardPaths::CacheLocation);
          QDir().mkpath(cacheDir);
-         _instanceLock = std::make_unique<QLockFile>(cacheDir + QDir::separator() + "gem-imager.lock");
+         _instanceLock = std::make_unique<QLockFile>(cacheDir + QDir::separator() + "t3-gem-imager.lock");
          _instanceLock->setStaleLockTime(0);
          if (_instanceLock->tryLock(0))
              DfuThread::removeLeftoverTempFiles();
@@ -209,7 +209,7 @@
              qDebug() << "Another instance is running; leaving temporary files alone";
      }
  
-     QDir dir(":/i18n", "gem-imager_*.qm");
+     QDir dir(":/i18n", "t3-gem-imager_*.qm");
      const QStringList transFiles = dir.entryList();
      QLocale currentLocale;
      QStringList localeComponents = currentLocale.name().split('_');
@@ -219,7 +219,8 @@
  
      for (const QString &tf : transFiles)
      {
-         QString langcode = tf.mid(11, tf.length()-14);
+         /* t3-gem-imager_<langcode>.qm */
+         QString langcode = tf.mid(14, tf.length()-17);
          /* FIXME: we currently lack a font with support for Chinese characters in embedded mode */
          //if (isEmbeddedMode() && langcode == "zh")
          //    continue;
@@ -433,7 +434,7 @@ void ImageWriter::setBootloaderHashes(const QByteArray &tiboot3Hash, const QByte
      connect(_thread, SIGNAL(finalizing()), SLOT(onFinalizing()));
      connect(_thread, SIGNAL(preparationStatusUpdate(QString)), SLOT(onPreparationStatusUpdate(QString)));
      _thread->setVerifyEnabled(_verifyEnabled);
-     _thread->setUserAgent(QString("Mozilla/5.0 gem-imager/%1").arg(constantVersion()).toUtf8());
+     _thread->setUserAgent(QString("Mozilla/5.0 t3-gem-imager/%1").arg(constantVersion()).toUtf8());
      _thread->setImageCustomization(_config, _cmdline, _firstrun, _cloudinit, _cloudinitNetwork, _geminit, _initFormat, _dst.toLatin1());
  
      if (!_expectedHash.isEmpty() && _cachedFileHash != _expectedHash && _cachingEnabled)
@@ -924,9 +925,9 @@ void ImageWriter::startDfu()
     if (::geteuid() != 0)
     {
         bool udevRulesInstalled =
-            QFile::exists("/usr/lib/udev/rules.d/60-gem-imager-dfu.rules") ||
-            QFile::exists("/lib/udev/rules.d/60-gem-imager-dfu.rules")     ||
-            QFile::exists("/etc/udev/rules.d/60-gem-imager-dfu.rules");
+            QFile::exists("/usr/lib/udev/rules.d/60-t3-gem-imager-dfu.rules") ||
+            QFile::exists("/lib/udev/rules.d/60-t3-gem-imager-dfu.rules")     ||
+            QFile::exists("/etc/udev/rules.d/60-t3-gem-imager-dfu.rules");
 
         if (!udevRulesInstalled)
         {
@@ -1206,7 +1207,7 @@ void ImageWriter::_startDfuThread()
     connect(dfuThread, SIGNAL(dfuProgress(int, QString)), SLOT(onDfuProgress(int, QString)));
 
     _thread->setVerifyEnabled(_verifyEnabled);
-    _thread->setUserAgent(QString("Mozilla/5.0 gem-imager/%1").arg(constantVersion()).toUtf8());
+    _thread->setUserAgent(QString("Mozilla/5.0 t3-gem-imager/%1").arg(constantVersion()).toUtf8());
     _thread->setImageCustomization(_config, _cmdline, _firstrun, _cloudinit, _cloudinitNetwork, _geminit, _initFormat, _dst.toLatin1());
 
     // Setup caching
@@ -1892,7 +1893,7 @@ void ImageWriter::_startDfuThread()
      qDebug() << "Changing language to" << langcode;
  
      QTranslator *trans = new QTranslator();
-     if (trans->load(":/i18n/gem-imager_"+langcode+".qm"))
+     if (trans->load(":/i18n/t3-gem-imager_"+langcode+".qm"))
      {
          replaceTranslator(trans);
          _currentLang = newLanguageName;
