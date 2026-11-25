@@ -11,17 +11,6 @@ struct sha256_ctx
   char buffer[128];	/* NB: always correctly aligned for uint32_t.  */
 };
 
-char *stpncpy(char *dest, const char *src, size_t n)
-{
-    size_t size = strnlen(src, n);
-    memcpy(dest, src, size);
-    dest += size;
-    if (size != n)
-        dest[0] = '\0';
-
-    return dest;
-}
-
 #if __BYTE_ORDER == __LITTLE_ENDIAN
 # define SWAP(n) \
     (((n) << 24) | (((n) & 0xff00) << 8) | (((n) >> 8) & 0xff00) | ((n) >> 24))
@@ -475,7 +464,7 @@ sha256_crypt_r (const char *key, const char *salt, char *buffer, int buflen)
 
   /* Now we can construct the result string.  It consists of three
      parts.  */
-  cp = stpncpy (buffer, sha256_salt_prefix, MAX (0, buflen));
+  cp = crypt_stpncpy (buffer, sha256_salt_prefix, MAX (0, buflen));
   buflen -= sizeof (sha256_salt_prefix) - 1;
 
   if (rounds_custom)
@@ -486,7 +475,7 @@ sha256_crypt_r (const char *key, const char *salt, char *buffer, int buflen)
       buflen -= n;
     }
 
-  cp = stpncpy (cp, salt, MIN ((size_t) MAX (0, buflen), salt_len));
+  cp = crypt_stpncpy (cp, salt, MIN ((size_t) MAX (0, buflen), salt_len));
   buflen -= MIN ((size_t) MAX (0, buflen), salt_len);
 
   if (buflen > 0)

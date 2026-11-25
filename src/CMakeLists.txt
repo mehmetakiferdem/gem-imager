@@ -7,11 +7,11 @@ OPTION (ENABLE_TELEMETRY "Enable sending telemetry" OFF)
 
 set(CMAKE_OSX_ARCHITECTURES "arm64;x86_64" CACHE STRING "Which macOS architectures to build for")
 
-project(gem-imager LANGUAGES CXX C)
+project(t3-gem-imager LANGUAGES CXX C)
 set(IMAGER_VERSION_MAJOR 1)
-set(IMAGER_VERSION_MINOR 1)
-set(IMAGER_VERSION_PATCH 1)
-set(IMAGER_VERSION_STR "${IMAGER_VERSION_MAJOR}.${IMAGER_VERSION_MINOR}.${IMAGER_VERSION_PATCH}" CACHE STRING "Version string for gem-imager")
+set(IMAGER_VERSION_MINOR 2)
+set(IMAGER_VERSION_PATCH 0)
+set(IMAGER_VERSION_STR "${IMAGER_VERSION_MAJOR}.${IMAGER_VERSION_MINOR}.${IMAGER_VERSION_PATCH}" CACHE STRING "Version string for t3-gem-imager")
 set(IMAGER_VERSION_CSV "${IMAGER_VERSION_MAJOR},${IMAGER_VERSION_MINOR},${IMAGER_VERSION_PATCH},0")
 add_definitions(-DIMAGER_VERSION_STR="${IMAGER_VERSION_STR}")
 add_definitions(-DIMAGER_VERSION_CSV=${IMAGER_VERSION_CSV})
@@ -141,6 +141,16 @@ set(CURL_DISABLE_SMTP ON)
 set(CURL_DISABLE_TELNET ON)
 set(CURL_DISABLE_TFTP ON)
 set(CURL_ZSTD ON)
+
+# These curl options default to ON and link whatever the host happens to have
+# installed. That breaks the macOS universal build, where Homebrew only ships
+# the host architecture, and it makes the vendored build depend on the machine
+# it is compiled on. None of the features are used: images are fetched over
+# plain HTTPS from ASCII hostnames, with no cookies and no SCP/SFTP.
+set(USE_NGHTTP2 OFF)
+set(USE_LIBIDN2 OFF)
+set(CURL_USE_LIBPSL OFF)
+set(CURL_USE_LIBSSH2 OFF)
 set(CURL_ENABLE_EXPORT_TARGET OFF CACHE BOOL "" FORCE)
 set(CURL_DISABLE_INSTALL ON)
 if (APPLE)
@@ -169,27 +179,29 @@ set(CURL_INCLUDE_DIR ${CMAKE_CURRENT_LIST_DIR}/dependencies/curl-8.11.0/include)
 set(CURL_INCLUDE_DIRS ${CMAKE_CURRENT_LIST_DIR}/dependencies/curl-8.11.0/include)
 
 # Adding headers explicity so they are displayed in Qt Creator
-set(HEADERS config.h imagewriter.h networkaccessmanagerfactory.h nan.h drivelistitem.h drivelistmodel.h drivelistmodelpollthread.h driveformatthread.h powersaveblocker.h cli.h
+set(HEADERS config.h imagewriter.h networkaccessmanagerfactory.h nan.h drivelistitem.h drivelistmodel.h drivelistmodelpollthread.h driveformatthread.h powersaveblocker.h cli.h crashlog.h
     devicewrapper.h devicewrapperblockcacheentry.h devicewrapperpartition.h devicewrapperstructs.h devicewrapperfatpartition.h wlancredentials.h
-    downloadthread.h downloadextractthread.h localfileextractthread.h downloadstatstelemetry.h dfuthread.h dependencies/mountutils/src/mountutils.hpp 
+    downloadthread.h downloadextractthread.h localfileextractthread.h downloadstatstelemetry.h dfuthread.h dfudriver.h dependencies/mountutils/src/mountutils.hpp 
     dependencies/crypt/sha256crypt.h dependencies/crypt/des.h dependencies/crypt/sha512crypt.h dependencies/crypt/shacrypt.h
     dependencies/qtxmodem/crc16-xmodem.h dependencies/qtxmodem/transfer.h)
 
 # Add dependencies
 if (APPLE)
-    set_source_files_properties("icons/gem-imager.icns" PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
+    set_source_files_properties("icons/t3-gem-imager.icns" PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
     set(PLATFORM_SOURCES
         mac/acceleratedcryptographichash_commoncrypto.cpp
         mac/macfile.cpp
         mac/macfile.h
+        mac/macumsdisk.cpp
+        mac/macumsdisk.h
         dependencies/mountutils/src/darwin/functions.cpp
         mac/macwlancredentials.h
         mac/macwlancredentials.cpp
         dependencies/drivelist/src/darwin/list.mm
         dependencies/drivelist/src/darwin/REDiskList.m
     )
-    set(DEPENDENCIES  icons/gem-imager.icns)
-    enable_language(OBJC C)
+    set(DEPENDENCIES  icons/t3-gem-imager.icns)
+    enable_language(C OBJC OBJCXX)
 elseif (UNIX)
     find_package(GnuTLS REQUIRED)
     set(PLATFORM_SOURCES
@@ -214,7 +226,7 @@ elseif (WIN32)
         windows/winwlancredentials.h
         windows/winwlancredentials.cpp
     )
-    set(DEPENDENCIES windows/gem-imager.rc)
+    set(DEPENDENCIES windows/t3-gem-imager.rc)
     set(EXTRALIBS setupapi wlanapi Bcrypt.dll)
 endif()
 
@@ -248,8 +260,8 @@ endif( IS_BIG_ENDIAN )
 set(SOURCES ${PLATFORM_SOURCES} "main.cpp" "imagewriter.cpp" "networkaccessmanagerfactory.cpp"
     "drivelistitem.cpp" "drivelistmodel.cpp" "drivelistmodelpollthread.cpp" "downloadthread.cpp" "downloadextractthread.cpp"
     "devicewrapper.cpp" "devicewrapperblockcacheentry.cpp" "devicewrapperpartition.cpp" "devicewrapperfatpartition.cpp"
-    "driveformatthread.cpp" "localfileextractthread.cpp" "powersaveblocker.cpp" "downloadstatstelemetry.cpp" "dfuthread.cpp" "dfuwrapper.cpp" "qml.qrc"
-    "dependencies/crypt/sha256crypt.c" "dependencies/crypt/des.cpp" "dependencies/crypt/sha512crypt.c" "cli.cpp"
+    "driveformatthread.cpp" "localfileextractthread.cpp" "powersaveblocker.cpp" "downloadstatstelemetry.cpp" "dfuthread.cpp" "dfuwrapper.cpp" "dfudriver.cpp" "qml.qrc"
+    "dependencies/crypt/sha256crypt.c" "dependencies/crypt/des.cpp" "dependencies/crypt/sha512crypt.c" "cli.cpp" "crashlog.cpp"
     "dependencies/qtxmodem/crc16-xmodem.cpp" "dependencies/qtxmodem/transfer.cpp")
 
 find_package(Qt6 6.7 QUIET COMPONENTS Core Quick LinguistTools Svg OPTIONAL_COMPONENTS Widgets DBus WinExtras SerialPort)
@@ -278,11 +290,11 @@ if(${QT}WinExtras_FOUND)
     set(EXTRALIBS ${EXTRALIBS} ${QT}::WinExtras)
 endif()
 
-set(TRANSLATIONS i18n/gem-imager_en.ts i18n/gem-imager_nl.ts i18n/gem-imager_zh.ts i18n/gem-imager_tr.ts
-    i18n/gem-imager_fr.ts i18n/gem-imager_de.ts i18n/gem-imager_sk.ts i18n/gem-imager_it.ts
-    i18n/gem-imager_ca.ts i18n/gem-imager_sl.ts i18n/gem-imager_ko.ts i18n/gem-imager_ja.ts
-    i18n/gem-imager_ru.ts i18n/gem-imager_es.ts i18n/gem-imager_uk.ts i18n/gem-imager_zh-TW.ts
-    i18n/gem-imager_pl.ts i18n/gem-imager_he.ts i18n/gem-imager_pt.ts)
+set(TRANSLATIONS i18n/t3-gem-imager_en.ts i18n/t3-gem-imager_nl.ts i18n/t3-gem-imager_zh.ts i18n/t3-gem-imager_tr.ts
+    i18n/t3-gem-imager_fr.ts i18n/t3-gem-imager_de.ts i18n/t3-gem-imager_sk.ts i18n/t3-gem-imager_it.ts
+    i18n/t3-gem-imager_ca.ts i18n/t3-gem-imager_sl.ts i18n/t3-gem-imager_ko.ts i18n/t3-gem-imager_ja.ts
+    i18n/t3-gem-imager_ru.ts i18n/t3-gem-imager_es.ts i18n/t3-gem-imager_uk.ts i18n/t3-gem-imager_zh-TW.ts
+    i18n/t3-gem-imager_pl.ts i18n/t3-gem-imager_he.ts i18n/t3-gem-imager_pt.ts)
 #qt6_create_translation(QM_FILES ${CMAKE_SOURCE_DIR} ${TRANSLATIONS})
 qt_add_translation(QM_FILES  ${TRANSLATIONS})
 configure_file(i18n/translations.qrc "${CMAKE_CURRENT_BINARY_DIR}" COPYONLY)
@@ -397,12 +409,13 @@ if (WIN32)
         POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy
             "${CMAKE_BINARY_DIR}/${PROJECT_NAME}.exe" "${CMAKE_BINARY_DIR}/dependencies/fat32format/fat32format.exe"
-            "${CMAKE_SOURCE_DIR}/../license.txt" "${CMAKE_SOURCE_DIR}/windows/gem-imager-cli.cmd"
+            "${CMAKE_SOURCE_DIR}/../license.txt" "${CMAKE_SOURCE_DIR}/windows/t3-gem-imager-cli.cmd"
+            "${CMAKE_SOURCE_DIR}/windows/remove-dfu-driver.ps1"
             "${CMAKE_BINARY_DIR}/deploy")
     
     configure_file(
-        "${CMAKE_CURRENT_SOURCE_DIR}/windows/gem-imager.nsi.in"
-        "${CMAKE_CURRENT_BINARY_DIR}/gem-imager.nsi"
+        "${CMAKE_CURRENT_SOURCE_DIR}/windows/t3-gem-imager.nsi.in"
+        "${CMAKE_CURRENT_BINARY_DIR}/t3-gem-imager.nsi"
         @ONLY)
 
     add_custom_command(TARGET ${PROJECT_NAME}
@@ -415,7 +428,7 @@ if (WIN32)
 
     add_custom_command(TARGET ${PROJECT_NAME}
         POST_BUILD
-        COMMAND "${WINDEPLOYQT}" --no-translations --qmldir "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_BINARY_DIR}/deploy/gem-imager.exe")
+        COMMAND "${WINDEPLOYQT}" --no-translations --qmldir "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_BINARY_DIR}/deploy/t3-gem-imager.exe")
 
     # Remove excess files
     add_custom_command(TARGET ${PROJECT_NAME}
@@ -435,7 +448,11 @@ elseif(APPLE)
     set(EXTRALIBS ${EXTRALIBS} ${CoreFoundation} ${DiskArbitration} ${Security} ${Cocoa} ${IOKit} ${SystemConfiguration} iconv)
     set_target_properties(${PROJECT_NAME} PROPERTIES MACOSX_BUNDLE YES MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/mac/Info.plist.in)
 
-    find_program(MACDEPLOYQT "macdeployqt" PATHS "${Qt6_ROOT}/bin")
+    # Locate macdeployqt next to the qmake of the Qt we actually resolved,
+    # so this works for any Qt prefix and not just an explicit Qt6_ROOT.
+    get_target_property(QMAKE_EXECUTABLE ${QT}::qmake IMPORTED_LOCATION)
+    get_filename_component(QT_BIN_DIR "${QMAKE_EXECUTABLE}" DIRECTORY)
+    find_program(MACDEPLOYQT_EXECUTABLE NAMES macdeployqt HINTS "${QT_BIN_DIR}" "${Qt6_ROOT}/bin")
     if (NOT MACDEPLOYQT_EXECUTABLE)
         message(FATAL_ERROR "Unable to locate macdeployqt")
     endif()
@@ -445,34 +462,38 @@ elseif(APPLE)
             # Create the .app, leveraging macdeployqt's knowledge of Qt libraries and configuration files
             add_custom_command(TARGET ${PROJECT_NAME}
                 POST_BUILD
-                COMMAND "${MACDEPLOYQT_EXECUTABLE}" "${CMAKE_BINARY_DIR}/${PROJECT_NAME}.app" -qmldir="${CMAKE_CURRENT_SOURCE_DIR}")
+                COMMAND "${MACDEPLOYQT_EXECUTABLE}" "${CMAKE_BINARY_DIR}/${PROJECT_NAME}.app" -qmldir=${CMAKE_CURRENT_SOURCE_DIR})
             add_custom_command(TARGET ${PROJECT_NAME}
                 POST_BUILD
-                COMMAND mv "${CMAKE_BINARY_DIR}/${PROJECT_NAME}.app" "${CMAKE_BINARY_DIR}/GemstoneImager.app")
+                COMMAND ${CMAKE_COMMAND} -E rm -rf "${CMAKE_BINARY_DIR}/T3GemstoneImager.app"
+                COMMAND ${CMAKE_COMMAND} -E rename "${CMAKE_BINARY_DIR}/${PROJECT_NAME}.app" "${CMAKE_BINARY_DIR}/T3GemstoneImager.app")
             
             # Sign the .app.
             add_custom_command(TARGET ${PROJECT_NAME}
                 POST_BUILD
-                COMMAND codesign -f --deep --digest-algorithm=sha1,sha256 -o runtime --timestamp -s "${IMAGER_SIGNING_IDENTITY}" "${CMAKE_BINARY_DIR}/GemstoneImager.app")
+                COMMAND codesign -f --deep --digest-algorithm=sha1,sha256 -o runtime --timestamp -s "${IMAGER_SIGNING_IDENTITY}" "${CMAKE_BINARY_DIR}/T3GemstoneImager.app"
+                VERBATIM)
 
             # Create the .dmg for distribution
             add_custom_command(TARGET ${PROJECT_NAME}
                 POST_BUILD
-                COMMAND hdiutil create -volname "Gemstone Imager" -srcfolder "${CMAKE_BINARY_DIR}/GemstoneImager.app" -ov -format UDBZ "${CMAKE_BINARY_DIR}/GemstoneImager.dmg")
+                COMMAND hdiutil create -volname "T3 Gemstone Imager" -srcfolder "${CMAKE_BINARY_DIR}/T3GemstoneImager.app" -ov -format UDBZ "${CMAKE_BINARY_DIR}/T3GemstoneImager.dmg")
 
             # Sign the .dmg for distribution, but do not initialise notarisation
             add_custom_command(TARGET ${PROJECT_NAME}
                 POST_BUILD
-                COMMAND codesign -f --digest-algorithm=sha1,sha256 -o runtime --timestamp -s "${IMAGER_SIGNING_IDENTITY}" "${CMAKE_BINARY_DIR}/GemstoneImager.dmg")
+                COMMAND codesign -f --digest-algorithm=sha1,sha256 -o runtime --timestamp -s "${IMAGER_SIGNING_IDENTITY}" "${CMAKE_BINARY_DIR}/T3GemstoneImager.dmg"
+                VERBATIM)
 
             if(IMAGER_NOTARIZE_APP)
                 if(IMAGER_NOTARIZE_KEYCHAIN_PROFILE)
                     add_custom_command(TARGET ${PROJECT_NAME}
                         POST_BUILD
-                        COMMAND xcrun notarytool submit "${CMAKE_BINARY_DIR}/GemstoneImager.dmg" --wait --keychain-profile "${IMAGER_NOTARIZE_KEYCHAIN_PROFILE}")
+                        COMMAND xcrun notarytool submit "${CMAKE_BINARY_DIR}/T3GemstoneImager.dmg" --wait --keychain-profile "${IMAGER_NOTARIZE_KEYCHAIN_PROFILE}"
+                        VERBATIM)
                     add_custom_command(TARGET ${PROJECT_NAME}
                         POST_BUILD
-                        COMMAND xcrun stapler staple "${CMAKE_BINARY_DIR}/GemstoneImager.dmg")
+                        COMMAND xcrun stapler staple "${CMAKE_BINARY_DIR}/T3GemstoneImager.dmg")
                 else()
                     message(FATAL_ERROR "Notarization requested, but no keychain profile is supplied")
                 endif(IMAGER_NOTARIZE_KEYCHAIN_PROFILE)
@@ -485,12 +506,16 @@ elseif(APPLE)
         # Unsigned application
         add_custom_command(TARGET ${PROJECT_NAME}
             POST_BUILD
-            COMMAND "${MACDEPLOYQT_EXECUTABLE}" "${CMAKE_BINARY_DIR}/GemstoneImager.app" -qmldir="${CMAKE_CURRENT_SOURCE_DIR}" -always-overwrite -no-strip -dmg)
+            COMMAND ${CMAKE_COMMAND} -E rm -rf "${CMAKE_BINARY_DIR}/T3GemstoneImager.app"
+            COMMAND ${CMAKE_COMMAND} -E rename "${CMAKE_BINARY_DIR}/${PROJECT_NAME}.app" "${CMAKE_BINARY_DIR}/T3GemstoneImager.app")
+        add_custom_command(TARGET ${PROJECT_NAME}
+            POST_BUILD
+            COMMAND "${MACDEPLOYQT_EXECUTABLE}" "${CMAKE_BINARY_DIR}/T3GemstoneImager.app" -qmldir=${CMAKE_CURRENT_SOURCE_DIR} -always-overwrite -no-strip -dmg)
     endif(IMAGER_SIGNED_APP)
 
     add_custom_command(TARGET ${PROJECT_NAME}
         POST_BUILD
-        COMMAND "mv" "${CMAKE_BINARY_DIR}/GemstoneImager.dmg" "${CMAKE_BINARY_DIR}/GemstoneImager-${IMAGER_VERSION_STR}.dmg")
+        COMMAND "mv" "${CMAKE_BINARY_DIR}/T3GemstoneImager.dmg" "${CMAKE_BINARY_DIR}/T3GemstoneImager-${IMAGER_VERSION_STR}.dmg")
 
 else()
     # UNIX, Linux systems
@@ -508,9 +533,9 @@ else()
 
     install(TARGETS ${PROJECT_NAME} DESTINATION bin)
     install(TARGETS simpbootp DESTINATION bin)
-    install(FILES "${CMAKE_CURRENT_LIST_DIR}/../debian/gem-imager.png" DESTINATION share/icons/hicolor/128x128/apps)
-    install(FILES "linux/org.t3gemstone.gem-imager.desktop" DESTINATION share/applications)
-    install(FILES "${CMAKE_CURRENT_LIST_DIR}/../debian/gem-imager.metainfo.xml" DESTINATION share/metainfo)
+    install(FILES "${CMAKE_CURRENT_LIST_DIR}/../debian/t3-gem-imager.png" DESTINATION share/icons/hicolor/256x256/apps)
+    install(FILES "linux/org.t3gemstone.t3-gem-imager.desktop" DESTINATION share/applications)
+    install(FILES "${CMAKE_CURRENT_LIST_DIR}/../debian/t3-gem-imager.metainfo.xml" DESTINATION share/metainfo)
 endif()
 
 include_directories(${CURL_INCLUDE_DIR} ${LibArchive_INCLUDE_DIR} ${LIBLZMA_INCLUDE_DIRS} ${LIBDRM_INCLUDE_DIRS} ${ZLIB_INCLUDE_DIRS} ${ZSTD_INCLUDE_DIR} ${DFU_UTIL_INCLUDE_DIR})

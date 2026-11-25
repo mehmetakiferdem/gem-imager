@@ -1,0 +1,12 @@
+# T3 Gemstone Imager: Grant non-root USB access for TI AM62x DFU device
+# Texas Instruments AM62x USB Boot (DFU mode) - VID:0451 PID:6165
+#
+# Install this file to /usr/lib/udev/rules.d/ or /etc/udev/rules.d/
+# then run: udevadm control --reload-rules && udevadm trigger --subsystem-match=usb
+#
+# The filename must sort before 73-seat-late.rules, otherwise TAG+="uaccess"
+# is added too late and never processed.
+# TAG+="uaccess" grants access to the currently logged-in seat user (systemd/logind).
+# MODE="0666" is the fallback for non-logind environments, remote sessions and
+# distros without a plugdev group.
+SUBSYSTEM=="usb", ATTR{idVendor}=="0451", ATTR{idProduct}=="6165", TAG+="uaccess", MODE="0666"

@@ -1,4 +1,4 @@
-Source: gem-imager
+Source: t3-gem-imager
 Section: admin
 Priority: optional
 Maintainer: Devteam <dev@t3gemstone.org>
@@ -6,9 +6,11 @@ Build-Depends: debhelper (>= 10), cmake, libgnutls28-dev, dh-exec
 Standards-Version: 4.1.2
 Homepage: https://docs.t3gemstone.org/en
 
-Package: gem-imager
+Package: t3-gem-imager
 Architecture: arm64
 Depends: ${shlibs:Depends}, ${misc:Depends}, dosfstools, fdisk, fuse, libfuse2, util-linux (>= 2.38)
 Recommends: udisks2
-Description: Gemstone Imaging utility
+Conflicts: gem-imager
+Replaces: gem-imager
+Description: T3 Gemstone Imaging utility
  A user-friendly tool for creating bootable media for Gemstone Devices.
