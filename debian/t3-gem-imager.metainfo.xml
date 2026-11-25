@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <component type="desktop-application">
-  <id>org.t3gemstone.gem-imager</id>
+  <id>org.t3gemstone.t3-gem-imager</id>
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>Apache-2.0</project_license>
-  <name>Gemstone Imager</name>
+  <name>T3 Gemstone Imager</name>
   <summary>Gemstone Imaging utility</summary>
   <description>
     <p>
-      Gemstone Imager downloads a .JSON file from the Gemstone
+      T3 Gemstone Imager downloads a .JSON file from the Gemstone
       website with a list of all current download options, ensuring you are
       always installing the most up-to-date version.
     </p>
@@ -21,13 +21,13 @@
       to the SD card.
     </p>
     <p>
-      During this process, Gemstone Imager also caches the downloaded
+      During this process, T3 Gemstone Imager also caches the downloaded
       operating system image – that is to say, it saves a local copy on your
       computer, so you can program additional SD cards without having to
       download the file again.
     </p>
   </description>
-  <launchable type="desktop-id">org.t3gemstone.gem-imager.desktop</launchable>
+  <launchable type="desktop-id">org.t3gemstone.t3-gem-imager.desktop</launchable>
   <screenshots>
     <screenshot type="default">
       <image>http://packages.t3gemstone.org/imager/IMAGING-UTILITY-MAIN.png</image>
@@ -52,7 +52,7 @@
   </screenshots>
   <url type="homepage">https://github.com/t3gemstone/gem-imager</url>
   <provides>
-    <binary>gem-imager</binary>
+    <binary>t3-gem-imager</binary>
   </provides>
   <releases>
     <release version="1.0.1" />

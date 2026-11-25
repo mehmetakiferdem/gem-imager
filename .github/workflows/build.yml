@@ -101,12 +101,12 @@ jobs:
             ${{ runner.temp }}/appimagecraft.AppImage
             imager_version=$(grep '  version:' appimagecraft.yml | cut -d ':' -f 2 | tr -d ' ')
             tee -a "${GITHUB_OUTPUT}" <<< gemImagerVersion="$imager_version"
-            mv Gemstone_Imager-${imager_version}-x86_64.AppImage GemImager-${imager_version}.AppImage
+            mv T3_Gemstone_Imager-${imager_version}-x86_64.AppImage T3-Gemstone-Imager-${imager_version}.AppImage
       - name: Upload AppImage
         uses: actions/upload-artifact@v6
         with:
-          name: GemImager Linux ${{ steps.build.outputs.gemImagerVersion }}
-          path: GemImager-${{ steps.build.outputs.gemImagerVersion }}.AppImage
+          name: T3 Gemstone Imager Linux ${{ steps.build.outputs.gemImagerVersion }}
+          path: T3-Gemstone-Imager-${{ steps.build.outputs.gemImagerVersion }}.AppImage
 
   windows:
     runs-on: windows-2022
@@ -161,19 +161,19 @@ jobs:
       - name: Make NSIS installer
         run: |
           if not exist "%GITHUB_WORKSPACE%\build\deploy\wdi-simple.exe" exit /b 1
-          makensis %GITHUB_WORKSPACE%\build\gem-imager.nsi
+          makensis %GITHUB_WORKSPACE%\build\t3-gem-imager.nsi
       - name: Get project version
         id: getversion
         shell: bash
         run: |
           version=$(grep IMAGER_VERSION_STR "$GITHUB_WORKSPACE/build/CMakeCache.txt" | cut -d '=' -f 2)
-          mv $GITHUB_WORKSPACE/build/gem-imager-${version}.exe $GITHUB_WORKSPACE/build/GemImager-${version}.exe
+          mv $GITHUB_WORKSPACE/build/t3-gem-imager-${version}.exe $GITHUB_WORKSPACE/build/T3-Gemstone-Imager-${version}.exe
           tee -a "${GITHUB_OUTPUT}" <<< gemImagerVersion="$version"
       - name: Upload installer
         uses: actions/upload-artifact@v6
         with:
-          name: GemImager Windows ${{ steps.getversion.outputs.gemImagerVersion }}
-          path: ${{ github.workspace }}\build\GemImager-${{ steps.getversion.outputs.gemImagerVersion }}.exe
+          name: T3 Gemstone Imager Windows ${{ steps.getversion.outputs.gemImagerVersion }}
+          path: ${{ github.workspace }}\build\T3-Gemstone-Imager-${{ steps.getversion.outputs.gemImagerVersion }}.exe
 
   macos:
     runs-on: macos-15
@@ -263,7 +263,7 @@ jobs:
         id: getversion
         run: |
           version=$(grep IMAGER_VERSION_STR "$GITHUB_WORKSPACE/build/CMakeCache.txt" | cut -d '=' -f 2)
-          mv "$GITHUB_WORKSPACE/build/GemstoneImager-${version}.dmg" "$GITHUB_WORKSPACE/build/GemImager-${version}.dmg"
+          mv "$GITHUB_WORKSPACE/build/T3GemstoneImager-${version}.dmg" "$GITHUB_WORKSPACE/build/T3-Gemstone-Imager-${version}.dmg"
           tee -a "${GITHUB_OUTPUT}" <<< gemImagerVersion="$version"
 
       - name: Notarize and staple
@@ -276,7 +276,7 @@ jobs:
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
           APPLE_APP_PASSWORD: ${{ secrets.APPLE_APP_PASSWORD }}
         run: |
-          DMG="$GITHUB_WORKSPACE/build/GemImager-${{ steps.getversion.outputs.gemImagerVersion }}.dmg"
+          DMG="$GITHUB_WORKSPACE/build/T3-Gemstone-Imager-${{ steps.getversion.outputs.gemImagerVersion }}.dmg"
           if [ -n "$APPLE_API_KEY_P8_BASE64" ]; then
             KEY="$RUNNER_TEMP/AuthKey_${APPLE_API_KEY_ID}.p8"
             echo "$APPLE_API_KEY_P8_BASE64" | base64 --decode > "$KEY"
@@ -297,8 +297,8 @@ jobs:
       - name: Verify signature
         if: steps.signing.outputs.sign == 'true'
         run: |
-          DMG="$GITHUB_WORKSPACE/build/GemImager-${{ steps.getversion.outputs.gemImagerVersion }}.dmg"
-          APP="$GITHUB_WORKSPACE/build/GemstoneImager.app"
+          DMG="$GITHUB_WORKSPACE/build/T3-Gemstone-Imager-${{ steps.getversion.outputs.gemImagerVersion }}.dmg"
+          APP="$GITHUB_WORKSPACE/build/T3GemstoneImager.app"
           # The bundle is what has to be signed inside-out; verify it strictly
           codesign --verify --deep --strict --verbose=2 "$APP"
           codesign -dv --verbose=4 "$APP" 2>&1 | grep -E 'Authority|TeamIdentifier|Timestamp|flags'
@@ -314,5 +314,5 @@ jobs:
       - name: Upload DMG
         uses: actions/upload-artifact@v6
         with:
-          name: GemImager macOS ${{ steps.getversion.outputs.gemImagerVersion }}
-          path: build/GemImager-${{ steps.getversion.outputs.gemImagerVersion }}.dmg
+          name: T3 Gemstone Imager macOS ${{ steps.getversion.outputs.gemImagerVersion }}
+          path: build/T3-Gemstone-Imager-${{ steps.getversion.outputs.gemImagerVersion }}.dmg

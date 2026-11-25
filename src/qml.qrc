@@ -2,7 +2,7 @@
     <qresource prefix="/">
         <file>main.qml</file>
         <file>qtquickcontrols2.conf</file>
-        <file>icons/gem-imager.ico</file>
+        <file>icons/t3-gem-imager.ico</file>
         <file>fonts/NotoSans-Bold.ttf</file>
         <file>fonts/NotoSans-Light.ttf</file>
         <file>fonts/NotoSans-Regular.ttf</file>

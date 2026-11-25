@@ -1,23 +1,23 @@
 <RCC>
     <qresource prefix="/i18n">
-        <file>gem-imager_ca.qm</file>
-        <file>gem-imager_de.qm</file>
-        <file>gem-imager_en.qm</file>
-        <file>gem-imager_es.qm</file>
-        <file>gem-imager_fr.qm</file>
-        <file>gem-imager_he.qm</file>
-        <file>gem-imager_it.qm</file>
-        <file>gem-imager_ja.qm</file>
-        <file>gem-imager_ko.qm</file>
-        <file>gem-imager_nl.qm</file>
-        <file>gem-imager_pl.qm</file>
-        <file>gem-imager_pt.qm</file>
-        <file>gem-imager_ru.qm</file>
-        <file>gem-imager_sk.qm</file>
-        <file>gem-imager_sl.qm</file>
-        <file>gem-imager_tr.qm</file>
-        <file>gem-imager_uk.qm</file>
-        <file>gem-imager_zh.qm</file>
-        <file>gem-imager_zh-TW.qm</file>
+        <file>t3-gem-imager_ca.qm</file>
+        <file>t3-gem-imager_de.qm</file>
+        <file>t3-gem-imager_en.qm</file>
+        <file>t3-gem-imager_es.qm</file>
+        <file>t3-gem-imager_fr.qm</file>
+        <file>t3-gem-imager_he.qm</file>
+        <file>t3-gem-imager_it.qm</file>
+        <file>t3-gem-imager_ja.qm</file>
+        <file>t3-gem-imager_ko.qm</file>
+        <file>t3-gem-imager_nl.qm</file>
+        <file>t3-gem-imager_pl.qm</file>
+        <file>t3-gem-imager_pt.qm</file>
+        <file>t3-gem-imager_ru.qm</file>
+        <file>t3-gem-imager_sk.qm</file>
+        <file>t3-gem-imager_sl.qm</file>
+        <file>t3-gem-imager_tr.qm</file>
+        <file>t3-gem-imager_uk.qm</file>
+        <file>t3-gem-imager_zh.qm</file>
+        <file>t3-gem-imager_zh-TW.qm</file>
     </qresource>
 </RCC>
