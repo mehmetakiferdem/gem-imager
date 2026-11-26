@@ -336,7 +336,7 @@ jobs:
           codesign --verify --deep --strict --verbose=2 "$APP"
           codesign -dv --verbose=4 "$APP" 2>&1 | grep -E 'Format|Authority|TeamIdentifier|Timestamp|flags'
           # One universal DMG serves both Apple silicon and Intel Macs
-          lipo -verify_arch arm64 x86_64 "$APP/Contents/MacOS/t3-gem-imager"
+          lipo "$APP/Contents/MacOS/t3-gem-imager" -verify_arch arm64 x86_64
           codesign --verify --verbose=2 "$DMG"
           if [ "${{ steps.signing.outputs.notarize }}" = "true" ]; then
             # Gatekeeper's own verdict; only meaningful once notarized
