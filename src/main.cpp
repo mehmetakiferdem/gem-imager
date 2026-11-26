@@ -360,7 +360,21 @@ int main(int argc, char *argv[])
         QLocale::setDefault(QLocale(langcode));
 #endif
 
-        if (translator->load(QLocale(), "t3-gem-imager", "_", QLatin1String(":/i18n")))
+        /* Try the preferred languages one at a time, in order.
+           QTranslator::load(QLocale()) sorts the candidates of all of them
+           together, so with Windows' "tr-TR, en-US" "en" came before "tr"
+           and the program was shown in English. */
+        bool loaded = false;
+        for (const QString &lang : QLocale().uiLanguages())
+        {
+            if (translator->load(QLocale(lang), "t3-gem-imager", "_", QLatin1String(":/i18n")))
+            {
+                loaded = true;
+                break;
+            }
+        }
+
+        if (loaded)
             imageWriter.replaceTranslator(translator);
         else
             delete translator;

@@ -219,7 +219,8 @@
  
      for (const QString &tf : transFiles)
      {
-         QString langcode = tf.mid(11, tf.length()-14);
+         /* t3-gem-imager_<langcode>.qm */
+         QString langcode = tf.mid(14, tf.length()-17);
          /* FIXME: we currently lack a font with support for Chinese characters in embedded mode */
          //if (isEmbeddedMode() && langcode == "zh")
          //    continue;
