@@ -510,7 +510,12 @@ elseif(APPLE)
             COMMAND ${CMAKE_COMMAND} -E rename "${CMAKE_BINARY_DIR}/${PROJECT_NAME}.app" "${CMAKE_BINARY_DIR}/T3GemstoneImager.app")
         add_custom_command(TARGET ${PROJECT_NAME}
             POST_BUILD
-            COMMAND "${MACDEPLOYQT_EXECUTABLE}" "${CMAKE_BINARY_DIR}/T3GemstoneImager.app" -qmldir=${CMAKE_CURRENT_SOURCE_DIR} -always-overwrite -no-strip -dmg)
+            COMMAND "${MACDEPLOYQT_EXECUTABLE}" "${CMAKE_BINARY_DIR}/T3GemstoneImager.app" -qmldir=${CMAKE_CURRENT_SOURCE_DIR} -always-overwrite -no-strip)
+        # Not macdeployqt -dmg, which names the volume after the full path
+        # of the build directory
+        add_custom_command(TARGET ${PROJECT_NAME}
+            POST_BUILD
+            COMMAND hdiutil create -volname "T3 Gemstone Imager" -srcfolder "${CMAKE_BINARY_DIR}/T3GemstoneImager.app" -ov -format UDBZ "${CMAKE_BINARY_DIR}/T3GemstoneImager.dmg")
     endif(IMAGER_SIGNED_APP)
 
     add_custom_command(TARGET ${PROJECT_NAME}
