@@ -318,7 +318,9 @@ jobs:
           APP="$GITHUB_WORKSPACE/build/T3GemstoneImager.app"
           # The bundle is what has to be signed inside-out; verify it strictly
           codesign --verify --deep --strict --verbose=2 "$APP"
-          codesign -dv --verbose=4 "$APP" 2>&1 | grep -E 'Authority|TeamIdentifier|Timestamp|flags'
+          codesign -dv --verbose=4 "$APP" 2>&1 | grep -E 'Format|Authority|TeamIdentifier|Timestamp|flags'
+          # One universal DMG serves both Apple silicon and Intel Macs
+          lipo -verify_arch arm64 x86_64 "$APP/Contents/MacOS/t3-gem-imager"
           codesign --verify --verbose=2 "$DMG"
           if [ "${{ steps.signing.outputs.notarize }}" = "true" ]; then
             # Gatekeeper's own verdict; only meaningful once notarized
