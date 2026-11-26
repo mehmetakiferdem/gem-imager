@@ -459,19 +459,18 @@ elseif(APPLE)
 
     if(IMAGER_SIGNED_APP)
         if(IMAGER_SIGNING_IDENTITY)
-            # Create the .app, leveraging macdeployqt's knowledge of Qt libraries and configuration files
-            add_custom_command(TARGET ${PROJECT_NAME}
-                POST_BUILD
-                COMMAND "${MACDEPLOYQT_EXECUTABLE}" "${CMAKE_BINARY_DIR}/${PROJECT_NAME}.app" -qmldir=${CMAKE_CURRENT_SOURCE_DIR})
             add_custom_command(TARGET ${PROJECT_NAME}
                 POST_BUILD
                 COMMAND ${CMAKE_COMMAND} -E rm -rf "${CMAKE_BINARY_DIR}/T3GemstoneImager.app"
                 COMMAND ${CMAKE_COMMAND} -E rename "${CMAKE_BINARY_DIR}/${PROJECT_NAME}.app" "${CMAKE_BINARY_DIR}/T3GemstoneImager.app")
-            
-            # Sign the .app.
+
+            # Create and sign the .app. macdeployqt signs inside-out (every
+            # framework and plugin, then the bundle) with the hardened runtime
+            # and a secure timestamp, as notarization requires. codesign --deep
+            # is not used: Apple supports it only for verifying, not signing.
             add_custom_command(TARGET ${PROJECT_NAME}
                 POST_BUILD
-                COMMAND codesign -f --deep --digest-algorithm=sha1,sha256 -o runtime --timestamp -s "${IMAGER_SIGNING_IDENTITY}" "${CMAKE_BINARY_DIR}/T3GemstoneImager.app"
+                COMMAND "${MACDEPLOYQT_EXECUTABLE}" "${CMAKE_BINARY_DIR}/T3GemstoneImager.app" -qmldir=${CMAKE_CURRENT_SOURCE_DIR} "-sign-for-notarization=${IMAGER_SIGNING_IDENTITY}"
                 VERBATIM)
 
             # Create the .dmg for distribution
