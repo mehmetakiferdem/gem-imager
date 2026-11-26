@@ -195,60 +195,85 @@ jobs:
       # and the user has to re-add the app to Full Disk Access by hand. Sign
       # with a Developer ID and notarize whenever the secrets are configured;
       # fall back to an unsigned build (forks, PRs) so the job never blocks.
-      - name: Check for signing credentials
+      #
+      # Repository secrets, named as in DeneyapKartIDE so the same values can
+      # be reused:
+      #   CSC_LINK                 base64 (single line) of the Developer ID
+      #                            Application .p12, with the "Developer ID
+      #                            Certification Authority (G2)" intermediate
+      #                            embedded, exported with -legacy
+      #   CSC_KEY_PASSWORD         password of that .p12
+      #   APPLE_API_KEY_P8_BASE64  base64 of the App Store Connect API key (.p8)
+      #   APPLE_API_KEY_ID         its key ID
+      #   APPLE_API_ISSUER         its issuer ID
+      - name: Prepare signing credentials
         id: signing
         env:
-          MACOS_CERTIFICATE: ${{ secrets.MACOS_CERTIFICATE }}
-          MACOS_SIGNING_IDENTITY: ${{ secrets.MACOS_SIGNING_IDENTITY }}
-          APPLE_ID: ${{ secrets.APPLE_ID }}
+          CSC_LINK: ${{ secrets.CSC_LINK }}
+          CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
           APPLE_API_KEY_P8_BASE64: ${{ secrets.APPLE_API_KEY_P8_BASE64 }}
+          APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
+          APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
         run: |
-          if [ -n "$MACOS_CERTIFICATE" ] && [ -n "$MACOS_SIGNING_IDENTITY" ]; then
-            echo "sign=true" >> "$GITHUB_OUTPUT"
-          else
+          set -euo pipefail
+          csc=$(printf %s "$CSC_LINK" | tr -d '\r\n')
+          if [ -z "$csc" ]; then
             echo "sign=false" >> "$GITHUB_OUTPUT"
-            echo "::warning::MACOS_CERTIFICATE/MACOS_SIGNING_IDENTITY not set - producing an UNSIGNED build. Users will have to grant Full Disk Access by hand, and the grant will not survive an update."
+            echo "notarize=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::CSC_LINK not set - producing an UNSIGNED build. Users will have to grant Full Disk Access by hand, and the grant will not survive an update."
+            exit 0
           fi
-          # Notarisation is optional: signing alone is enough for a locally
+
+          # From here on a secret that is present but wrong fails the job
+          # rather than silently producing an unsigned build.
+          dir="$RUNNER_TEMP/signing"
+          mkdir -p "$dir"
+          kc="$dir/signing.keychain-db"   # must end in -db or later commands miss it
+          kcpass=$(openssl rand -hex 24)
+          printf %s "$csc" | openssl base64 -d -A > "$dir/cert.p12"
+          security create-keychain -p "$kcpass" "$kc"
+          # No flags: no auto-lock timeout and no lock on sleep
+          security set-keychain-settings "$kc"
+          security unlock-keychain -p "$kcpass" "$kc"
+          # codesign only resolves the chain in keychains on the search list
+          security list-keychains -d user -s "$kc" $(security list-keychains -d user | tr -d '"')
+          security import "$dir/cert.p12" -k "$kc" -P "$CSC_KEY_PASSWORD" -T /usr/bin/codesign
+          # Without this codesign blocks on a GUI prompt for the private key.
+          # -k takes the keychain password, not the .p12 one.
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$kcpass" "$kc" > /dev/null
+          rm -f "$dir/cert.p12"
+          security find-identity -v -p codesigning "$kc"
+          identity=$(security find-identity -v -p codesigning "$kc" | grep -o '"Developer ID Application: [^"]*"' | head -n 1 | tr -d '"')
+          if [ -z "$identity" ]; then
+            echo "::error::No 'Developer ID Application' identity in CSC_LINK"
+            exit 1
+          fi
+          echo "sign=true" >> "$GITHUB_OUTPUT"
+          echo "MACOS_SIGNING_IDENTITY=$identity" >> "$GITHUB_ENV"
+
+          # Notarization is optional: signing alone is enough for a locally
           # built app, because a bundle that was never downloaded carries no
           # quarantine attribute for Gatekeeper to check. A DMG handed to
-          # someone else does need it. Either an App Store Connect API key or
-          # an Apple ID with an app-specific password will do.
-          if [ -n "$APPLE_API_KEY_P8_BASE64" ] || [ -n "$APPLE_ID" ]; then
+          # someone else does need it.
+          p8=$(printf %s "$APPLE_API_KEY_P8_BASE64" | tr -d '\r\n')
+          if [ -n "$p8" ] && [ -n "$APPLE_API_KEY_ID" ] && [ -n "$APPLE_API_ISSUER" ]; then
+            key="$RUNNER_TEMP/appstoreconnect/AuthKey_${APPLE_API_KEY_ID}.p8"
+            mkdir -p "$(dirname "$key")"
+            printf %s "$p8" | openssl base64 -d -A > "$key"
+            echo "APPLE_API_KEY_PATH=$key" >> "$GITHUB_ENV"
             echo "notarize=true" >> "$GITHUB_OUTPUT"
           else
             echo "notarize=false" >> "$GITHUB_OUTPUT"
           fi
-
-      - name: Import Developer ID certificate
-        if: steps.signing.outputs.sign == 'true'
-        env:
-          MACOS_CERTIFICATE: ${{ secrets.MACOS_CERTIFICATE }}
-          MACOS_CERTIFICATE_PWD: ${{ secrets.MACOS_CERTIFICATE_PWD }}
-        run: |
-          KEYCHAIN="$RUNNER_TEMP/signing.keychain-db"
-          KEYCHAIN_PWD="$(uuidgen)"
-          echo "$MACOS_CERTIFICATE" | base64 --decode > "$RUNNER_TEMP/cert.p12"
-          security create-keychain -p "$KEYCHAIN_PWD" "$KEYCHAIN"
-          security set-keychain-settings -lut 3600 "$KEYCHAIN"
-          security unlock-keychain -p "$KEYCHAIN_PWD" "$KEYCHAIN"
-          security import "$RUNNER_TEMP/cert.p12" -k "$KEYCHAIN" \
-            -P "$MACOS_CERTIFICATE_PWD" -T /usr/bin/codesign -T /usr/bin/security
-          # Without this codesign blocks on a GUI prompt for the private key
-          security set-key-partition-list -S apple-tool:,apple:,codesign: \
-            -s -k "$KEYCHAIN_PWD" "$KEYCHAIN" >/dev/null
-          security list-keychain -d user -s "$KEYCHAIN" login.keychain-db
-          rm -f "$RUNNER_TEMP/cert.p12"
-          security find-identity -v -p codesigning "$KEYCHAIN"
 
       - name: Configure
         run: |
           EXTRA=()
           if [ "${{ steps.signing.outputs.sign }}" = "true" ]; then
             EXTRA+=(-DIMAGER_SIGNED_APP:BOOL=ON)
-            EXTRA+=(-DIMAGER_SIGNING_IDENTITY:STRING="${{ secrets.MACOS_SIGNING_IDENTITY }}")
+            EXTRA+=(-DIMAGER_SIGNING_IDENTITY:STRING="$MACOS_SIGNING_IDENTITY")
           fi
-          # Notarisation is driven from the steps below rather than from
+          # Notarization is driven from the steps below rather than from
           # CMake's IMAGER_NOTARIZE_APP, which expects a notarytool keychain
           # profile to have been stored beforehand.
           cmake -S "$GITHUB_WORKSPACE/src" -B "$GITHUB_WORKSPACE/build" \
@@ -269,28 +294,20 @@ jobs:
       - name: Notarize and staple
         if: steps.signing.outputs.sign == 'true' && steps.signing.outputs.notarize == 'true'
         env:
-          APPLE_API_KEY_P8_BASE64: ${{ secrets.APPLE_API_KEY_P8_BASE64 }}
           APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
           APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
-          APPLE_ID: ${{ secrets.APPLE_ID }}
-          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
-          APPLE_APP_PASSWORD: ${{ secrets.APPLE_APP_PASSWORD }}
         run: |
+          set -euo pipefail
           DMG="$GITHUB_WORKSPACE/build/T3-Gemstone-Imager-${{ steps.getversion.outputs.gemImagerVersion }}.dmg"
-          if [ -n "$APPLE_API_KEY_P8_BASE64" ]; then
-            KEY="$RUNNER_TEMP/AuthKey_${APPLE_API_KEY_ID}.p8"
-            echo "$APPLE_API_KEY_P8_BASE64" | base64 --decode > "$KEY"
-            xcrun notarytool submit "$DMG" --wait --output-format json \
-              --key "$KEY" --key-id "$APPLE_API_KEY_ID" --issuer "$APPLE_API_ISSUER" \
-              | tee "$RUNNER_TEMP/notary.json"
-            rm -f "$KEY"
-          else
-            xcrun notarytool submit "$DMG" --wait --output-format json \
-              --apple-id "$APPLE_ID" --team-id "$APPLE_TEAM_ID" --password "$APPLE_APP_PASSWORD" \
-              | tee "$RUNNER_TEMP/notary.json"
-          fi
+          AUTH=(--key "$APPLE_API_KEY_PATH" --key-id "$APPLE_API_KEY_ID" --issuer "$APPLE_API_ISSUER")
+          xcrun notarytool submit "$DMG" --wait --output-format json "${AUTH[@]}" \
+            | tee "$RUNNER_TEMP/notary.json"
           # notarytool exits 0 even when Apple rejects the upload
-          grep -q '"status" *: *"Accepted"' "$RUNNER_TEMP/notary.json"
+          if ! grep -q '"status" *: *"Accepted"' "$RUNNER_TEMP/notary.json"; then
+            id=$(sed -n 's/.*"id" *: *"\([^"]*\)".*/\1/p' "$RUNNER_TEMP/notary.json" | head -n 1)
+            [ -n "$id" ] && xcrun notarytool log "$id" "${AUTH[@]}" || true
+            exit 1
+          fi
           # Staple the ticket so Gatekeeper accepts the DMG offline
           xcrun stapler staple "$DMG"
 
@@ -308,7 +325,7 @@ jobs:
             spctl --assess --type open --context context:primary-signature -vv "$DMG"
             xcrun stapler validate "$DMG"
           else
-            echo "::warning::Signed but not notarized (no APPLE_API_KEY_P8_BASE64 or APPLE_ID). Gatekeeper will refuse this DMG on a user's machine."
+            echo "::warning::Signed but not notarized (APPLE_API_KEY_P8_BASE64/APPLE_API_KEY_ID/APPLE_API_ISSUER not set). Gatekeeper will refuse this DMG on a user's machine."
           fi
 
       - name: Upload DMG
