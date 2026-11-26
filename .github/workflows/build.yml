@@ -182,7 +182,10 @@ jobs:
           path: ${{ github.workspace }}\build\T3-Gemstone-Imager-${{ steps.getversion.outputs.gemImagerVersion }}.exe
 
   macos:
-    runs-on: macos-15
+    # Intel runner: the arm64 pool repeatedly failed to pick the job up. The
+    # build is universal either way (Qt ships universal binaries and
+    # CMAKE_OSX_ARCHITECTURES is "arm64;x86_64"); the verify step checks it.
+    runs-on: macos-15-intel
     steps:
       - name: Install Qt
         uses: jurplel/install-qt-action@v4
