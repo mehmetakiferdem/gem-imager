@@ -1,7 +1,13 @@
 # https://github.com/pcolby/dokit/blob/main/.github/workflows/build.yaml
 
 name: Build
-on: workflow_dispatch
+on:
+  workflow_dispatch:
+    inputs:
+      release:
+        description: 'Publish a GitHub release v<version> (main only, version from src/CMakeLists.txt)'
+        type: boolean
+        default: false
 env:
   CMAKE_BUILD_PARALLEL_LEVEL: 4
   QT_FORCE_STDERR_LOGGING: 1
@@ -218,6 +224,10 @@ jobs:
           set -euo pipefail
           csc=$(printf %s "$CSC_LINK" | tr -d '\r\n')
           if [ -z "$csc" ]; then
+            if [ "${{ inputs.release }}" = "true" ]; then
+              echo "::error::CSC_LINK not set - refusing to release an unsigned macOS build"
+              exit 1
+            fi
             echo "sign=false" >> "$GITHUB_OUTPUT"
             echo "notarize=false" >> "$GITHUB_OUTPUT"
             echo "::warning::CSC_LINK not set - producing an UNSIGNED build. Users will have to grant Full Disk Access by hand, and the grant will not survive an update."
@@ -262,6 +272,9 @@ jobs:
             printf %s "$p8" | openssl base64 -d -A > "$key"
             echo "APPLE_API_KEY_PATH=$key" >> "$GITHUB_ENV"
             echo "notarize=true" >> "$GITHUB_OUTPUT"
+          elif [ "${{ inputs.release }}" = "true" ]; then
+            echo "::error::App Store Connect API key secrets not set - refusing to release a DMG that is not notarized"
+            exit 1
           else
             echo "notarize=false" >> "$GITHUB_OUTPUT"
           fi
@@ -335,3 +348,52 @@ jobs:
         with:
           name: T3 Gemstone Imager macOS ${{ steps.getversion.outputs.gemImagerVersion }}
           path: build/T3-Gemstone-Imager-${{ steps.getversion.outputs.gemImagerVersion }}.dmg
+
+  # Runs only when "release" is ticked, and only after all three platforms
+  # built - so a failed platform never leaves a half-finished public release.
+  # gh uploads the files to a draft and publishes it once every one is in.
+  release:
+    if: inputs.release
+    needs: [linux, windows, macos]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+      - name: Check version
+        id: version
+        run: |
+          set -euo pipefail
+          if [ "$GITHUB_REF" != "refs/heads/main" ]; then
+            echo "::error::Releases are made from main only (this run is on $GITHUB_REF)"
+            exit 1
+          fi
+          part() { sed -n "s/^set(IMAGER_VERSION_$1 \([0-9]*\))/\1/p" src/CMakeLists.txt; }
+          version="$(part MAJOR).$(part MINOR).$(part PATCH)"
+          appimage=$(sed -n 's/^  version: *//p' appimagecraft.yml | tr -d ' \r')
+          if [ "$version" != "$appimage" ]; then
+            echo "::error::src/CMakeLists.txt says $version but appimagecraft.yml says $appimage"
+            exit 1
+          fi
+          # Never overwrite a published version: bump the version instead
+          if git ls-remote --exit-code --tags origin "refs/tags/v$version" >/dev/null || gh release view "v$version" >/dev/null 2>&1; then
+            echo "::error::v$version is already tagged or released - bump the version in src/CMakeLists.txt and appimagecraft.yml"
+            exit 1
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+      - name: Fetch build outputs
+        uses: actions/download-artifact@v7
+        with:
+          pattern: T3 Gemstone Imager *
+          path: dist
+          merge-multiple: true
+      - name: Publish release
+        run: |
+          v="${{ steps.version.outputs.version }}"
+          gh release create "v$v" --target "$GITHUB_SHA" --title "v$v" --generate-notes \
+            "dist/T3-Gemstone-Imager-$v.AppImage" \
+            "dist/T3-Gemstone-Imager-$v.exe" \
+            "dist/T3-Gemstone-Imager-$v.dmg"
