@@ -668,6 +668,9 @@ void DownloadThread::_onDownloadSuccess()
 void DownloadThread::_onDownloadError(const QString &msg)
 {
     _cancelled = true;
+    /* Also after the transfer itself succeeded, e.g. on a hash mismatch:
+       callers that only check successfull() must not use the file */
+    _successful = false;
     emit error(msg);
 }
 
